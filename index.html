@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ag lucem - Agenda Escolar</title>
+    <!-- Vinculación al archivo de estilos externos -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>Ag lucem</h1>
+    <p>Panel Central de Gestión y Agenda Escolar</p>
+</header>
+
+<div class="container">
+
+    <!-- Sección de Enlaces y Hub Educativo -->
+    <h2 class="section-title">Hub Educativo e Inteligencia Artificial</h2>
+    <div class="links-grid">
+        <div class="card chemini">
+            <h3>Chemini</h3>
+            <p>Acceso al orquestador multi-agente e interfaz conversacional.</p>
+            <a href="https://chemini.aracknia.com/" target="_blank">Iniciar Chemini</a>
+        </div>
+        <div class="card herramientas">
+            <h3>Herramientas Educativas</h3>
+            <p>Panel de recursos de CHEMA-edu-2.0.</p>
+            <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank">Acceder</a>
+        </div>
+        <div class="card ia">
+            <h3>Repositorio de IA</h3>
+            <p>Acceso al repositorio del Departamento de Innovación Educativa.</p>
+            <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank">Explorar Repositorio</a>
+        </div>
+    </div>
+
+    <!-- Sección de Horario -->
+    <h2 class="section-title">Horario de Clases</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                </tr>
+            </thead>
+            <tbody id="horarioBody">
+                <tr>
+                    <td class="hora-col" contenteditable="true">07:00 - 09:00</td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="hora-col" contenteditable="true">09:00 - 11:00</td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="hora-col" contenteditable="true">11:00 - 13:00</td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="hora-col" contenteditable="true">13:00 - 15:00</td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="hora-col" contenteditable="true">15:00 - 17:00</td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="hora-col" contenteditable="true">17:00 - 19:00</td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td>
+                    <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sección de Agenda Dinámica -->
+    <h2 class="section-title">Agenda y Tareas Pendientes</h2>
+    <div class="agenda-container">
+        <div class="agenda-header">
+            <button class="btn-add" id="addTaskBtn">+ Nueva Tarea</button>
+        </div>
+        <ul class="task-list" id="taskList">
+            <!-- Las tareas se renderizan aquí mediante JavaScript -->
+        </ul>
+    </div>
+
+</div>
+
+<!-- Vinculación al archivo de lógica funcional -->
+<script src="script.js"></script>
+
+</body>
+</html>
