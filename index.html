@@ -16,7 +16,7 @@
         <form id="authForm">
             <div class="input-group">
                 <label for="emailInput">Correo Institucional</label>
-                <input type="email" id="emailInput" placeholder="usuario@juventud.edu" required>
+                <input type="email" id="emailInput" placeholder="usuario@juventud.edu.mx" required>
             </div>
             <div class="input-group">
                 <label for="passInput">Contraseña</label>
@@ -57,10 +57,8 @@
             let isRegisterMode = false;
             let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
 
-            // Verificar si ya está bloqueado al cargar
             if (failedAttempts >= 3) showLockScreen();
 
-            // Cambiar entre Iniciar Sesión y Registro
             toggleModeBtn.addEventListener("click", () => {
                 isRegisterMode = !isRegisterMode;
                 loginTitle.innerText = isRegisterMode ? "Crear Cuenta" : "Iniciar Sesión";
@@ -73,23 +71,21 @@
                 const email = emailInput.value.trim();
                 const pass = passInput.value.trim();
 
-                // 1. Validar dominio
-                if (!email.endsWith("@juventud.edu")) {
-                    errorMessage.innerText = "Error: Debes usar un correo con terminación @juventud.edu";
+                // Validación exacta del dominio solicitado
+                if (!email.endsWith("@juventud.edu.mx")) {
+                    errorMessage.innerText = "Error: Debes usar un correo con terminación @juventud.edu.mx";
                     return;
                 }
 
                 if (isRegisterMode) {
-                    // MODO REGISTRO
                     if (localStorage.getItem(`user_${email}`)) {
                         errorMessage.innerText = "Este correo ya está registrado.";
                     } else {
                         localStorage.setItem(`user_${email}`, pass);
                         alert("Cuenta creada con éxito. Ahora puedes iniciar sesión.");
-                        toggleModeBtn.click(); // Vuelve al modo login
+                        toggleModeBtn.click(); 
                     }
                 } else {
-                    // MODO INGRESO
                     const savedPass = localStorage.getItem(`user_${email}`);
                     if (!savedPass) {
                         errorMessage.innerText = "El correo no está registrado.";
@@ -97,12 +93,10 @@
                     }
 
                     if (savedPass === pass) {
-                        // Éxito
-                        localStorage.setItem("app_failed_attempts", "0"); // Reinicia intentos
-                        sessionStorage.setItem("isLoggedIn", "true"); // Marca sesión activa
-                        window.location.href = "novedades.html"; // Redirige a la app
+                        localStorage.setItem("app_failed_attempts", "0"); 
+                        sessionStorage.setItem("isLoggedIn", "true"); 
+                        window.location.href = "novedades.html"; 
                     } else {
-                        // Fallo
                         failedAttempts++;
                         localStorage.setItem("app_failed_attempts", failedAttempts.toString());
                         if (failedAttempts >= 3) {
@@ -120,7 +114,6 @@
                 lockScreen.classList.remove("hidden");
             }
 
-            // Lógica Administrativa (Contraseña Maestra)
             adminUnlockBtn.addEventListener("click", () => {
                 const masterPass = prompt("Ingrese la contraseña maestra del departamento:");
                 if (masterPass === "L0b0l0b0") {
