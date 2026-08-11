@@ -1,264 +1,89 @@
-/* =========================================
-   Identidad Gráfica - Instituto Juventud
-   Basado en el manual oficial
-   ========================================= */
-:root {
-    --ij-verde: #009944;
-    --ij-amarillo: #FFD100;
-    --ij-azul: #032A60;
-    --ij-rojo: #E2231A;
+document.addEventListener("DOMContentLoaded", () => {
     
-    /* Colores UI Android */
-    --fondo-app: #f2f2f2;
-    --superficie: #ffffff;
-    --texto-principal: #1f1f1f;
-    --texto-secundario: #5f6368;
-    --divisor: #e0e0e0;
-}
+    // --- 1. LÓGICA DEL HORARIO ---
+    const cells = document.querySelectorAll("td[contenteditable='true']");
+    
+    cells.forEach((cell, index) => {
+        const savedValue = localStorage.getItem(`app_aglucem_cell_${index}`);
+        if (savedValue !== null) {
+            cell.innerText = savedValue;
+        }
 
-body {
-    font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
-    background-color: var(--fondo-app);
-    color: var(--texto-principal);
-    margin: 0;
-    padding: 0;
-    padding-bottom: 80px; /* Espacio para el FAB */
-}
+        cell.addEventListener("input", () => {
+            localStorage.setItem(`app_aglucem_cell_${index}`, cell.innerText);
+        });
+    });
 
-/* =========================================
-   App Bar (Encabezado)
-   ========================================= */
-.app-bar {
-    background-color: var(--ij-azul);
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    border-bottom: 4px solid var(--ij-amarillo);
-}
+    // --- 2. LÓGICA DE LA AGENDA ---
+    const taskList = document.getElementById('taskList');
+    const btnAdd = document.getElementById('addTaskBtn'); // Conectado al Botón Flotante
 
-.header-logo {
-    max-height: 40px;
-    width: auto;
-}
+    let tasks = JSON.parse(localStorage.getItem('app_aglucem_tasks')) || [
+        { text: "Configurar app Chemini", done: false }
+    ];
 
-/* =========================================
-   Contenedor Principal
-   ========================================= */
-.app-container {
-    max-width: 600px; /* Ancho optimizado para simular móvil/tablet */
-    margin: 16px auto;
-    padding: 0 16px;
-}
+    function renderTasks() {
+        taskList.innerHTML = '';
+        
+        tasks.forEach((task, index) => {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            
+            const styleCrossed = task.done ? 'text-decoration: line-through; color: #999;' : '';
+            
+            li.innerHTML = `
+                <input type="checkbox" class="task-checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${index})">
+                <input type="text" class="task-input" value="${task.text}" oninput="updateTask(${index}, this.value)" style="${styleCrossed}" placeholder="Escribe aquí tu tarea...">
+                <button class="btn-delete" onclick="deleteTask(${index})">✖</button>
+            `;
+            
+            taskList.appendChild(li);
+        });
+        
+        localStorage.setItem('app_aglucem_tasks', JSON.stringify(tasks));
+    }
 
-.section-title {
-    font-size: 1.1rem;
-    color: var(--ij-azul);
-    margin: 24px 0 12px 4px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+    window.toggleTask = function(index) {
+        tasks[index].done = !tasks[index].done;
+        renderTasks();
+    };
 
-/* Elevación estilo Material Design */
-.card-elevation {
-    background: var(--superficie);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    overflow: hidden;
-}
+    window.updateTask = function(index, newText) {
+        tasks[index].text = newText;
+        localStorage.setItem('app_aglucem_tasks', JSON.stringify(tasks));
+    };
 
-/* =========================================
-   Menús Desplegables (Lista Android)
-   ========================================= */
-.menu-list {
-    background: var(--superficie);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-    margin-top: 10px;
-    overflow: hidden;
-}
+    window.deleteTask = function(index) {
+        tasks.splice(index, 1);
+        renderTasks();
+    };
 
-.menu-dropdown {
-    border-bottom: 1px solid var(--divisor);
-}
+    // Al presionar el botón flotante se añade una tarea nueva
+    btnAdd.addEventListener('click', () => {
+        tasks.unshift({ text: "", done: false }); 
+        renderTasks();
+        
+        setTimeout(() => {
+            const firstInput = document.querySelector('.task-list .task-input');
+            if (firstInput) {
+                firstInput.focus();
+                // Desplaza la vista hacia arriba para ver la nueva tarea en móviles
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }, 50);
+    });
 
-.menu-dropdown:last-child {
-    border-bottom: none;
-}
+    // Cierre automático de acordeones (opcional para estilo app: si abres uno, se cierran los demás)
+    const detailsElements = document.querySelectorAll("details.menu-dropdown");
+    detailsElements.forEach((targetDetail) => {
+        targetDetail.addEventListener("click", () => {
+            detailsElements.forEach((detail) => {
+                if (detail !== targetDetail) {
+                    detail.removeAttribute("open");
+                }
+            });
+        });
+    });
 
-.menu-dropdown summary {
-    padding: 18px 20px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.2s;
-}
-
-.menu-dropdown summary::-webkit-details-marker {
-    display: none; /* Oculta la flecha nativa en Chrome/Safari */
-}
-
-/* Flecha personalizada */
-.menu-dropdown summary::after {
-    content: '▼';
-    font-size: 0.8rem;
-    color: var(--ij-verde);
-    transition: transform 0.3s;
-}
-
-.menu-dropdown[open] summary::after {
-    transform: rotate(180deg);
-}
-
-.menu-dropdown summary:active {
-    background-color: rgba(0, 153, 68, 0.1);
-}
-
-.dropdown-content {
-    padding: 10px 20px 20px;
-    background-color: #fafafa;
-}
-
-.dropdown-content a {
-    display: block;
-    background-color: var(--ij-verde);
-    color: white;
-    text-align: center;
-    padding: 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,153,68,0.3);
-}
-
-.dropdown-content a:active {
-    background-color: #007a36;
-}
-
-/* =========================================
-   Horario de Clases (Tabla App)
-   ========================================= */
-.table-responsive {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 500px;
-}
-
-th, td {
-    padding: 12px 8px;
-    text-align: center;
-    border: 1px solid var(--divisor);
-    font-size: 0.9rem;
-}
-
-th {
-    background-color: var(--ij-azul);
-    color: white;
-    font-weight: 500;
-}
-
-td[contenteditable="true"]:focus {
-    background-color: rgba(255, 209, 0, 0.15); /* Feedback amarillo claro */
-    outline: 2px solid var(--ij-amarillo);
-}
-
-.hora-col {
-    font-weight: 500;
-    color: var(--ij-azul);
-    background-color: #fafafa;
-    font-size: 0.8rem;
-}
-
-/* =========================================
-   Agenda
-   ========================================= */
-.agenda-container {
-    padding: 8px 0;
-}
-
-.task-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.task-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--divisor);
-}
-
-.task-item:last-child {
-    border-bottom: none;
-}
-
-.task-checkbox {
-    margin-right: 16px;
-    transform: scale(1.3);
-    accent-color: var(--ij-verde);
-}
-
-.task-input {
-    flex-grow: 1;
-    border: none;
-    font-size: 1rem;
-    color: var(--texto-principal);
-    background: transparent;
-    outline: none;
-}
-
-.task-input:focus {
-    border-bottom: 1px solid var(--ij-verde);
-}
-
-.btn-delete {
-    background: transparent;
-    border: none;
-    color: var(--ij-rojo);
-    font-size: 1.2rem;
-    padding: 8px;
-    margin-left: 8px;
-}
-
-/* =========================================
-   FAB (Floating Action Button)
-   ========================================= */
-.fab-button {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    background-color: var(--ij-rojo);
-    color: white;
-    border-radius: 50%;
-    border: none;
-    font-size: 28px;
-    line-height: 1;
-    box-shadow: 0 4px 10px rgba(226, 35, 26, 0.4);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    z-index: 100;
-}
-
-.fab-button:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 5px rgba(226, 35, 26, 0.4);
-}
+    renderTasks();
+});
