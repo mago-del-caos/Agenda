@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Acceso - Ag lucem</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-body">
+
+    <div class="login-container card-elevation">
+        <img src="Ag.png" alt="Ag lucem" class="login-logo">
+        <h2 class="section-title" style="text-align: center; font-size: 1.2rem;" id="loginTitle">Iniciar Sesión</h2>
+        
+        <!-- Formulario Principal -->
+        <form id="authForm">
+            <div class="input-group">
+                <label for="emailInput">Correo Institucional</label>
+                <input type="email" id="emailInput" placeholder="usuario@juventud.edu" required>
+            </div>
+            <div class="input-group">
+                <label for="passInput">Contraseña</label>
+                <input type="password" id="passInput" placeholder="••••••••" required>
+            </div>
+            <p id="errorMessage" class="error-text"></p>
+            <button type="submit" class="app-btn btn-blue" style="width: 100%; padding: 15px; border: none; cursor: pointer;">
+                Ingresar
+            </button>
+        </form>
+
+        <!-- Botones de acción -->
+        <div class="login-actions">
+            <button type="button" id="toggleModeBtn" class="text-btn">Crear nueva cuenta</button>
+        </div>
+
+        <!-- Pantalla de Bloqueo (Oculta por defecto) -->
+        <div id="lockScreen" class="lock-screen hidden">
+            <span class="lock-icon">🔒</span>
+            <h3>Acceso Bloqueado</h3>
+            <p>Has superado el límite de 3 intentos.</p>
+            <p>Por favor, acude al <strong>Departamento de Innovación Educativa</strong> para actualizar tu contraseña.</p>
+            <button type="button" id="adminUnlockBtn" class="text-btn admin-btn">Acceso Administrativo</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("authForm");
+            const emailInput = document.getElementById("emailInput");
+            const passInput = document.getElementById("passInput");
+            const errorMessage = document.getElementById("errorMessage");
+            const toggleModeBtn = document.getElementById("toggleModeBtn");
+            const loginTitle = document.getElementById("loginTitle");
+            const lockScreen = document.getElementById("lockScreen");
+            const adminUnlockBtn = document.getElementById("adminUnlockBtn");
+
+            let isRegisterMode = false;
+            let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
+
+            // Verificar si ya está bloqueado al cargar
+            if (failedAttempts >= 3) showLockScreen();
+
+            // Cambiar entre Iniciar Sesión y Registro
+            toggleModeBtn.addEventListener("click", () => {
+                isRegisterMode = !isRegisterMode;
+                loginTitle.innerText = isRegisterMode ? "Crear Cuenta" : "Iniciar Sesión";
+                toggleModeBtn.innerText = isRegisterMode ? "Ya tengo cuenta (Ingresar)" : "Crear nueva cuenta";
+                errorMessage.innerText = "";
+            });
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                const pass = passInput.value.trim();
+
+                // 1. Validar dominio
+                if (!email.endsWith("@juventud.edu")) {
+                    errorMessage.innerText = "Error: Debes usar un correo con terminación @juventud.edu";
+                    return;
+                }
+
+                if (isRegisterMode) {
+                    // MODO REGISTRO
+                    if (localStorage.getItem(`user_${email}`)) {
+                        errorMessage.innerText = "Este correo ya está registrado.";
+                    } else {
+                        localStorage.setItem(`user_${email}`, pass);
+                        alert("Cuenta creada con éxito. Ahora puedes iniciar sesión.");
+                        toggleModeBtn.click(); // Vuelve al modo login
+                    }
+                } else {
+                    // MODO INGRESO
+                    const savedPass = localStorage.getItem(`user_${email}`);
+                    if (!savedPass) {
+                        errorMessage.innerText = "El correo no está registrado.";
+                        return;
+                    }
+
+                    if (savedPass === pass) {
+                        // Éxito
+                        localStorage.setItem("app_failed_attempts", "0"); // Reinicia intentos
+                        sessionStorage.setItem("isLoggedIn", "true"); // Marca sesión activa
+                        window.location.href = "novedades.html"; // Redirige a la app
+                    } else {
+                        // Fallo
+                        failedAttempts++;
+                        localStorage.setItem("app_failed_attempts", failedAttempts.toString());
+                        if (failedAttempts >= 3) {
+                            showLockScreen();
+                        } else {
+                            errorMessage.innerText = `Contraseña incorrecta. Intentos restantes: ${3 - failedAttempts}`;
+                        }
+                    }
+                }
+            });
+
+            function showLockScreen() {
+                form.style.display = "none";
+                document.querySelector(".login-actions").style.display = "none";
+                lockScreen.classList.remove("hidden");
+            }
+
+            // Lógica Administrativa (Contraseña Maestra)
+            adminUnlockBtn.addEventListener("click", () => {
+                const masterPass = prompt("Ingrese la contraseña maestra del departamento:");
+                if (masterPass === "L0b0l0b0") {
+                    const targetEmail = prompt("Ingrese el correo del alumno a desbloquear:");
+                    if (targetEmail && localStorage.getItem(`user_${targetEmail}`)) {
+                        const newPass = prompt("Asigne la nueva contraseña para " + targetEmail + ":");
+                        if (newPass) {
+                            localStorage.setItem(`user_${targetEmail}`, newPass);
+                            localStorage.setItem("app_failed_attempts", "0");
+                            alert("Contraseña actualizada y cuenta desbloqueada.");
+                            window.location.reload();
+                        }
+                    } else {
+                        alert("Correo no encontrado en el sistema.");
+                    }
+                } else {
+                    alert("Contraseña maestra incorrecta.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
