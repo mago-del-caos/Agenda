@@ -8,88 +8,139 @@
 </head>
 <body>
 
-<!-- App Bar Superior -->
-<header class="app-bar">
-    <img src="Ag.png" alt="Logotipo" class="header-logo">
-</header>
+    <!-- Banner Superior -->
+    <header class="app-header">
+        <img src="Ag.png" alt="Ag lucem" class="header-image">
+    </header>
 
-<div class="app-container">
+    <!-- Menú de Navegación (Desplazable horizontalmente) -->
+    <nav class="app-nav">
+        <button class="nav-btn active" data-target="novedades">Novedades</button>
+        <button class="nav-btn" data-target="horario">Horario</button>
+        <button class="nav-btn" data-target="agenda">Agenda</button>
+        <button class="nav-btn" data-target="herramientas">Herramientas</button>
+        <button class="nav-btn" data-target="comunicacion">Comunicación</button>
+        <button class="nav-btn" data-target="redes">Redes</button>
+    </nav>
 
-    <!-- Menús Desplegables (Estilo Android List) -->
-    <div class="menu-list">
-        <details class="menu-dropdown">
-            <summary>Chemini</summary>
-            <div class="dropdown-content">
-                <a href="https://chemini.aracknia.com/" target="_blank">Abrir Chemini</a>
+    <!-- Contenedor Principal (Vistas) -->
+    <main class="app-main">
+
+        <!-- VISTA: NOVEDADES -->
+        <section id="novedades" class="page-view active">
+            <h2 class="section-title">Últimas Novedades</h2>
+            <div class="carousel-container">
+                <div class="carousel-track">
+                    <img src="1.png" alt="Novedad 1" class="carousel-slide">
+                    <img src="2.png" alt="Novedad 2" class="carousel-slide">
+                    <img src="3.png" alt="Novedad 3" class="carousel-slide">
+                    <img src="4.png" alt="Novedad 4" class="carousel-slide">
+                    <img src="5.png" alt="Novedad 5" class="carousel-slide">
+                </div>
+                <p class="swipe-hint">← Desliza para ver más →</p>
             </div>
-        </details>
+        </section>
 
-        <details class="menu-dropdown">
-            <summary>Herramientas</summary>
-            <div class="dropdown-content">
-                <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank">Abrir Herramientas</a>
+        <!-- VISTA: HORARIO -->
+        <section id="horario" class="page-view">
+            <h2 class="section-title">Mi Horario</h2>
+            <div class="table-responsive card-elevation">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hora</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th>
+                        </tr>
+                    </thead>
+                    <tbody id="horarioBody">
+                        <tr><td class="hora-col">7:00-7:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">7:50-8:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">8:40-9:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">9:30-10:20</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        
+                        <!-- DESCANSO -->
+                        <tr class="row-break"><td class="hora-col">10:20-10:50</td><td colspan="5">☕ RECESO / DESCANSO ☕</td></tr>
+                        
+                        <tr><td class="hora-col">10:50-11:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">11:40-12:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        
+                        <!-- DESCANSO -->
+                        <tr class="row-break"><td class="hora-col">12:30-12:50</td><td colspan="5">🥪 RECESO / DESCANSO 🥪</td></tr>
+                        
+                        <tr><td class="hora-col">12:50-13:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">13:40-14:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">14:30-15:20</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    </tbody>
+                </table>
             </div>
-        </details>
+        </section>
 
-        <details class="menu-dropdown">
-            <summary>IAs</summary>
-            <div class="dropdown-content">
-                <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank">Abrir Repositorio IA</a>
+        <!-- VISTA: AGENDA -->
+        <section id="agenda" class="page-view">
+            <h2 class="section-title">Tareas y Pendientes</h2>
+            <div class="agenda-container card-elevation">
+                <ul class="task-list" id="taskList"></ul>
             </div>
-        </details>
+            <!-- FAB solo visible en Agenda -->
+            <button class="fab-button" id="addTaskBtn" title="Añadir Tarea">+</button>
+        </section>
 
-        <details class="menu-dropdown">
-            <summary>Classroom</summary>
-            <div class="dropdown-content">
-                <a href="https://classroom.google.com/" target="_blank">Abrir Google Classroom</a>
+        <!-- VISTA: HERRAMIENTAS -->
+        <section id="herramientas" class="page-view">
+            <h2 class="section-title">Herramientas IA</h2>
+            <div class="button-grid">
+                <a href="https://chemini.aracknia.com/" target="_blank" class="app-btn btn-blue">
+                    <span class="btn-icon">🤖</span>
+                    <span class="btn-text">Chemini</span>
+                </a>
+                <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" class="app-btn btn-yellow">
+                    <span class="btn-icon">🛠️</span>
+                    <span class="btn-text">Herramientas</span>
+                </a>
+                <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" class="app-btn btn-magenta">
+                    <span class="btn-icon">🧠</span>
+                    <span class="btn-text">IAs</span>
+                </a>
             </div>
-        </details>
+        </section>
 
-        <details class="menu-dropdown">
-            <summary>Padlet</summary>
-            <div class="dropdown-content">
-                <a href="https://padlet.com/" target="_blank">Abrir Padlet</a>
+        <!-- VISTA: COMUNICACIÓN -->
+        <section id="comunicacion" class="page-view">
+            <h2 class="section-title">Comunicación</h2>
+            <div class="button-grid">
+                <a href="https://classroom.google.com/" target="_blank" class="app-btn btn-green">
+                    <span class="btn-icon">📚</span>
+                    <span class="btn-text">Classroom</span>
+                </a>
+                <a href="https://padlet.com/" target="_blank" class="app-btn btn-magenta">
+                    <span class="btn-icon">📌</span>
+                    <span class="btn-text">Padlet</span>
+                </a>
+                <a href="https://ln.globalschool.mx/" target="_blank" class="app-btn btn-blue">
+                    <span class="btn-icon">🌐</span>
+                    <span class="btn-text">GlobalSchool</span>
+                </a>
             </div>
-        </details>
-    </div>
+        </section>
 
-    <!-- Sección de Horario -->
-    <h2 class="section-title">Horario</h2>
-    <div class="table-responsive card-elevation">
-        <table>
-            <thead>
-                <tr>
-                    <th>Hora</th>
-                    <th>Lun</th>
-                    <th>Mar</th>
-                    <th>Mié</th>
-                    <th>Jue</th>
-                    <th>Vie</th>
-                </tr>
-            </thead>
-            <tbody id="horarioBody">
-                <tr><td class="hora-col" contenteditable="true">07:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                <tr><td class="hora-col" contenteditable="true">09:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                <tr><td class="hora-col" contenteditable="true">11:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                <tr><td class="hora-col" contenteditable="true">13:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                <tr><td class="hora-col" contenteditable="true">15:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-            </tbody>
-        </table>
-    </div>
+        <!-- VISTA: REDES -->
+        <section id="redes" class="page-view">
+            <h2 class="section-title">Juventud TV</h2>
+            <div class="redes-container card-elevation">
+                <!-- Se integra el iframe dinámico hacia Juventud TV -->
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed?listType=search&list=Juventud+TV" allowfullscreen></iframe>
+                </div>
+                <div class="redes-action">
+                    <a href="https://www.youtube.com/@juventud-2.0" target="_blank" class="app-btn btn-red-yt">
+                        <span class="btn-icon">▶️</span>
+                        <span class="btn-text">Visitar Canal Oficial</span>
+                    </a>
+                </div>
+            </div>
+        </section>
 
-    <!-- Sección de Agenda Dinámica -->
-    <h2 class="section-title">Agenda</h2>
-    <div class="agenda-container card-elevation">
-        <ul class="task-list" id="taskList">
-            <!-- Las tareas se renderizan aquí mediante JavaScript -->
-        </ul>
-    </div>
+    </main>
 
-</div>
-
-<!-- Botón Flotante de Acción (FAB) estilo Android -->
-<button class="fab-button" id="addTaskBtn" title="Añadir Tarea">+</button>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
