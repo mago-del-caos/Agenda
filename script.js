@@ -1,9 +1,12 @@
 // ==========================================
 // 1. VERIFICACIÓN DE SEGURIDAD (Obliga al Login)
 // ==========================================
-// Si el alumno no ha iniciado sesión y no está en la página de login (index.html),
-// lo expulsa y lo regresa automáticamente a la pantalla de inicio.
-if (!sessionStorage.getItem("isLoggedIn") && window.location.pathname.indexOf("index.html") === -1 && window.location.pathname !== "/") {
+// Si el alumno no ha iniciado sesión y no está en la página de login, lo expulsa.
+// Se añade la validación para la ruta principal /Agenda/ de GitHub Pages.
+const currentPath = window.location.pathname;
+const isLoginPage = currentPath.indexOf("index.html") !== -1 || currentPath === "/Agenda/" || currentPath === "/Agenda";
+
+if (!sessionStorage.getItem("isLoggedIn") && !isLoginPage) {
     window.location.href = "index.html";
 }
 
@@ -12,7 +15,8 @@ if (!sessionStorage.getItem("isLoggedIn") && window.location.pathname.indexOf("i
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').then((registration) => {
+        // Le indicamos explícitamente la ruta y el scope de GitHub Pages
+        navigator.serviceWorker.register('/Agenda/sw.js', { scope: '/Agenda/' }).then((registration) => {
             console.log('Service Worker (PWA) registrado con éxito.');
             
             // Obliga al navegador a buscar si hay una nueva versión del sw.js en el servidor
