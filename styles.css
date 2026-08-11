@@ -1,264 +1,231 @@
 /* =========================================
    Identidad Gráfica - Instituto Juventud
-   Basado en el manual oficial
+   Tonos Secundaria/Preparatoria (Manual Oficial)
    ========================================= */
 :root {
-    --ij-verde: #009944;
-    --ij-amarillo: #FFD100;
-    --ij-azul: #032A60;
-    --ij-rojo: #E2231A;
+    --ij-azul-fuerte: #032A60;  
+    --ij-celeste: #00A8FF;      
+    --ij-magenta: #D31A52;      
+    --ij-amarillo: #FFD100;     
+    --ij-verde: #009944;        
     
-    /* Colores UI Android */
-    --fondo-app: #f2f2f2;
-    --superficie: #ffffff;
-    --texto-principal: #1f1f1f;
-    --texto-secundario: #5f6368;
-    --divisor: #e0e0e0;
+    --fondo-app: #F5F7FA;
+    --blanco: #FFFFFF;
+    --texto-oscuro: #1E293B;
+    --texto-claro: #64748B;
+    --borde: #E2E8F0;
 }
 
 body {
-    font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--fondo-app);
-    color: var(--texto-principal);
+    color: var(--texto-oscuro);
     margin: 0;
     padding: 0;
-    padding-bottom: 80px; /* Espacio para el FAB */
+    overflow-x: hidden;
 }
 
 /* =========================================
-   App Bar (Encabezado)
+   Banner y Navegación
    ========================================= */
-.app-bar {
-    background-color: var(--ij-azul);
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+.app-header {
+    background-color: var(--ij-azul-fuerte);
+    text-align: center;
+    padding: 15px 0;
+    border-bottom: 5px solid var(--ij-amarillo);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
-    z-index: 1000;
-    border-bottom: 4px solid var(--ij-amarillo);
+    z-index: 100;
 }
 
-.header-logo {
-    max-height: 40px;
+.header-image {
+    max-height: 45px;
     width: auto;
 }
 
+.app-nav {
+    display: flex;
+    overflow-x: auto;
+    background-color: var(--blanco);
+    padding: 10px;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    scrollbar-width: none; /* Oculta scrollbar en Firefox */
+}
+
+.app-nav::-webkit-scrollbar {
+    display: none; /* Oculta scrollbar en Chrome/Safari */
+}
+
+.nav-btn {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 2px solid var(--borde);
+    color: var(--texto-claro);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn.active {
+    background-color: var(--ij-azul-fuerte);
+    color: var(--blanco);
+    border-color: var(--ij-azul-fuerte);
+    box-shadow: 0 4px 10px rgba(3, 42, 96, 0.3);
+}
+
 /* =========================================
-   Contenedor Principal
+   Vistas de Página (SPA)
    ========================================= */
-.app-container {
-    max-width: 600px; /* Ancho optimizado para simular móvil/tablet */
-    margin: 16px auto;
-    padding: 0 16px;
+.app-main {
+    padding: 20px 15px 80px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-view {
+    display: none;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.page-view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .section-title {
-    font-size: 1.1rem;
-    color: var(--ij-azul);
-    margin: 24px 0 12px 4px;
-    font-weight: 500;
+    font-size: 1.4rem;
+    color: var(--ij-azul-fuerte);
+    margin: 0 0 20px 0;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Elevación estilo Material Design */
 .card-elevation {
-    background: var(--superficie);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background: var(--blanco);
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.06);
     overflow: hidden;
 }
 
 /* =========================================
-   Menús Desplegables (Lista Android)
+   Novedades (Carrusel)
    ========================================= */
-.menu-list {
-    background: var(--superficie);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-    margin-top: 10px;
-    overflow: hidden;
+.carousel-container {
+    position: relative;
 }
 
-.menu-dropdown {
-    border-bottom: 1px solid var(--divisor);
-}
-
-.menu-dropdown:last-child {
-    border-bottom: none;
-}
-
-.menu-dropdown summary {
-    padding: 18px 20px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    list-style: none;
+.carousel-track {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.2s;
-}
-
-.menu-dropdown summary::-webkit-details-marker {
-    display: none; /* Oculta la flecha nativa en Chrome/Safari */
-}
-
-/* Flecha personalizada */
-.menu-dropdown summary::after {
-    content: '▼';
-    font-size: 0.8rem;
-    color: var(--ij-verde);
-    transition: transform 0.3s;
-}
-
-.menu-dropdown[open] summary::after {
-    transform: rotate(180deg);
-}
-
-.menu-dropdown summary:active {
-    background-color: rgba(0, 153, 68, 0.1);
-}
-
-.dropdown-content {
-    padding: 10px 20px 20px;
-    background-color: #fafafa;
-}
-
-.dropdown-content a {
-    display: block;
-    background-color: var(--ij-verde);
-    color: white;
-    text-align: center;
-    padding: 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,153,68,0.3);
-}
-
-.dropdown-content a:active {
-    background-color: #007a36;
-}
-
-/* =========================================
-   Horario de Clases (Tabla App)
-   ========================================= */
-.table-responsive {
     overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 500px;
+.carousel-slide {
+    flex: 0 0 90%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 16px;
+    scroll-snap-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    object-fit: cover;
+    aspect-ratio: 16/9;
+    background-color: #ddd; /* Color de fondo mientras carga imagen */
 }
 
-th, td {
-    padding: 12px 8px;
+.swipe-hint {
     text-align: center;
-    border: 1px solid var(--divisor);
-    font-size: 0.9rem;
-}
-
-th {
-    background-color: var(--ij-azul);
-    color: white;
-    font-weight: 500;
-}
-
-td[contenteditable="true"]:focus {
-    background-color: rgba(255, 209, 0, 0.15); /* Feedback amarillo claro */
-    outline: 2px solid var(--ij-amarillo);
-}
-
-.hora-col {
-    font-weight: 500;
-    color: var(--ij-azul);
-    background-color: #fafafa;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--texto-claro);
+    margin-top: 10px;
+    font-weight: 600;
 }
 
 /* =========================================
-   Agenda
+   Botones App (Adolescentes)
    ========================================= */
-.agenda-container {
-    padding: 8px 0;
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
 }
 
-.task-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.task-item {
+.app-btn {
     display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--divisor);
-}
-
-.task-item:last-child {
-    border-bottom: none;
-}
-
-.task-checkbox {
-    margin-right: 16px;
-    transform: scale(1.3);
-    accent-color: var(--ij-verde);
-}
-
-.task-input {
-    flex-grow: 1;
-    border: none;
-    font-size: 1rem;
-    color: var(--texto-principal);
-    background: transparent;
-    outline: none;
-}
-
-.task-input:focus {
-    border-bottom: 1px solid var(--ij-verde);
-}
-
-.btn-delete {
-    background: transparent;
-    border: none;
-    color: var(--ij-rojo);
-    font-size: 1.2rem;
-    padding: 8px;
-    margin-left: 8px;
-}
-
-/* =========================================
-   FAB (Floating Action Button)
-   ========================================= */
-.fab-button {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    background-color: var(--ij-rojo);
-    color: white;
-    border-radius: 50%;
-    border: none;
-    font-size: 28px;
-    line-height: 1;
-    box-shadow: 0 4px 10px rgba(226, 35, 26, 0.4);
-    cursor: pointer;
-    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 25px 10px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--blanco);
+    font-weight: bold;
+    font-size: 1.1rem;
     transition: transform 0.2s, box-shadow 0.2s;
-    z-index: 100;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-.fab-button:active {
+.app-btn:active {
     transform: scale(0.95);
-    box-shadow: 0 2px 5px rgba(226, 35, 26, 0.4);
 }
+
+.btn-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+/* Colores institucionales aplicados a botones */
+.btn-blue { background: linear-gradient(135deg, var(--ij-celeste), var(--ij-azul-fuerte)); }
+.btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo)); color: var(--ij-azul-fuerte); }
+.btn-magenta { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta)); }
+.btn-green { background: linear-gradient(135deg, #00C65A, var(--ij-verde)); }
+.btn-red-yt { background: linear-gradient(135deg, #FF3333, #CC0000); flex-direction: row; gap: 10px; padding: 15px; }
+
+/* =========================================
+   Horario
+   ========================================= */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th, td { padding: 12px 6px; text-align: center; border: 1px solid var(--borde); font-size: 0.9rem; }
+th { background-color: var(--ij-azul-fuerte); color: var(--blanco); }
+td[contenteditable="true"]:focus { background-color: #FFF9D6; outline: 2px solid var(--ij-amarillo); }
+.hora-col { font-weight: 700; color: var(--ij-azul-fuerte); background-color: #F8FAFC; font-size: 0.8rem; }
+.row-break td { background-color: var(--ij-amarillo); color: var(--ij-azul-fuerte); font-weight: bold; letter-spacing: 2px; }
+
+/* =========================================
+   Agenda y Redes
+   ========================================= */
+.task-list { list-style: none; padding: 0; margin: 0; }
+.task-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid var(--borde); }
+.task-checkbox { transform: scale(1.4); margin-right: 15px; accent-color: var(--ij-magenta); }
+.task-input { flex-grow: 1; border: none; font-size: 1rem; color: var(--texto-oscuro); background: transparent; outline: none; }
+.btn-delete { background: transparent; border: none; color: var(--ij-magenta); font-size: 1.3rem; padding: 5px; cursor: pointer; }
+
+.video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-bottom: 3px solid var(--ij-amarillo); }
+.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.redes-action { padding: 20px; text-align: center; }
+
+/* FAB */
+.fab-button {
+    position: fixed; bottom: 25px; right: 25px;
+    width: 60px; height: 60px;
+    background-color: var(--ij-magenta);
+    color: var(--blanco); border-radius: 50%;
+    border: none; font-size: 30px; font-weight: bold;
+    box-shadow: 0 6px 15px rgba(211, 26, 82, 0.4);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s; z-index: 100;
+}
+.fab-button:active { transform: scale(0.9); }
