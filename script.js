@@ -1,3 +1,8 @@
+// --- VERIFICACIÓN DE SEGURIDAD ---
+// Si no hay una sesión activa, lo regresa a la pantalla de Login (index.html)
+if (!sessionStorage.getItem("isLoggedIn") && window.location.pathname.indexOf("index.html") === -1) {
+    window.location.href = "index.html";
+}
 document.addEventListener("DOMContentLoaded", () => {
     
     // --- 1. LÓGICA DEL HORARIO (Solo se ejecuta si existe la tabla) ---
