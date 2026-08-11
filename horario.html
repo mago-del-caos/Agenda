@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horario - Ag lucem</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <img src="Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <a href="index.html" class="nav-btn">Novedades</a>
+        <a href="horario.html" class="nav-btn active">Horario</a>
+        <a href="agenda.html" class="nav-btn">Agenda</a>
+        <a href="herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="redes.html" class="nav-btn">Redes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title">Mi Horario</h2>
+        <div class="table-responsive card-elevation">
+            <table>
+                <thead>
+                    <tr><th>Hora</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th></tr>
+                </thead>
+                <tbody id="horarioBody">
+                    <tr><td class="hora-col">7:00-7:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr><td class="hora-col">7:50-8:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr><td class="hora-col">8:40-9:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr><td class="hora-col">9:30-10:20</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr class="row-break"><td class="hora-col">10:20-10:50</td><td colspan="5">☕ DESCANSO ☕</td></tr>
+                    <tr><td class="hora-col">10:50-11:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr><td class="hora-col">11:40-12:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr class="row-break"><td class="hora-col">12:30-12:50</td><td colspan="5">🥪 DESCANSO 🥪</td></tr>
+                    <tr><td class="hora-col">12:50-13:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr><td class="hora-col">13:40-14:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <tr><td class="hora-col">14:30-15:20</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
