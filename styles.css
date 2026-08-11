@@ -1,6 +1,6 @@
 /* =========================================
    Identidad Gráfica - Instituto Juventud
-   Tonos Secundaria/Preparatoria (Manual Oficial)
+   Tonos Secundaria/Preparatoria
    ========================================= */
 :root {
     --ij-azul-fuerte: #032A60;  
@@ -26,7 +26,7 @@ body {
 }
 
 /* =========================================
-   Banner y Navegación
+   Banner y Navegación (Horizontal)
    ========================================= */
 .app-header {
     background-color: var(--ij-azul-fuerte);
@@ -34,9 +34,6 @@ body {
     padding: 15px 0;
     border-bottom: 5px solid var(--ij-amarillo);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
 }
 
 .header-image {
@@ -51,24 +48,24 @@ body {
     padding: 10px;
     gap: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    scrollbar-width: none; /* Oculta scrollbar en Firefox */
+    scrollbar-width: none; 
 }
 
 .app-nav::-webkit-scrollbar {
-    display: none; /* Oculta scrollbar en Chrome/Safari */
+    display: none; 
 }
 
 .nav-btn {
     flex: 0 0 auto;
-    background: transparent;
+    text-decoration: none;
     border: 2px solid var(--borde);
     color: var(--texto-claro);
     font-weight: 600;
     font-size: 0.95rem;
     padding: 10px 20px;
     border-radius: 25px;
-    cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .nav-btn.active {
@@ -78,27 +75,17 @@ body {
     box-shadow: 0 4px 10px rgba(3, 42, 96, 0.3);
 }
 
+.nav-btn:hover:not(.active) {
+    background-color: #f1f5f9;
+}
+
 /* =========================================
-   Vistas de Página (SPA)
+   Contenedor Principal
    ========================================= */
 .app-main {
     padding: 20px 15px 80px;
     max-width: 800px;
     margin: 0 auto;
-}
-
-.page-view {
-    display: none;
-    animation: fadeIn 0.4s ease forwards;
-}
-
-.page-view.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 .section-title {
@@ -120,17 +107,12 @@ body {
 /* =========================================
    Novedades (Carrusel)
    ========================================= */
-.carousel-container {
-    position: relative;
-}
-
 .carousel-track {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: 15px;
     padding-bottom: 10px;
-    scrollbar-width: thin;
 }
 
 .carousel-slide {
@@ -142,7 +124,7 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     object-fit: cover;
     aspect-ratio: 16/9;
-    background-color: #ddd; /* Color de fondo mientras carga imagen */
+    background-color: #ddd;
 }
 
 .swipe-hint {
@@ -154,7 +136,7 @@ body {
 }
 
 /* =========================================
-   Botones App (Adolescentes)
+   Botones App (Herramientas y Comunicación)
    ========================================= */
 .button-grid {
     display: grid;
@@ -177,16 +159,9 @@ body {
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-.app-btn:active {
-    transform: scale(0.95);
-}
+.app-btn:active { transform: scale(0.95); }
+.btn-icon { font-size: 2.5rem; margin-bottom: 10px; }
 
-.btn-icon {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-/* Colores institucionales aplicados a botones */
 .btn-blue { background: linear-gradient(135deg, var(--ij-celeste), var(--ij-azul-fuerte)); }
 .btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo)); color: var(--ij-azul-fuerte); }
 .btn-magenta { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta)); }
