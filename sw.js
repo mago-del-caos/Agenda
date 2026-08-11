@@ -1,27 +1,24 @@
 // === SISTEMA DE VERSIONES ===
-// Cuando quieras forzar una actualización a todos los alumnos, 
-// solo cambia este número (ej. de v1 a v2, luego a v3, etc.)
 const APP_VERSION = 'aglucem-v1'; 
 
+// Rutas exactas para tu repositorio en GitHub Pages
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/novedades.html',
-    '/horario.html',
-    '/agenda.html',
-    '/herramientas.html',
-    '/comunicacion.html',
-    '/redes.html',
-    '/styles.css',
-    '/script.js',
-    '/Ag.png',
-    '/manifest.json'
-    // Puedes agregar aquí '1.png', '2.png', etc., si quieres que carguen offline
+    '/Agenda/',
+    '/Agenda/index.html',
+    '/Agenda/novedades.html',
+    '/Agenda/horario.html',
+    '/Agenda/agenda.html',
+    '/Agenda/herramientas.html',
+    '/Agenda/comunicacion.html',
+    '/Agenda/redes.html',
+    '/Agenda/styles.css',
+    '/Agenda/script.js',
+    '/Agenda/Ag.png',
+    '/Agenda/manifest.json'
 ];
 
-// 1. INSTALACIÓN (Forzamos a que tome el control inmediatamente)
 self.addEventListener('install', (event) => {
-    self.skipWaiting(); // Obliga al nuevo Service Worker a activarse sin esperar
+    self.skipWaiting(); 
     event.waitUntil(
         caches.open(APP_VERSION).then((cache) => {
             return cache.addAll(ASSETS_TO_CACHE);
@@ -29,7 +26,6 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// 2. ACTIVACIÓN (Borra versiones antiguas para forzar la actualización)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -41,11 +37,10 @@ self.addEventListener('activate', (event) => {
                     }
                 })
             );
-        }).then(() => self.clients.claim()) // Toma el control de las ventanas abiertas al instante
+        }).then(() => self.clients.claim()) 
     );
 });
 
-// 3. ESTRATEGIA DE RED (Busca primero en caché, si no está, va a internet)
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
