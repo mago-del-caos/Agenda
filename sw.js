@@ -1,5 +1,5 @@
 // === SISTEMA DE VERSIONES ===
-const APP_VERSION = 'aglucem-v1'; 
+const APP_VERSION = 'aglucem-v2'; 
 
 // Rutas exactas para tu repositorio en GitHub Pages
 const ASSETS_TO_CACHE = [
