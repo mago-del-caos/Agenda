@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Novedades - Ag lucem</title>
     
+    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
+    <!-- Rutas Absolutas (Garantizan que siempre encuentre los archivos) -->
     <link rel="stylesheet" href="/Agenda/styles.css">
-    
     <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,31 +20,12 @@
 </head>
 <body>
 
-    <!-- Panel Flotante de Ajustes y Cerrar Sesión -->
-    <button id="btnAjustes" class="fab-button" style="position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; font-size: 20px; z-index: 1001;" title="Ajustes">⚙️</button>
-    
-    <div id="panelAjustes" class="card-elevation hidden" style="position: absolute; top: 70px; right: 15px; padding: 20px; z-index: 1000; width: 260px; background: var(--blanco);">
-        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ij-azul-fuerte); border-bottom: 2px solid var(--borde); padding-bottom: 10px;">Ajustes de la App</h3>
-        
-        <div class="input-group" style="margin-bottom: 15px;">
-            <label for="colorApp" style="margin-bottom: 8px;">🎨 Color de la interfaz:</label>
-            <input type="color" id="colorApp" value="#032A60" style="width: 100%; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
-        </div>
-        
-        <div class="input-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-            <label for="modoOscuro" style="margin: 0; cursor: pointer;">🌙 Modo Oscuro</label>
-            <input type="checkbox" id="modoOscuro" style="width: 22px; height: 22px; accent-color: var(--ij-azul-fuerte); cursor: pointer;">
-        </div>
-
-        <button id="btnCerrarSesion" class="app-btn btn-magenta" style="width: 100%; padding: 12px; font-size: 0.9rem; flex-direction: row; box-shadow: none;">🚪 Cerrar Sesión</button>
-    </div>
-
     <!-- Banner -->
     <header class="app-header">
         <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
     </header>
 
-    <!-- Navegación con Rutas Absolutas -->
+    <!-- Navegación con Rutas Absolutas y la nueva pestaña de Ajustes -->
     <nav class="app-nav">
         <a href="/Agenda/novedades.html" class="nav-btn active">Novedades</a>
         <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
@@ -51,6 +33,7 @@
         <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
         <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
         <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
     </nav>
 
     <main class="app-main">
