@@ -5,19 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Novedades - Ag lucem</title>
     
-    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/Agenda/styles.css">
     
-    <!-- Enlaces PWA -->
-    <link rel="manifest" href="./manifest.json">
+    <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
-    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 </head>
 <body>
 
@@ -42,31 +40,34 @@
 
     <!-- Banner -->
     <header class="app-header">
-        <img src="./Ag.png" alt="Ag lucem" class="header-image">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
     </header>
 
+    <!-- Navegación con Rutas Absolutas -->
     <nav class="app-nav">
-        <a href="novedades.html" class="nav-btn active">Novedades</a>
-        <a href="horario.html" class="nav-btn">Horario</a>
-        <a href="agenda.html" class="nav-btn">Agenda</a>
-        <a href="herramientas.html" class="nav-btn">Herramientas</a>
-        <a href="comunicacion.html" class="nav-btn">Comunicación</a>
-        <a href="redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/novedades.html" class="nav-btn active">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
     </nav>
 
     <main class="app-main">
         <h2 class="section-title" id="tituloNovedades">Hola, mira las novedades del día de hoy</h2>
         
         <div class="carousel-track">
-            <img src="./1.png" alt="Novedad 1" class="carousel-slide">
-            <img src="./2.png" alt="Novedad 2" class="carousel-slide">
-            <img src="./3.png" alt="Novedad 3" class="carousel-slide">
-            <img src="./4.png" alt="Novedad 4" class="carousel-slide">
-            <img src="./5.png" alt="Novedad 5" class="carousel-slide">
+            <!-- Imágenes con Rutas Absolutas -->
+            <img src="/Agenda/1.png" alt="Novedad 1" class="carousel-slide">
+            <img src="/Agenda/2.png" alt="Novedad 2" class="carousel-slide">
+            <img src="/Agenda/3.png" alt="Novedad 3" class="carousel-slide">
+            <img src="/Agenda/4.png" alt="Novedad 4" class="carousel-slide">
+            <img src="/Agenda/5.png" alt="Novedad 5" class="carousel-slide">
         </div>
         <p class="swipe-hint">← Desliza para ver más →</p>
     </main>
 
-    <script src="script.js"></script>
+    <!-- Script Central (Ruta absoluta) -->
+    <script src="/Agenda/script.js"></script>
 </body>
 </html>
