@@ -5,16 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Herramientas - Ag lucem</title>
     
+    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
+    <!-- Rutas absolutas -->
     <link rel="stylesheet" href="/Agenda/styles.css">
     <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Ajuste para que los iconos de imagen se vean perfectos dentro del botón */
+        .img-icon {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.2));
+        }
+    </style>
 </head>
 <body>
     <header class="app-header">
@@ -32,25 +45,34 @@
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title">Plataformas y Recursos</h2>
+        <h2 class="section-title">Herramientas</h2>
+        
         <div class="button-grid">
-            <!-- Recuerda cambiar los enlaces href="#" por los reales -->
-            <a href="#" target="_blank" class="app-btn btn-blue">
-                <span class="btn-icon">💻</span>
-                Plataforma Web
+            
+            <!-- 1. Chemini -->
+            <a href="https://chemini.aracknia.com/" target="_blank" class="app-btn btn-blue">
+                <img src="/Agenda/Chemini.png" alt="Icono Chemini" class="img-icon">
+                Chemini
             </a>
-            <a href="#" target="_blank" class="app-btn btn-yellow">
-                <span class="btn-icon">📚</span>
-                Biblioteca
+
+            <!-- 2. edu-chema -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" class="app-btn btn-magenta">
+                <img src="/Agenda/Edu.png" alt="Icono edu-chema" class="img-icon">
+                edu-chema
             </a>
-            <a href="#" target="_blank" class="app-btn btn-magenta">
-                <span class="btn-icon">📊</span>
-                Calificaciones
+
+            <!-- 3. repositorio IA -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" class="app-btn btn-green">
+                <img src="/Agenda/repo.png" alt="Icono repositorio IA" class="img-icon">
+                repositorio IA
             </a>
-            <a href="#" target="_blank" class="app-btn btn-green">
-                <span class="btn-icon">📁</span>
-                Repositorio
+
+            <!-- 4. mapa -->
+            <a href="https://proyecto-aracknia.neocities.org/Mapajuventud" target="_blank" class="app-btn btn-yellow">
+                <img src="/Agenda/mapa.png" alt="Icono mapa" class="img-icon">
+                mapa
             </a>
+
         </div>
     </main>
 
