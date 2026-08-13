@@ -4,49 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Redes - Ag lucem</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 </head>
 <body>
-    <!-- Banner de la App (Ocupa todo el ancho) -->
     <header class="app-header">
-        <img src="Ag.png" alt="Ag lucem" class="header-image">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
     </header>
 
-    <!-- Menú Desplazable -->
     <nav class="app-nav">
-        <a href="novedades.html" class="nav-btn">Novedades</a>
-        <a href="horario.html" class="nav-btn">Horario</a>
-        <a href="agenda.html" class="nav-btn">Agenda</a>
-        <a href="herramientas.html" class="nav-btn">Herramientas</a>
-        <a href="comunicacion.html" class="nav-btn">Comunicación</a>
-        <a href="redes.html" class="nav-btn active">Redes</a>
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn active">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
     </nav>
 
-    <!-- Contenido Principal -->
     <main class="app-main">
-        <h2 class="section-title">Juventud TV</h2>
+        <h2 class="section-title">Comunidad Juventud</h2>
         
-        <div class="card-elevation">
-            <!-- Reproductor de YouTube adaptado al video especificado -->
-            <div class="video-wrapper">
-                <iframe 
-                    src="https://www.youtube.com/embed/9TLUtY9XnQ8?start=77" 
-                    title="Notebook primeros pasos - Juventud TV" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
+        <!-- Video Integrado -->
+        <div class="card-elevation" style="margin-bottom: 20px; overflow: hidden;">
+            <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+                <!-- Cambia el link del embed de YouTube por el de tu escuela -->
+                <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
                 </iframe>
             </div>
-            
-            <!-- Botón para visitar el canal -->
-            <div class="redes-action">
-                <a href="https://www.youtube.com/@juventud-2.0" target="_blank" class="app-btn btn-red-yt">
-                    <span class="btn-icon">▶️</span>
-                    <span class="btn-text">Visitar Canal Oficial</span>
-                </a>
-            </div>
+        </div>
+
+        <div class="button-grid">
+            <a href="#" target="_blank" class="app-btn btn-blue">
+                <span class="btn-icon">👍</span>
+                Facebook
+            </a>
+            <a href="#" target="_blank" class="app-btn btn-magenta">
+                <span class="btn-icon">📸</span>
+                Instagram
+            </a>
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script src="/Agenda/script.js"></script>
 </body>
 </html>
