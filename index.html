@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Evita el zoom accidental y fuerza la vista de aplicación móvil -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - Ag lucem</title>
     
@@ -11,19 +10,17 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- Estilos base -->
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- CONEXIÓN PWA (Fuerza la instalación como App Nativa y los íconos) -->
-    <link rel="manifest" href="./manifest.json">
+    <!-- Rutas Absolutas (Garantizan que siempre encuentre los archivos) -->
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
-    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 </head>
 <body class="login-body">
 
-    <!-- Panel Flotante de Ajustes (Tema y Color) -->
+    <!-- Panel Flotante de Ajustes -->
     <button id="btnAjustes" class="fab-button" style="position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; font-size: 20px; z-index: 1001;" title="Ajustes">⚙️</button>
     
     <div id="panelAjustes" class="card-elevation hidden" style="position: absolute; top: 70px; right: 15px; padding: 20px; z-index: 1000; width: 260px; background: var(--blanco);">
@@ -42,11 +39,11 @@
 
     <!-- Contenedor Principal de Login -->
     <div class="login-container card-elevation">
-        <img src="./Ag.png" alt="Ag lucem" class="login-logo">
+        <!-- Ruta absoluta para el logo -->
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="login-logo">
         <h2 class="section-title" style="text-align: center; font-size: 1.2rem;" id="loginTitle">Iniciar Sesión</h2>
         
         <form id="authForm">
-            <!-- Campo de Nombre (Oculto en Login, Visible en Registro) -->
             <div class="input-group" id="nameGroup" style="display: none;">
                 <label for="nameInput">Nombre o Apodo</label>
                 <input type="text" id="nameInput" placeholder="Ej. Juan">
@@ -70,7 +67,6 @@
             <button type="button" id="toggleModeBtn" class="text-btn">Crear nueva cuenta</button>
         </div>
 
-        <!-- Pantalla de Bloqueo Administrativo -->
         <div id="lockScreen" class="lock-screen hidden">
             <span class="lock-icon">🔒</span>
             <h3>Acceso Bloqueado</h3>
@@ -80,18 +76,14 @@
         </div>
     </div>
 
+    <!-- Script de autenticación con ruta absoluta al iniciar sesión -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            
-            // ==========================================
-            // MÓDULO DE AJUSTES (COLOR Y MODO OSCURO)
-            // ==========================================
             const btnAjustes = document.getElementById('btnAjustes');
             const panelAjustes = document.getElementById('panelAjustes');
             const colorApp = document.getElementById('colorApp');
             const modoOscuro = document.getElementById('modoOscuro');
 
-            // 1. Cargar preferencias al abrir la app
             const temaGuardado = localStorage.getItem('tema');
             if (temaGuardado === 'dark') {
                 modoOscuro.checked = true;
@@ -101,11 +93,9 @@
             const colorGuardado = localStorage.getItem('colorPreferido');
             if (colorGuardado) {
                 colorApp.value = colorGuardado;
-                // Sobrescribimos la variable CSS principal con el color elegido
                 document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
             }
 
-            // 2. Eventos de interacción
             btnAjustes.addEventListener('click', () => {
                 panelAjustes.classList.toggle('hidden');
             });
@@ -126,10 +116,6 @@
                 }
             });
 
-
-            // ==========================================
-            // MÓDULO DE AUTENTICACIÓN
-            // ==========================================
             const form = document.getElementById("authForm");
             const nameGroup = document.getElementById("nameGroup");
             const nameInput = document.getElementById("nameInput");
@@ -189,7 +175,8 @@
                         localStorage.setItem("app_failed_attempts", "0"); 
                         localStorage.setItem("app_isLoggedIn", "true"); 
                         localStorage.setItem("app_currentUserEmail", email);
-                        window.location.href = "novedades.html"; 
+                        // ¡Ruta absoluta para redireccionar!
+                        window.location.href = "/Agenda/novedades.html"; 
                     } else {
                         failedAttempts++;
                         localStorage.setItem("app_failed_attempts", failedAttempts.toString());
@@ -209,22 +196,18 @@
             }
 
             adminUnlockBtn.addEventListener("click", () => {
-                const masterPass = prompt("Ingrese la contraseña maestra del departamento:");
+                const masterPass = prompt("Ingrese la contraseña maestra:");
                 if (masterPass === "L0b0l0b0") {
-                    const targetEmail = prompt("Ingrese el correo del alumno a desbloquear:");
+                    const targetEmail = prompt("Ingrese el correo del alumno:");
                     if (targetEmail && localStorage.getItem(`user_${targetEmail}`)) {
-                        const newPass = prompt("Asigne la nueva contraseña para " + targetEmail + ":");
+                        const newPass = prompt("Nueva contraseña:");
                         if (newPass) {
                             localStorage.setItem(`user_${targetEmail}`, newPass);
                             localStorage.setItem("app_failed_attempts", "0");
-                            alert("Contraseña actualizada y cuenta desbloqueada.");
+                            alert("Cuenta desbloqueada.");
                             window.location.reload();
                         }
-                    } else {
-                        alert("El correo no se encuentra registrado.");
                     }
-                } else {
-                    alert("Contraseña maestra incorrecta.");
                 }
             });
         });
