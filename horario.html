@@ -2,48 +2,67 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Horario - Ag lucem</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 </head>
 <body>
     <header class="app-header">
-        <img src="Ag.png" alt="Ag lucem" class="header-image">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
     </header>
 
     <nav class="app-nav">
-        <a href="index.html" class="nav-btn">Novedades</a>
-        <a href="horario.html" class="nav-btn active">Horario</a>
-        <a href="agenda.html" class="nav-btn">Agenda</a>
-        <a href="herramientas.html" class="nav-btn">Herramientas</a>
-        <a href="comunicacion.html" class="nav-btn">Comunicación</a>
-        <a href="redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn active">Horario</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title">Mi Horario</h2>
-        <div class="table-responsive card-elevation">
-            <table>
-                <thead>
-                    <tr><th>Hora</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th></tr>
-                </thead>
-                <tbody id="horarioBody">
-                    <tr><td class="hora-col">7:00-7:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="hora-col">7:50-8:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="hora-col">8:40-9:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="hora-col">9:30-10:20</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr class="row-break"><td class="hora-col">10:20-10:50</td><td colspan="5">☕ DESCANSO ☕</td></tr>
-                    <tr><td class="hora-col">10:50-11:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="hora-col">11:40-12:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr class="row-break"><td class="hora-col">12:30-12:50</td><td colspan="5">🥪 DESCANSO 🥪</td></tr>
-                    <tr><td class="hora-col">12:50-13:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="hora-col">13:40-14:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="hora-col">14:30-15:20</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                </tbody>
-            </table>
+        <h2 class="section-title">Tu Horario Escolar</h2>
+        <div class="card-elevation" style="padding: 10px;">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="hora-col">07:00 - 07:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">07:50 - 08:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">08:40 - 09:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr class="row-break"><td colspan="6">RECESO</td></tr>
+                        <tr><td class="hora-col">10:00 - 10:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">10:50 - 11:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">11:40 - 12:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr class="row-break"><td colspan="6">RECESO</td></tr>
+                        <tr><td class="hora-col">12:50 - 13:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                        <tr><td class="hora-col">13:40 - 14:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script src="/Agenda/script.js"></script>
 </body>
 </html>
