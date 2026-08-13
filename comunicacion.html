@@ -5,16 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Comunicación - Ag lucem</title>
     
+    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
+    <!-- Rutas absolutas -->
     <link rel="stylesheet" href="/Agenda/styles.css">
     <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Logos grandes idénticos a los de herramientas */
+        .img-icon {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
+        }
+
+        /* Restaurando los fondos de color verde y amarillo directamente aquí por si acaso */
+        .btn-green { 
+            background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); 
+            color: #FFFFFF !important; 
+        }
+        .btn-yellow { 
+            background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); 
+            color: #1E293B !important; 
+        }
+    </style>
 </head>
 <body>
     <header class="app-header">
@@ -33,23 +56,27 @@
 
     <main class="app-main">
         <h2 class="section-title">Canales Oficiales</h2>
+        
         <div class="button-grid">
-            <a href="mailto:departamento@juventud.edu.mx" class="app-btn btn-magenta">
-                <span class="btn-icon">✉️</span>
-                Correo Depto.
+            
+            <!-- 1. Departamento de Innovación Educativa (DIE) -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/CIIJ-WEB/index.html" target="_blank" class="app-btn btn-blue">
+                <img src="/Agenda/DIE.png" alt="Símbolo DIE" class="img-icon">
+                DIE
             </a>
-            <a href="https://wa.me/numerodetelefono" target="_blank" class="app-btn btn-green">
-                <span class="btn-icon">💬</span>
-                WhatsApp
+
+            <!-- 2. Facebook -->
+            <a href="https://www.facebook.com/InstitutoJuventudMX" target="_blank" class="app-btn btn-magenta">
+                <img src="/Agenda/facebook.png" alt="Icono Facebook" class="img-icon">
+                Facebook
             </a>
-            <a href="#" class="app-btn btn-blue">
-                <span class="btn-icon">📞</span>
-                Directorio
+
+            <!-- 3. IJEM -->
+            <a href="https://juventud.edu.mx/" target="_blank" class="app-btn btn-green">
+                <img src="/Agenda/IJEM.png" alt="Símbolo IJEM" class="img-icon">
+                IJEM
             </a>
-            <a href="#" class="app-btn btn-yellow">
-                <span class="btn-icon">📋</span>
-                Trámites
-            </a>
+
         </div>
     </main>
 
