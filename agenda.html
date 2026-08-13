@@ -34,23 +34,23 @@
     <main class="app-main">
         <h2 class="section-title">Centro de Productividad</h2>
         
-        <!-- Panel Superior: Menú de Herramientas Rápidas -->
+        <!-- Panel Superior: Menú de Herramientas Rápidas (Ahora con colores forzados y vibrantes) -->
         <div class="button-grid" style="margin-bottom: 20px;">
-            <a href="https://calendar.google.com/" target="_blank" class="app-btn btn-blue" style="padding: 15px; font-size: 1rem; text-align: center;">
+            <a href="https://calendar.google.com/" target="_blank" class="app-btn" style="padding: 15px; font-size: 1rem; text-align: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: #FFF;">
                 <span style="font-size: 1.8rem; margin-bottom: 5px;">📅</span> Agenda
             </a>
-            <button id="btnPomodoro" class="app-btn btn-magenta" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer;">
+            <button id="btnPomodoro" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #FF4D79, #D31A52); color: #FFF;">
                 <span style="font-size: 1.8rem; margin-bottom: 5px;">🍅</span> Enfoque
             </button>
-            <button id="btnNotas" class="app-btn btn-yellow" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer;">
+            <button id="btnNotas" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #FFE047, #FFD100); color: #1E293B;">
                 <span style="font-size: 1.8rem; margin-bottom: 5px;">📝</span> Notas
             </button>
-            <button id="btnHabitos" class="app-btn btn-green" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer;">
-                <span style="font-size: 1.8rem; margin-bottom: 5px;">💧</span> Hábitos
+            <button id="btnHabitos" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #00C65A, #009944); color: #FFF;">
+                <span style="font-size: 1.8rem; margin-bottom: 5px; font-weight: 900; font-family: monospace;">33</span> Hábitos
             </button>
         </div>
 
-        <!-- Panel: Temporizador Pomodoro (Oculto por defecto) -->
+        <!-- Panel: Temporizador Pomodoro -->
         <div id="panelPomodoro" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; text-align: center; background: var(--blanco);">
             <h3 style="margin-top: 0; color: var(--ij-magenta);">Técnica Pomodoro</h3>
             <div id="timerDisplay" style="font-size: 3.5rem; font-weight: bold; margin: 10px 0; font-family: monospace; color: var(--texto-oscuro);">25:00</div>
@@ -62,21 +62,20 @@
             </div>
         </div>
 
-        <!-- Panel: Bloc de Notas (Oculto por defecto) -->
+        <!-- Panel: Bloc de Notas -->
         <div id="panelNotas" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; background: var(--blanco);">
-            <h3 style="margin-top: 0; color: var(--ij-amarillo);">Notas Rápidas</h3>
+            <h3 style="margin-top: 0; color: #FFD100;">Notas Rápidas</h3>
             <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 10px;">Se guardan automáticamente.</p>
             <textarea id="quickNotes" style="width: 100%; height: 120px; padding: 12px; border-radius: 8px; border: 1px solid var(--borde); font-family: var(--fuente-app); background: var(--fondo-app); color: var(--texto-oscuro); font-size: 1rem; resize: vertical;" placeholder="Escribe ideas sueltas, enlaces o recordatorios..."></textarea>
         </div>
 
-        <!-- Panel: Rastreador de Hábitos (Oculto por defecto) -->
+        <!-- Panel: Rastreador de Hábitos (RENOVADO PARA 33 DÍAS) -->
         <div id="panelHabitos" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; background: var(--blanco);">
-            <h3 style="margin-top: 0; color: var(--ij-verde);">Hábitos Diarios</h3>
-            <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 15px;">Se reinician a medianoche.</p>
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem;"><input type="checkbox" id="habito1" class="task-checkbox"> 💧 Beber 2L de agua</label>
-                <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem;"><input type="checkbox" id="habito2" class="task-checkbox"> 📚 Leer 15 minutos</label>
-                <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem;"><input type="checkbox" id="habito3" class="task-checkbox"> 📝 Repasar lecciones</label>
+            <h3 style="margin-top: 0; color: var(--ij-verde);">Reto: 33 Días</h3>
+            <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 15px;">Escribe un hábito y suma +1 cada día que lo cumplas.</p>
+            
+            <div id="habitosContainer">
+                <!-- Se inyectan desde script.js para no repetir código HTML -->
             </div>
         </div>
 
