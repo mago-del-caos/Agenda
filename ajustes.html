@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ajustes - Ag lucem</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+</head>
+<body>
+
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <!-- Nueva barra de navegación que incluye Ajustes -->
+    <nav class="app-nav">
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn active">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title">Personalización de la App</h2>
+        
+        <div class="card-elevation" style="padding: 25px; margin-bottom: 20px;">
+            
+            <!-- Índice Cromático (Selector de Color Nativo) -->
+            <div class="input-group">
+                <label for="colorApp">🎨 Índice Cromático (Color Principal):</label>
+                <input type="color" id="colorApp" value="#032A60" style="height: 60px; padding: 5px; cursor: pointer; border-radius: 12px;">
+                <p style="font-size: 0.8rem; color: var(--texto-claro); margin-top: 5px;">Toca el color para abrir la paleta y elegir el tono de tu aplicación.</p>
+            </div>
+
+            <!-- Estilo de Letra -->
+            <div class="input-group">
+                <label for="fuenteApp">🔤 Estilo de Letra (Tipografía):</label>
+                <select id="fuenteApp">
+                    <option value="'Segoe UI', sans-serif">Predeterminada (Moderna)</option>
+                    <option value="'Times New Roman', serif">Clásica (Serif)</option>
+                    <option value="'Courier New', monospace">Máquina de escribir</option>
+                    <option value="'Comic Sans MS', cursive">Divertida (Infantil)</option>
+                    <option value="Arial, sans-serif">Limpia (Arial)</option>
+                </select>
+            </div>
+            
+            <!-- Modo Nocturno -->
+            <div class="input-group" style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--borde); padding-top: 20px;">
+                <label for="modoOscuro" style="margin: 0; font-size: 1.1rem;">🌙 Activar Modo Nocturno</label>
+                <input type="checkbox" id="modoOscuro" style="width: 25px; height: 25px; accent-color: var(--ij-azul-fuerte);">
+            </div>
+
+        </div>
+
+        <!-- Botón de Cerrar Sesión movido aquí -->
+        <button id="btnCerrarSesion" class="app-btn btn-magenta" style="width: 100%; flex-direction: row; gap: 10px;">
+            🚪 Cerrar Sesión Segura
+        </button>
+
+    </main>
+
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
