@@ -20,11 +20,11 @@
 
     <div class="login-container card-elevation">
         <img src="/Agenda/Ag.png" alt="Ag lucem" class="login-logo">
-        <h2 class="section-title" style="text-align: center; font-size: 1.3rem;" id="loginTitle">Crear Cuenta Escolar</h2>
+        <h2 class="section-title" style="text-align: center; font-size: 1.3rem;" id="loginTitle">Iniciar Sesión</h2>
         
         <form id="authForm">
-            <!-- El nombre ahora está visible por defecto al abrir la app por primera vez -->
-            <div class="input-group" id="nameGroup">
+            <!-- El nombre inicia oculto, solo sale si tocan "Crear nueva cuenta" -->
+            <div class="input-group" id="nameGroup" style="display: none;">
                 <label for="nameInput">¿Cómo te llamas? (Nombre o Apodo)</label>
                 <input type="text" id="nameInput" placeholder="Ej. Juan Pérez">
             </div>
@@ -41,11 +41,14 @@
             <p id="errorMessage" class="error-text"></p>
             
             <button type="submit" id="mainSubmitBtn" class="app-btn btn-blue" style="width: 100%; padding: 15px; border: none; cursor: pointer;">
-                Registrarme y Entrar
+                Ingresar
             </button>
         </form>
 
-        <button type="button" id="toggleModeBtn" class="text-btn">Ya tengo cuenta (Iniciar sesión)</button>
+        <!-- Botón de cambio de modo centrado y arreglado -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="button" id="toggleModeBtn" class="text-btn" style="display: inline-block; width: auto; margin: 0 auto;">Crear nueva cuenta (Registrarme)</button>
+        </div>
 
         <div id="lockScreen" class="lock-screen hidden">
             <span class="lock-icon">🔒</span>
@@ -55,7 +58,6 @@
         </div>
     </div>
 
-    <!-- Script simplificado, la lógica pesada se fue al global -->
     <script src="/Agenda/script.js"></script>
 </body>
 </html>
