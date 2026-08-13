@@ -2,7 +2,7 @@
 // SERVICE WORKER: MOTOR DE CACHÉ Y ACTUALIZACIONES
 // ==========================================
 // Versión actual. Cambia este número (ej. a v5, v6) si haces cambios drásticos
-const APP_VERSION = 'aglucem-v4'; 
+const APP_VERSION = 'aglucem-v5'; 
 
 // Lista estricta de archivos con la ruta relativa a tu repositorio de GitHub Pages
 const ASSETS_TO_CACHE = [
