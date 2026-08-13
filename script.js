@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ==========================================
-    // 5. MÓDULOS DE PRODUCTIVIDAD (NUEVOS)
+    // 5. MÓDULOS DE PRODUCTIVIDAD
     // ==========================================
     
     // A. Mostrar/Ocultar Paneles
@@ -137,14 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setupToggle('btnNotas', 'panelNotas');
     setupToggle('btnHabitos', 'panelHabitos');
 
-    // B. Notas Rápidas (Autoguardado)
+    // B. Notas Rápidas
     const quickNotes = document.getElementById('quickNotes');
     if (quickNotes) {
         quickNotes.value = localStorage.getItem('app_notas_rapidas') || '';
         quickNotes.addEventListener('input', () => localStorage.setItem('app_notas_rapidas', quickNotes.value));
     }
 
-    // C. Top 3 Prioridades (Autoguardado)
+    // C. Top 3 Prioridades
     const prioridades = ['prio1', 'prio2', 'prio3'];
     prioridades.forEach(prio => {
         const input = document.getElementById(prio);
@@ -154,24 +154,81 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // D. Hábitos (Reinicio Diario a Medianoche)
-    const habitos = ['habito1', 'habito2', 'habito3'];
-    const hoy = new Date().toDateString(); // Ej: "Thu Aug 13 2026"
-    const fechaGuardada = localStorage.getItem('app_habitos_fecha');
+    // D. Reto 33 Días (Hábitos Editables)
+    const habitosContainer = document.getElementById('habitosContainer');
+    if (habitosContainer) {
+        habitosContainer.innerHTML = ''; // Limpiar contenedor
+        
+        for (let i = 1; i <= 3; i++) {
+            // Estructura HTML inyectada por JS
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.gap = '8px';
+            row.style.marginBottom = '15px';
+            row.style.flexWrap = 'wrap';
+            
+            row.innerHTML = `
+                <input type="text" id="habitoNombre${i}" placeholder="Escribe tu hábito ${i}..." style="flex: 1; min-width: 150px; padding: 10px; border-radius: 8px; border: 1px solid var(--borde); font-family: var(--fuente-app); background: var(--fondo-app); color: var(--texto-oscuro);">
+                <div style="display: flex; align-items: center; gap: 5px; background: var(--fondo-app); padding: 5px; border-radius: 8px; border: 1px solid var(--borde);">
+                    <button id="btnHabitoMinus${i}" style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer;">➖</button>
+                    <span id="habitoCount${i}" style="font-weight: bold; width: 45px; text-align: center; color: var(--texto-oscuro);">0/33</span>
+                    <button id="btnHabitoPlus${i}" style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer;">➕</button>
+                </div>
+                <button id="btnHabitoClear${i}" style="border: none; background: transparent; font-size: 1.4rem; cursor: pointer;" title="Borrar Hábito">🗑️</button>
+            `;
+            habitosContainer.appendChild(row);
 
-    if (fechaGuardada !== hoy) {
-        // Es un nuevo día, borramos los checks
-        habitos.forEach(h => localStorage.removeItem(`app_${h}`));
-        localStorage.setItem('app_habitos_fecha', hoy);
-    }
-    
-    habitos.forEach(h => {
-        const checkbox = document.getElementById(h);
-        if (checkbox) {
-            checkbox.checked = localStorage.getItem(`app_${h}`) === 'true';
-            checkbox.addEventListener('change', () => localStorage.setItem(`app_${h}`, checkbox.checked));
+            // Lógica para este hábito
+            const inputNombre = document.getElementById(`habitoNombre${i}`);
+            const textCount = document.getElementById(`habitoCount${i}`);
+            const btnMinus = document.getElementById(`btnHabitoMinus${i}`);
+            const btnPlus = document.getElementById(`btnHabitoPlus${i}`);
+            const btnClear = document.getElementById(`btnHabitoClear${i}`);
+
+            // Cargar datos guardados
+            inputNombre.value = localStorage.getItem(`app_habito_nombre_${i}`) || '';
+            let count = parseInt(localStorage.getItem(`app_habito_count_${i}`)) || 0;
+            textCount.innerText = `${count}/33`;
+
+            // Guardar nombre
+            inputNombre.addEventListener('input', () => localStorage.setItem(`app_habito_nombre_${i}`, inputNombre.value));
+
+            // Sumar día
+            btnPlus.addEventListener('click', () => {
+                if (count < 33) {
+                    count++;
+                    localStorage.setItem(`app_habito_count_${i}`, count);
+                    textCount.innerText = `${count}/33`;
+                    
+                    // Celebración al llegar a 33
+                    if (count === 33) {
+                        setTimeout(() => alert(`🎉 ¡FELICIDADES!\nHas completado los 33 días de tu hábito: "${inputNombre.value}".\n¡Ya es parte de ti!`), 300);
+                    }
+                }
+            });
+
+            // Restar día (por si se equivocan)
+            btnMinus.addEventListener('click', () => {
+                if (count > 0) {
+                    count--;
+                    localStorage.setItem(`app_habito_count_${i}`, count);
+                    textCount.innerText = `${count}/33`;
+                }
+            });
+
+            // Borrar hábito por completo
+            btnClear.addEventListener('click', () => {
+                if (confirm('¿Estás seguro de borrar este hábito y reiniciar su contador?')) {
+                    count = 0;
+                    inputNombre.value = '';
+                    localStorage.removeItem(`app_habito_nombre_${i}`);
+                    localStorage.removeItem(`app_habito_count_${i}`);
+                    textCount.innerText = `0/33`;
+                }
+            });
         }
-    });
+    }
 
     // E. Temporizador Pomodoro
     const timerDisplay = document.getElementById('timerDisplay');
@@ -182,18 +239,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (timerDisplay) {
         let timerInterval;
-        let timeLeft = 25 * 60; // Inicia en 25 minutos
+        let timeLeft = 25 * 60; 
         let isRunning = false;
 
         const updateDisplay = () => {
             const min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
             const sec = (timeLeft % 60).toString().padStart(2, '0');
             timerDisplay.innerText = `${min}:${sec}`;
-        };
-
-        const playChime = () => {
-            // Sonido suave nativo
-            alert("⏰ ¡Tiempo terminado!");
         };
 
         btnStartTimer.addEventListener('click', () => {
@@ -206,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     clearInterval(timerInterval);
                     isRunning = false;
-                    playChime();
+                    alert("⏰ ¡Tiempo de enfoque terminado! Toma un descanso.");
                 }
             }, 1000);
         });
