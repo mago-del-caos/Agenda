@@ -5,7 +5,8 @@ const currentPath = window.location.pathname;
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
 
 if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
-    window.location.href = "index.html";
+    // Ruta absoluta para evitar que GitHub Pages se pierda
+    window.location.href = "/Agenda/index.html"; 
 }
 
 // ==========================================
@@ -20,10 +21,11 @@ if ('serviceWorker' in navigator) {
             console.log('[Araknia PWA] Error al registrar el motor:', error);
         });
 
+        // Este evento se dispara automáticamente cuando cambias la versión en sw.js
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
-                console.log("[Araknia PWA] Actualización detectada. Reiniciando...");
+                alert("Actualización detectada. Reiniciando el sistema escolar...");
                 window.location.reload();
                 refreshing = true;
             }
@@ -133,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modoOscuro = document.getElementById('modoOscuro');
     const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 
-    // A. Aplicar preferencias guardadas sin importar en qué pantalla estemos
+    // A. Aplicar preferencias guardadas sin importar la pantalla
     const temaGuardado = localStorage.getItem('tema');
     if (temaGuardado === 'dark') {
         if(modoOscuro) modoOscuro.checked = true;
@@ -146,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
     }
 
-    // B. Lógica de los botones (solo si existen en el HTML actual)
+    // B. Funciones de los botones del panel
     if (btnAjustes && panelAjustes) {
         btnAjustes.addEventListener('click', () => {
             panelAjustes.classList.toggle('hidden');
@@ -175,12 +177,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnCerrarSesion) {
         btnCerrarSesion.addEventListener('click', () => {
-            // Eliminar las llaves de seguridad de la sesión
             localStorage.removeItem("app_isLoggedIn");
             localStorage.removeItem("app_currentUserEmail");
-            
-            // Redirigir al inicio de sesión
-            window.location.href = "index.html";
+            // Ruta absoluta de redirección al salir
+            window.location.href = "/Agenda/index.html"; 
         });
     }
 });
