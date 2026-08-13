@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - Ag lucem</title>
+    
+    <!-- Meta etiquetas destructoras de caché (Fuerzan la recarga de cambios) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
@@ -14,11 +21,12 @@
 <body class="login-body">
 
     <div class="login-container card-elevation">
-        <img src="Ag.png" alt="Ag lucem" class="login-logo">
+        <!-- Ruta forzada a relativa con ./ para asegurar que encuentre el archivo -->
+        <img src="./Ag.png" alt="Ag lucem" class="login-logo">
         <h2 class="section-title" style="text-align: center; font-size: 1.2rem;" id="loginTitle">Iniciar Sesión</h2>
         
         <form id="authForm">
-            <!-- Campo de Nombre (Oculto por defecto, solo visible al registrar) -->
+            <!-- Campo de Nombre -->
             <div class="input-group" id="nameGroup" style="display: none;">
                 <label for="nameInput">Nombre o Apodo</label>
                 <input type="text" id="nameInput" placeholder="Ej. Juan">
@@ -51,8 +59,11 @@
         </div>
     </div>
 
+    <!-- Lógica de Autenticación Unificada y Blindada -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            console.log("Inicializando pantalla de acceso...");
+            
             const form = document.getElementById("authForm");
             const nameGroup = document.getElementById("nameGroup");
             const nameInput = document.getElementById("nameInput");
@@ -90,6 +101,7 @@
                 }
 
                 if (isRegisterMode) {
+                    // VALIDACIÓN DE REGISTRO
                     if (!name) {
                         errorMessage.innerText = "Por favor, ingresa tu nombre.";
                         return;
@@ -97,13 +109,13 @@
                     if (localStorage.getItem(`user_${email}`)) {
                         errorMessage.innerText = "Este correo ya está registrado.";
                     } else {
-                        // Guardar credenciales y nombre
                         localStorage.setItem(`user_${email}`, pass);
                         localStorage.setItem(`name_${email}`, name);
                         alert("Cuenta creada con éxito. Ahora puedes iniciar sesión.");
                         toggleModeBtn.click(); 
                     }
                 } else {
+                    // VALIDACIÓN DE INGRESO
                     const savedPass = localStorage.getItem(`user_${email}`);
                     if (!savedPass) {
                         errorMessage.innerText = "El correo no está registrado.";
@@ -112,7 +124,6 @@
 
                     if (savedPass === pass) {
                         localStorage.setItem("app_failed_attempts", "0"); 
-                        // Guardamos la sesión y el correo actual de forma permanente
                         localStorage.setItem("app_isLoggedIn", "true"); 
                         localStorage.setItem("app_currentUserEmail", email);
                         window.location.href = "novedades.html"; 
