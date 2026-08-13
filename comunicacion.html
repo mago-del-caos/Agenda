@@ -10,7 +10,6 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- Rutas absolutas -->
     <link rel="stylesheet" href="/Agenda/styles.css">
     <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,7 +18,7 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        /* Logos grandes idénticos a los de herramientas */
+        /* Logos grandes idénticos a los de herramientas y redes */
         .img-icon {
             width: 90px;
             height: 90px;
@@ -27,16 +26,8 @@
             margin-bottom: 12px;
             filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
         }
-
-        /* Restaurando los fondos de color verde y amarillo directamente aquí por si acaso */
-        .btn-green { 
-            background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); 
-            color: #FFFFFF !important; 
-        }
-        .btn-yellow { 
-            background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); 
-            color: #1E293B !important; 
-        }
+        .btn-green { background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); color: #FFFFFF !important; }
+        .btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); color: #1E293B !important; }
     </style>
 </head>
 <body>
@@ -59,22 +50,35 @@
         
         <div class="button-grid">
             
-            <!-- 1. Departamento de Innovación Educativa (DIE) -->
+            <!-- 1. DIE -->
             <a href="https://departamentoinnovacioneducativa-del.github.io/CIIJ-WEB/index.html" target="_blank" class="app-btn btn-blue">
                 <img src="/Agenda/DIE.png" alt="Símbolo DIE" class="img-icon">
                 DIE
             </a>
 
-            <!-- 2. Facebook -->
-            <a href="https://www.facebook.com/InstitutoJuventudMX" target="_blank" class="app-btn btn-magenta">
-                <img src="/Agenda/facebook.png" alt="Icono Facebook" class="img-icon">
-                Facebook
-            </a>
-
-            <!-- 3. IJEM -->
+            <!-- 2. IJEM -->
             <a href="https://juventud.edu.mx/" target="_blank" class="app-btn btn-green">
                 <img src="/Agenda/IJEM.png" alt="Símbolo IJEM" class="img-icon">
                 IJEM
+            </a>
+
+            <!-- 3. Padlet -->
+            <a href="https://padlet.com/" target="_blank" class="app-btn btn-magenta">
+                <img src="/Agenda/padlet.png" alt="Icono Padlet" class="img-icon">
+                Padlet
+            </a>
+
+            <!-- 4. Global School -->
+            <!-- Cambia el "#" por el link correcto de Global School -->
+            <a href="#" target="_blank" class="app-btn btn-yellow">
+                <img src="/Agenda/global.png" alt="Icono Global School" class="img-icon">
+                Global School
+            </a>
+
+            <!-- 5. Google Classroom -->
+            <a href="https://classroom.google.com/" target="_blank" class="app-btn btn-blue">
+                <img src="/Agenda/classroom.png" alt="Icono Classroom" class="img-icon">
+                Classroom
             </a>
 
         </div>
