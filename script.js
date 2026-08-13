@@ -11,7 +11,7 @@ const fuenteGuardada = localStorage.getItem('fuentePreferida');
 if (fuenteGuardada) document.documentElement.style.setProperty('--fuente-app', fuenteGuardada);
 
 // ==========================================
-// 2. VERIFICACIÓN DE SEGURIDAD (Sesión)
+// 2. VERIFICACIÓN DE SEGURIDAD
 // ==========================================
 const currentPath = window.location.pathname;
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
@@ -41,82 +41,10 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// EJECUCIÓN AL CARGAR EL HTML
+// EJECUCIÓN AL CARGAR EL HTML (Novedades, Agenda, etc.)
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- LÓGICA DE LOGIN Y REGISTRO ---
-    const form = document.getElementById("authForm");
-    if (form) {
-        let isRegisterMode = false; // Ahora inicia correctamente en modo INICIO DE SESIÓN
-        let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
-        
-        const nameGroup = document.getElementById("nameGroup");
-        const loginTitle = document.getElementById("loginTitle");
-        const toggleModeBtn = document.getElementById("toggleModeBtn");
-        const mainSubmitBtn = document.getElementById("mainSubmitBtn");
-        const errorMessage = document.getElementById("errorMessage");
-
-        if (failedAttempts >= 3) {
-            form.style.display = "none";
-            toggleModeBtn.style.display = "none";
-            document.getElementById("lockScreen").classList.remove("hidden");
-        }
-
-        toggleModeBtn.addEventListener("click", () => {
-            isRegisterMode = !isRegisterMode;
-            loginTitle.innerText = isRegisterMode ? "Crear Cuenta Escolar" : "Iniciar Sesión";
-            toggleModeBtn.innerText = isRegisterMode ? "Ya tengo cuenta (Iniciar sesión)" : "Crear nueva cuenta (Registrarme)";
-            mainSubmitBtn.innerText = isRegisterMode ? "Registrarme y Entrar" : "Ingresar";
-            nameGroup.style.display = isRegisterMode ? "block" : "none";
-            errorMessage.innerText = "";
-        });
-
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const email = document.getElementById("emailInput").value.trim();
-            const pass = document.getElementById("passInput").value.trim();
-            const name = document.getElementById("nameInput") ? document.getElementById("nameInput").value.trim() : "";
-
-            if (!email.endsWith("@juventud.edu.mx")) {
-                errorMessage.innerText = "Debes usar un correo con terminación @juventud.edu.mx";
-                return;
-            }
-
-            if (isRegisterMode) {
-                if (!name) { errorMessage.innerText = "Por favor, ingresa tu nombre."; return; }
-                if (localStorage.getItem(`user_${email}`)) {
-                    errorMessage.innerText = "Este correo ya está registrado. Toca 'Ya tengo cuenta'.";
-                } else {
-                    localStorage.setItem(`user_${email}`, pass);
-                    localStorage.setItem(`name_${email}`, name);
-                    localStorage.setItem("app_isLoggedIn", "true"); 
-                    localStorage.setItem("app_currentUserEmail", email);
-                    window.location.href = "/Agenda/novedades.html";
-                }
-            } else {
-                const savedPass = localStorage.getItem(`user_${email}`);
-                if (!savedPass) { errorMessage.innerText = "El correo no está registrado. Crea una cuenta primero."; return; }
-                if (savedPass === pass) {
-                    localStorage.setItem("app_failed_attempts", "0"); 
-                    localStorage.setItem("app_isLoggedIn", "true"); 
-                    localStorage.setItem("app_currentUserEmail", email);
-                    window.location.href = "/Agenda/novedades.html"; 
-                } else {
-                    failedAttempts++;
-                    localStorage.setItem("app_failed_attempts", failedAttempts.toString());
-                    if (failedAttempts >= 3) {
-                        form.style.display = "none";
-                        toggleModeBtn.style.display = "none";
-                        document.getElementById("lockScreen").classList.remove("hidden");
-                    } else {
-                        errorMessage.innerText = `Contraseña incorrecta. Intentos restantes: ${3 - failedAttempts}`;
-                    }
-                }
-            }
-        });
-    }
-
     // --- SALUDO EN NOVEDADES ---
     const tituloNovedades = document.getElementById("tituloNovedades");
     if (tituloNovedades) {
