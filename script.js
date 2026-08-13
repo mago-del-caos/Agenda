@@ -41,15 +41,14 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// EJECUCIÓN AL CARGAR EL HTML 
+// 4. EJECUCIÓN AL CARGAR EL HTML 
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
     // --- SALUDO EN NOVEDADES ---
     const tituloNovedades = document.getElementById("tituloNovedades");
     if (tituloNovedades) {
-        const currentUserEmail = localStorage.getItem("app_currentUserEmail");
-        const currentUserName = localStorage.getItem(`name_${currentUserEmail}`);
+        const currentUserName = localStorage.getItem(`name_${localStorage.getItem("app_currentUserEmail")}`);
         if (currentUserName) tituloNovedades.innerText = `Hola ${currentUserName}, mira las novedades del día de hoy`;
     }
 
@@ -60,10 +59,10 @@ document.addEventListener("DOMContentLoaded", () => {
         cell.addEventListener("input", () => localStorage.setItem(`app_horario_${i}`, cell.innerText));
     });
 
-    // --- LÓGICA DE LA AGENDA ---
+    // --- LÓGICA DE LA AGENDA (PENDIENTES) ---
     const taskList = document.getElementById('taskList');
     if (taskList) {
-        let tasks = JSON.parse(localStorage.getItem('app_agenda_tareas')) || [{ text: "Bienvenido a tu agenda escolar Ag lucem", done: false }];
+        let tasks = JSON.parse(localStorage.getItem('app_agenda_tareas')) || [{ text: "Bienvenido a tu centro de productividad", done: false }];
         window.renderTasks = function() {
             taskList.innerHTML = '';
             tasks.forEach((t, i) => {
@@ -103,12 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.documentElement.style.setProperty('--ij-azul-fuerte', e.target.value);
         localStorage.setItem('colorPreferido', e.target.value);
     });
-
     if (fuenteApp) fuenteApp.addEventListener('change', (e) => {
         document.documentElement.style.setProperty('--fuente-app', e.target.value);
         localStorage.setItem('fuentePreferida', e.target.value);
     });
-
     if (modoOscuro) modoOscuro.addEventListener('change', (e) => {
         if (e.target.checked) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -118,117 +115,120 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem('tema', 'light');
         }
     });
-
     if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', () => {
         localStorage.removeItem("app_isLoggedIn");
-        localStorage.removeItem("app_currentUserEmail");
         window.location.href = "/Agenda/index.html"; 
     });
 
 
     // ==========================================
-    // 4. MÓDULO DE ALARMA GLOBAL (Para iPhone y Android)
+    // 5. MÓDULOS DE PRODUCTIVIDAD (NUEVOS)
     // ==========================================
-    const btnToggleAlarma = document.getElementById('btnToggleAlarma');
-    const panelAlarma = document.getElementById('panelAlarma');
-    const btnSetAlarm = document.getElementById('btnSetAlarm');
-    const alarmTimeInput = document.getElementById('alarmTimeInput');
-    const alarmStatus = document.getElementById('alarmStatus');
     
-    let alarmInterval;
-
-    // Mostrar/Ocultar panel de alarma
-    if (btnToggleAlarma && panelAlarma) {
-        btnToggleAlarma.addEventListener('click', () => {
-            panelAlarma.classList.toggle('hidden');
-        });
-    }
-
-    // Comprobar si hay una alarma guardada al cargar la app
-    const savedAlarm = localStorage.getItem('app_alarma');
-    if (savedAlarm) {
-        if(alarmTimeInput) alarmTimeInput.value = savedAlarm;
-        if(alarmStatus) alarmStatus.innerText = `🔔 Alarma activa: ${savedAlarm}`;
-        if(btnSetAlarm) {
-            btnSetAlarm.innerText = "Desactivar Alarma";
-            btnSetAlarm.classList.replace('btn-green', 'btn-magenta');
+    // A. Mostrar/Ocultar Paneles
+    const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+            btn.addEventListener('click', () => panel.classList.toggle('hidden'));
         }
-        startAlarmChecker(savedAlarm);
+    };
+    setupToggle('btnPomodoro', 'panelPomodoro');
+    setupToggle('btnNotas', 'panelNotas');
+    setupToggle('btnHabitos', 'panelHabitos');
+
+    // B. Notas Rápidas (Autoguardado)
+    const quickNotes = document.getElementById('quickNotes');
+    if (quickNotes) {
+        quickNotes.value = localStorage.getItem('app_notas_rapidas') || '';
+        quickNotes.addEventListener('input', () => localStorage.setItem('app_notas_rapidas', quickNotes.value));
     }
 
-    // Interacción con el botón de activar/desactivar
-    if (btnSetAlarm) {
-        btnSetAlarm.addEventListener('click', () => {
-            const isAlarmActive = localStorage.getItem('app_alarma');
+    // C. Top 3 Prioridades (Autoguardado)
+    const prioridades = ['prio1', 'prio2', 'prio3'];
+    prioridades.forEach(prio => {
+        const input = document.getElementById(prio);
+        if (input) {
+            input.value = localStorage.getItem(`app_${prio}`) || '';
+            input.addEventListener('input', () => localStorage.setItem(`app_${prio}`, input.value));
+        }
+    });
 
-            if (isAlarmActive) {
-                // Apagar alarma
-                localStorage.removeItem('app_alarma');
-                clearInterval(alarmInterval);
-                alarmStatus.innerText = "Alarma desactivada";
-                btnSetAlarm.innerText = "Activar Alarma";
-                btnSetAlarm.classList.replace('btn-magenta', 'btn-green');
-            } else {
-                // Encender alarma
-                const time = alarmTimeInput.value;
-                if (!time) {
-                    alert("Por favor, selecciona una hora primero.");
-                    return;
-                }
-                
-                // Truco para iOS: Desbloquear el permiso de audio reproduciendo silencio
-                let audioNode = document.getElementById('alarmSound') || new Audio('/Agenda/alarma.mp3');
-                audioNode.play().then(() => {
-                    audioNode.pause();
-                    audioNode.currentTime = 0;
-                }).catch(err => console.log("Audio pendiente de permiso", err));
+    // D. Hábitos (Reinicio Diario a Medianoche)
+    const habitos = ['habito1', 'habito2', 'habito3'];
+    const hoy = new Date().toDateString(); // Ej: "Thu Aug 13 2026"
+    const fechaGuardada = localStorage.getItem('app_habitos_fecha');
 
-                localStorage.setItem('app_alarma', time);
-                alarmStatus.innerText = `🔔 Alarma activa: ${time}`;
-                btnSetAlarm.innerText = "Desactivar Alarma";
-                btnSetAlarm.classList.replace('btn-green', 'btn-magenta');
-                
-                startAlarmChecker(time);
-            }
-        });
+    if (fechaGuardada !== hoy) {
+        // Es un nuevo día, borramos los checks
+        habitos.forEach(h => localStorage.removeItem(`app_${h}`));
+        localStorage.setItem('app_habitos_fecha', hoy);
     }
+    
+    habitos.forEach(h => {
+        const checkbox = document.getElementById(h);
+        if (checkbox) {
+            checkbox.checked = localStorage.getItem(`app_${h}`) === 'true';
+            checkbox.addEventListener('change', () => localStorage.setItem(`app_${h}`, checkbox.checked));
+        }
+    });
 
-    // Función que vigila la hora constantemente
-    function startAlarmChecker(timeToRing) {
-        clearInterval(alarmInterval);
-        alarmInterval = setInterval(() => {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const currentTime = `${hours}:${minutes}`;
+    // E. Temporizador Pomodoro
+    const timerDisplay = document.getElementById('timerDisplay');
+    const btnStartTimer = document.getElementById('btnStartTimer');
+    const btnPauseTimer = document.getElementById('btnPauseTimer');
+    const btnResetTimer = document.getElementById('btnResetTimer');
+    const btnDescanso = document.getElementById('btnDescanso');
 
-            // ¡Es la hora!
-            if (currentTime === timeToRing) {
-                clearInterval(alarmInterval);
-                localStorage.removeItem('app_alarma');
-                
-                if(alarmStatus) alarmStatus.innerText = "¡Es hora!";
-                if(btnSetAlarm) {
-                    btnSetAlarm.innerText = "Activar Alarma";
-                    btnSetAlarm.classList.replace('btn-magenta', 'btn-green');
-                }
+    if (timerDisplay) {
+        let timerInterval;
+        let timeLeft = 25 * 60; // Inicia en 25 minutos
+        let isRunning = false;
 
-                // Disparar sonido
-                let audioNode = document.getElementById('alarmSound');
-                if (audioNode) {
-                    audioNode.play();
+        const updateDisplay = () => {
+            const min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const sec = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.innerText = `${min}:${sec}`;
+        };
+
+        const playChime = () => {
+            // Sonido suave nativo
+            alert("⏰ ¡Tiempo terminado!");
+        };
+
+        btnStartTimer.addEventListener('click', () => {
+            if (isRunning) return;
+            isRunning = true;
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
                 } else {
-                    // Si están en otra pantalla (como Novedades), creamos el audio en memoria
-                    let tempAudio = new Audio('/Agenda/alarma.mp3');
-                    tempAudio.play();
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    playChime();
                 }
+            }, 1000);
+        });
 
-                // Mostrar alerta
-                setTimeout(() => {
-                    alert(`⏰ ¡ALARMA! Son las ${currentTime}`);
-                }, 500);
-            }
-        }, 1000); // Revisa cada segundo
+        btnPauseTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            isRunning = false;
+        });
+
+        btnResetTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeLeft = 25 * 60;
+            updateDisplay();
+        });
+
+        btnDescanso.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeLeft = 5 * 60;
+            updateDisplay();
+        });
     }
 
 });
