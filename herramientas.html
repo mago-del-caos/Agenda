@@ -2,39 +2,58 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Herramientas - Ag lucem</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 </head>
 <body>
     <header class="app-header">
-        <img src="Ag.png" alt="Ag lucem" class="header-image">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
     </header>
 
     <nav class="app-nav">
-        <a href="index.html" class="nav-btn">Novedades</a>
-        <a href="horario.html" class="nav-btn">Horario</a>
-        <a href="agenda.html" class="nav-btn">Agenda</a>
-        <a href="herramientas.html" class="nav-btn active">Herramientas</a>
-        <a href="comunicacion.html" class="nav-btn">Comunicación</a>
-        <a href="redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn active">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title">Herramientas IA</h2>
+        <h2 class="section-title">Plataformas y Recursos</h2>
         <div class="button-grid">
-            <a href="https://chemini.aracknia.com/" target="_blank" class="app-btn btn-blue">
-                <span class="btn-icon">🤖</span><span class="btn-text">Chemini</span>
+            <!-- Recuerda cambiar los enlaces href="#" por los reales -->
+            <a href="#" target="_blank" class="app-btn btn-blue">
+                <span class="btn-icon">💻</span>
+                Plataforma Web
             </a>
-            <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" class="app-btn btn-yellow">
-                <span class="btn-icon">🛠️</span><span class="btn-text">Herramientas</span>
+            <a href="#" target="_blank" class="app-btn btn-yellow">
+                <span class="btn-icon">📚</span>
+                Biblioteca
             </a>
-            <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" class="app-btn btn-magenta">
-                <span class="btn-icon">🧠</span><span class="btn-text">IAs</span>
+            <a href="#" target="_blank" class="app-btn btn-magenta">
+                <span class="btn-icon">📊</span>
+                Calificaciones
+            </a>
+            <a href="#" target="_blank" class="app-btn btn-green">
+                <span class="btn-icon">📁</span>
+                Repositorio
             </a>
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script src="/Agenda/script.js"></script>
 </body>
 </html>
