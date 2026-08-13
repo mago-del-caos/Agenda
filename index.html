@@ -23,7 +23,7 @@
         <h2 class="section-title" style="text-align: center; font-size: 1.3rem;" id="loginTitle">Iniciar Sesión</h2>
         
         <form id="authForm">
-            <!-- El nombre inicia oculto, solo sale si tocan "Crear nueva cuenta" -->
+            <!-- El nombre inicia oculto -->
             <div class="input-group" id="nameGroup" style="display: none;">
                 <label for="nameInput">¿Cómo te llamas? (Nombre o Apodo)</label>
                 <input type="text" id="nameInput" placeholder="Ej. Juan Pérez">
@@ -45,7 +45,6 @@
             </button>
         </form>
 
-        <!-- Botón de cambio de modo centrado y arreglado -->
         <div style="text-align: center; margin-top: 20px;">
             <button type="button" id="toggleModeBtn" class="text-btn" style="display: inline-block; width: auto; margin: 0 auto;">Crear nueva cuenta (Registrarme)</button>
         </div>
@@ -58,6 +57,96 @@
         </div>
     </div>
 
+    <!-- LÓGICA DE AUTENTICACIÓN INCRUSTADA (Inmune a desincronización) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("authForm");
+            const nameGroup = document.getElementById("nameGroup");
+            const loginTitle = document.getElementById("loginTitle");
+            const toggleModeBtn = document.getElementById("toggleModeBtn");
+            const mainSubmitBtn = document.getElementById("mainSubmitBtn");
+            const errorMessage = document.getElementById("errorMessage");
+            const lockScreen = document.getElementById("lockScreen");
+            
+            let isRegisterMode = false;
+            let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
+
+            if (failedAttempts >= 3) {
+                form.style.display = "none";
+                toggleModeBtn.style.display = "none";
+                lockScreen.classList.remove("hidden");
+            }
+
+            // Cambiar entre Iniciar Sesión y Registro
+            toggleModeBtn.addEventListener("click", () => {
+                isRegisterMode = !isRegisterMode;
+                loginTitle.innerText = isRegisterMode ? "Crear Cuenta Escolar" : "Iniciar Sesión";
+                toggleModeBtn.innerText = isRegisterMode ? "Ya tengo cuenta (Iniciar sesión)" : "Crear nueva cuenta (Registrarme)";
+                mainSubmitBtn.innerText = isRegisterMode ? "Registrarme y Entrar" : "Ingresar";
+                nameGroup.style.display = isRegisterMode ? "block" : "none";
+                errorMessage.innerText = ""; // Limpiar errores
+            });
+
+            // Procesar el formulario
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const emailInput = document.getElementById("emailInput");
+                const passInput = document.getElementById("passInput");
+                const nameInput = document.getElementById("nameInput");
+
+                const email = emailInput.value.trim();
+                const pass = passInput.value.trim();
+                const name = nameInput ? nameInput.value.trim() : "";
+
+                // FILTRO DE SEGURIDAD ESTRICTO
+                if (!email.endsWith("@juventud.edu.mx")) {
+                    errorMessage.innerText = "Error: Debes usar un correo con terminación @juventud.edu.mx";
+                    return;
+                }
+
+                if (isRegisterMode) {
+                    if (!name) {
+                        errorMessage.innerText = "Por favor, ingresa tu nombre o apodo.";
+                        return;
+                    }
+                    if (localStorage.getItem(`user_${email}`)) {
+                        errorMessage.innerText = "Este correo ya está registrado. Toca 'Ya tengo cuenta'.";
+                    } else {
+                        localStorage.setItem(`user_${email}`, pass);
+                        localStorage.setItem(`name_${email}`, name);
+                        localStorage.setItem("app_isLoggedIn", "true"); 
+                        localStorage.setItem("app_currentUserEmail", email);
+                        window.location.href = "/Agenda/novedades.html";
+                    }
+                } else {
+                    const savedPass = localStorage.getItem(`user_${email}`);
+                    if (!savedPass) {
+                        errorMessage.innerText = "No existe una cuenta con este correo. Crea una nueva cuenta primero.";
+                        return;
+                    }
+
+                    if (savedPass === pass) {
+                        localStorage.setItem("app_failed_attempts", "0"); 
+                        localStorage.setItem("app_isLoggedIn", "true"); 
+                        localStorage.setItem("app_currentUserEmail", email);
+                        window.location.href = "/Agenda/novedades.html"; 
+                    } else {
+                        failedAttempts++;
+                        localStorage.setItem("app_failed_attempts", failedAttempts.toString());
+                        if (failedAttempts >= 3) {
+                            form.style.display = "none";
+                            toggleModeBtn.style.display = "none";
+                            lockScreen.classList.remove("hidden");
+                        } else {
+                            errorMessage.innerText = `Contraseña incorrecta. Intentos restantes: ${3 - failedAttempts}`;
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <!-- Cargar el resto del motor global -->
     <script src="/Agenda/script.js"></script>
 </body>
 </html>
