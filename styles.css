@@ -26,6 +26,11 @@
     --borde: #333333;
 }
 
+/* Reseteo de márgenes y modelo de caja (Evita que las cosas se descuadren) */
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--fondo-app);
@@ -63,12 +68,12 @@ body {
     padding: 10px;
     gap: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    scrollbar-width: none; 
+    scrollbar-width: none; /* Ocultar scrollbar en Firefox */
     transition: background-color 0.3s ease;
 }
 
 .app-nav::-webkit-scrollbar {
-    display: none; 
+    display: none; /* Ocultar scrollbar en Chrome/Safari */
 }
 
 .nav-btn {
@@ -114,7 +119,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Títulos en modo oscuro */
 [data-theme="dark"] .section-title {
     color: var(--ij-celeste);
 }
@@ -159,7 +163,7 @@ body {
 }
 
 /* =========================================
-   Botones App (Herramientas y Comunicación)
+   Botones App (Herramientas y Redes)
    ========================================= */
 .button-grid {
     display: grid;
@@ -180,6 +184,8 @@ body {
     font-size: 1.1rem;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    cursor: pointer;
+    border: none;
 }
 
 .app-btn:active { transform: scale(0.95); }
@@ -189,7 +195,6 @@ body {
 .btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo)); color: #1E293B; }
 .btn-magenta { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta)); }
 .btn-green { background: linear-gradient(135deg, #00C65A, var(--ij-verde)); }
-.btn-red-yt { background: linear-gradient(135deg, #FF3333, #CC0000); flex-direction: row; gap: 10px; padding: 15px; }
 
 /* =========================================
    Horario
@@ -202,11 +207,10 @@ td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); out
 
 .hora-col { font-weight: 700; color: var(--ij-azul-fuerte); background-color: var(--fondo-app); font-size: 0.8rem; }
 [data-theme="dark"] .hora-col { color: var(--ij-celeste); }
-
 .row-break td { background-color: var(--ij-amarillo); color: #1E293B; font-weight: bold; letter-spacing: 2px; }
 
 /* =========================================
-   Agenda y Redes
+   Agenda (Lista de tareas)
    ========================================= */
 .task-list { list-style: none; padding: 0; margin: 0; }
 .task-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid var(--borde); }
@@ -214,20 +218,35 @@ td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); out
 .task-input { flex-grow: 1; border: none; font-size: 1rem; color: var(--texto-oscuro); background: transparent; outline: none; }
 .btn-delete { background: transparent; border: none; color: var(--ij-magenta); font-size: 1.3rem; padding: 5px; cursor: pointer; }
 
-.video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-bottom: 3px solid var(--ij-amarillo); }
-.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-.redes-action { padding: 20px; text-align: center; }
-
-.fab-button {
-    position: fixed; bottom: 25px; right: 25px;
-    width: 60px; height: 60px;
-    background-color: var(--ij-magenta);
-    color: #FFFFFF; border-radius: 50%;
-    border: none; font-size: 30px; font-weight: bold;
-    box-shadow: 0 6px 15px rgba(211, 26, 82, 0.4);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s; z-index: 100;
+/* =========================================
+   Clases Utilitarias y Menú de Ajustes
+   ========================================= */
+.hidden {
+    display: none !important;
 }
+
+/* Estilo para los botones flotantes de las esquinas (Como el de Agregar Tarea o Ajustes) */
+.fab-button {
+    position: fixed; 
+    bottom: 25px; 
+    right: 25px;
+    width: 60px; 
+    height: 60px;
+    background-color: var(--ij-magenta);
+    color: #FFFFFF; 
+    border-radius: 50%;
+    border: none; 
+    font-size: 30px; 
+    font-weight: bold;
+    box-shadow: 0 6px 15px rgba(211, 26, 82, 0.4);
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: transform 0.2s; 
+    z-index: 100;
+}
+
 .fab-button:active { transform: scale(0.9); }
 
 /* =========================================
@@ -268,6 +287,7 @@ td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); out
 .input-group {
     margin-bottom: 15px;
     text-align: left;
+    width: 100%;
 }
 
 .input-group label {
@@ -336,10 +356,6 @@ td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); out
     margin-bottom: 10px;
 }
 
-.hidden {
-    display: none !important;
-}
-
 .admin-btn {
     color: var(--texto-claro);
     font-size: 0.75rem;
@@ -373,5 +389,4 @@ td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); out
     .header-image { max-height: 120px; }
     .task-item { padding: 10px; }
     .task-input { font-size: 0.9rem; }
-    .fab-button { width: 50px; height: 50px; font-size: 24px; bottom: 15px; right: 15px; }
 }
