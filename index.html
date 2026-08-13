@@ -2,31 +2,51 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Evita el zoom accidental y fuerza la vista de aplicación móvil -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - Ag lucem</title>
     
-    <!-- Meta etiquetas destructoras de caché (Fuerzan la recarga de cambios) -->
+    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
+    <!-- Estilos base -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
     
+    <!-- CONEXIÓN PWA (Fuerza la instalación como App Nativa y los íconos) -->
+    <link rel="manifest" href="./manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
 </head>
 <body class="login-body">
 
+    <!-- Panel Flotante de Ajustes (Tema y Color) -->
+    <button id="btnAjustes" class="fab-button" style="position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; font-size: 20px; z-index: 1001;" title="Ajustes">⚙️</button>
+    
+    <div id="panelAjustes" class="card-elevation hidden" style="position: absolute; top: 70px; right: 15px; padding: 20px; z-index: 1000; width: 260px; background: var(--blanco);">
+        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ij-azul-fuerte); border-bottom: 2px solid var(--borde); padding-bottom: 10px;">Ajustes Visuales</h3>
+        
+        <div class="input-group" style="margin-bottom: 15px;">
+            <label for="colorApp" style="margin-bottom: 8px;">🎨 Color de la interfaz:</label>
+            <input type="color" id="colorApp" value="#032A60" style="width: 100%; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
+        </div>
+        
+        <div class="input-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0;">
+            <label for="modoOscuro" style="margin: 0; cursor: pointer;">🌙 Modo Oscuro</label>
+            <input type="checkbox" id="modoOscuro" style="width: 22px; height: 22px; accent-color: var(--ij-azul-fuerte); cursor: pointer;">
+        </div>
+    </div>
+
+    <!-- Contenedor Principal de Login -->
     <div class="login-container card-elevation">
-        <!-- Ruta forzada a relativa con ./ para asegurar que encuentre el archivo -->
         <img src="./Ag.png" alt="Ag lucem" class="login-logo">
         <h2 class="section-title" style="text-align: center; font-size: 1.2rem;" id="loginTitle">Iniciar Sesión</h2>
         
         <form id="authForm">
-            <!-- Campo de Nombre -->
+            <!-- Campo de Nombre (Oculto en Login, Visible en Registro) -->
             <div class="input-group" id="nameGroup" style="display: none;">
                 <label for="nameInput">Nombre o Apodo</label>
                 <input type="text" id="nameInput" placeholder="Ej. Juan">
@@ -50,6 +70,7 @@
             <button type="button" id="toggleModeBtn" class="text-btn">Crear nueva cuenta</button>
         </div>
 
+        <!-- Pantalla de Bloqueo Administrativo -->
         <div id="lockScreen" class="lock-screen hidden">
             <span class="lock-icon">🔒</span>
             <h3>Acceso Bloqueado</h3>
@@ -59,11 +80,56 @@
         </div>
     </div>
 
-    <!-- Lógica de Autenticación Unificada y Blindada -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("Inicializando pantalla de acceso...");
             
+            // ==========================================
+            // MÓDULO DE AJUSTES (COLOR Y MODO OSCURO)
+            // ==========================================
+            const btnAjustes = document.getElementById('btnAjustes');
+            const panelAjustes = document.getElementById('panelAjustes');
+            const colorApp = document.getElementById('colorApp');
+            const modoOscuro = document.getElementById('modoOscuro');
+
+            // 1. Cargar preferencias al abrir la app
+            const temaGuardado = localStorage.getItem('tema');
+            if (temaGuardado === 'dark') {
+                modoOscuro.checked = true;
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+
+            const colorGuardado = localStorage.getItem('colorPreferido');
+            if (colorGuardado) {
+                colorApp.value = colorGuardado;
+                // Sobrescribimos la variable CSS principal con el color elegido
+                document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
+            }
+
+            // 2. Eventos de interacción
+            btnAjustes.addEventListener('click', () => {
+                panelAjustes.classList.toggle('hidden');
+            });
+
+            colorApp.addEventListener('input', (e) => {
+                const nuevoColor = e.target.value;
+                document.documentElement.style.setProperty('--ij-azul-fuerte', nuevoColor);
+                localStorage.setItem('colorPreferido', nuevoColor);
+            });
+
+            modoOscuro.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('tema', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('tema', 'light');
+                }
+            });
+
+
+            // ==========================================
+            // MÓDULO DE AUTENTICACIÓN
+            // ==========================================
             const form = document.getElementById("authForm");
             const nameGroup = document.getElementById("nameGroup");
             const nameInput = document.getElementById("nameInput");
@@ -80,7 +146,6 @@
 
             if (failedAttempts >= 3) showLockScreen();
 
-            // Alternar entre Iniciar Sesión y Crear Cuenta
             toggleModeBtn.addEventListener("click", () => {
                 isRegisterMode = !isRegisterMode;
                 loginTitle.innerText = isRegisterMode ? "Crear Cuenta" : "Iniciar Sesión";
@@ -101,7 +166,6 @@
                 }
 
                 if (isRegisterMode) {
-                    // VALIDACIÓN DE REGISTRO
                     if (!name) {
                         errorMessage.innerText = "Por favor, ingresa tu nombre.";
                         return;
@@ -115,7 +179,6 @@
                         toggleModeBtn.click(); 
                     }
                 } else {
-                    // VALIDACIÓN DE INGRESO
                     const savedPass = localStorage.getItem(`user_${email}`);
                     if (!savedPass) {
                         errorMessage.innerText = "El correo no está registrado.";
