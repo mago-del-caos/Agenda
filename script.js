@@ -1,31 +1,38 @@
 // ==========================================
-// 1. VERIFICACIÓN DE SEGURIDAD (Sesión Permanente)
+// 1. CARGA INICIAL DE PREFERENCIAS VISUALES
+// ==========================================
+const temaGuardado = localStorage.getItem('tema');
+if (temaGuardado === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+
+const colorGuardado = localStorage.getItem('colorPreferido');
+if (colorGuardado) document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
+
+const fuenteGuardada = localStorage.getItem('fuentePreferida');
+if (fuenteGuardada) document.documentElement.style.setProperty('--fuente-app', fuenteGuardada);
+
+// ==========================================
+// 2. VERIFICACIÓN DE SEGURIDAD (Sesión)
 // ==========================================
 const currentPath = window.location.pathname;
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
 
 if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
-    // Ruta absoluta para evitar que GitHub Pages se pierda
     window.location.href = "/Agenda/index.html"; 
 }
 
 // ==========================================
-// 2. SISTEMA PWA Y ACTUALIZADOR FORZADO
+// 3. SISTEMA PWA (Actualizador)
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Agenda/sw.js', { scope: '/Agenda/' }).then((registration) => {
-            console.log('[Araknia PWA] Motor registrado con éxito.');
-            registration.update();
-        }).catch((error) => {
-            console.log('[Araknia PWA] Error al registrar el motor:', error);
-        });
+        navigator.serviceWorker.register('/Agenda/sw.js', { scope: '/Agenda/' })
+            .then(reg => reg.update())
+            .catch(err => console.log('Error PWA:', err));
 
-        // Este evento se dispara automáticamente cuando cambias la versión en sw.js
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
-                alert("Actualización detectada. Reiniciando el sistema escolar...");
+                alert("Actualización detectada. Reiniciando el sistema...");
                 window.location.reload();
                 refreshing = true;
             }
@@ -34,153 +41,159 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// EJECUCIÓN AL CARGAR LAS PÁGINAS HTML
+// EJECUCIÓN AL CARGAR EL HTML
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 3. SALUDO PERSONALIZADO EN NOVEDADES ---
-    const tituloNovedades = document.getElementById("tituloNovedades");
-    if (tituloNovedades) {
-        const currentUserEmail = localStorage.getItem("app_currentUserEmail");
-        const currentUserName = localStorage.getItem(`name_${currentUserEmail}`);
-        if (currentUserName) {
-            tituloNovedades.innerText = `Hola ${currentUserName}, mira las novedades del día de hoy`;
-        }
-    }
+    // --- LÓGICA DE LOGIN Y REGISTRO ---
+    const form = document.getElementById("authForm");
+    if (form) {
+        let isRegisterMode = false; // Ahora inicia correctamente en modo INICIO DE SESIÓN
+        let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
+        
+        const nameGroup = document.getElementById("nameGroup");
+        const loginTitle = document.getElementById("loginTitle");
+        const toggleModeBtn = document.getElementById("toggleModeBtn");
+        const mainSubmitBtn = document.getElementById("mainSubmitBtn");
+        const errorMessage = document.getElementById("errorMessage");
 
-    // --- 4. LÓGICA DEL HORARIO (Guardado automático) ---
-    const cells = document.querySelectorAll("td[contenteditable='true']");
-    if (cells.length > 0) {
-        cells.forEach((cell, index) => {
-            const savedValue = localStorage.getItem(`app_horario_${index}`);
-            if (savedValue !== null) cell.innerText = savedValue;
-
-            cell.addEventListener("input", () => {
-                localStorage.setItem(`app_horario_${index}`, cell.innerText);
-            });
-        });
-    }
-
-    // --- 5. LÓGICA DE LA AGENDA (Guardado en memoria) ---
-    const taskList = document.getElementById('taskList');
-    const btnAdd = document.getElementById('addTaskBtn');
-    
-    if (taskList) {
-        let tasks = JSON.parse(localStorage.getItem('app_agenda_tareas')) || [
-            { text: "Bienvenido a tu agenda escolar Ag lucem", done: false }
-        ];
-
-        function renderTasks() {
-            taskList.innerHTML = '';
-            tasks.forEach((task, index) => {
-                const li = document.createElement('li');
-                li.className = 'task-item';
-                
-                const styleCrossed = task.done ? 'text-decoration: line-through; color: #94A3B8;' : '';
-                
-                li.innerHTML = `
-                    <input type="checkbox" class="task-checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${index})">
-                    <input type="text" class="task-input" value="${task.text}" oninput="updateTask(${index}, this.value)" style="${styleCrossed}" placeholder="Escribe una nueva tarea...">
-                    <button class="btn-delete" onclick="deleteTask(${index})" title="Eliminar tarea">✖</button>
-                `;
-                taskList.appendChild(li);
-            });
-            localStorage.setItem('app_agenda_tareas', JSON.stringify(tasks));
+        if (failedAttempts >= 3) {
+            form.style.display = "none";
+            toggleModeBtn.style.display = "none";
+            document.getElementById("lockScreen").classList.remove("hidden");
         }
 
-        window.toggleTask = function(index) {
-            tasks[index].done = !tasks[index].done;
-            renderTasks();
-        };
-
-        window.updateTask = function(index, newText) {
-            tasks[index].text = newText;
-            localStorage.setItem('app_agenda_tareas', JSON.stringify(tasks));
-        };
-
-        window.deleteTask = function(index) {
-            tasks.splice(index, 1);
-            renderTasks();
-        };
-
-        if(btnAdd){
-            btnAdd.addEventListener('click', () => {
-                tasks.unshift({ text: "", done: false }); 
-                renderTasks();
-                
-                setTimeout(() => {
-                    const firstInput = document.querySelector('.task-list .task-input');
-                    if (firstInput) {
-                        firstInput.focus();
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                    }
-                }, 50);
-            });
-        }
-        renderTasks();
-    }
-    
-    // --- 6. AUTO-SCROLL EN EL MENÚ SUPERIOR ---
-    const activeNav = document.querySelector('.nav-btn.active');
-    if (activeNav) {
-        activeNav.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
-    }
-
-    // ==========================================
-    // 7. MÓDULO GLOBAL DE AJUSTES Y CERRAR SESIÓN
-    // ==========================================
-    const btnAjustes = document.getElementById('btnAjustes');
-    const panelAjustes = document.getElementById('panelAjustes');
-    const colorApp = document.getElementById('colorApp');
-    const modoOscuro = document.getElementById('modoOscuro');
-    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
-
-    // A. Aplicar preferencias guardadas sin importar la pantalla
-    const temaGuardado = localStorage.getItem('tema');
-    if (temaGuardado === 'dark') {
-        if(modoOscuro) modoOscuro.checked = true;
-        document.documentElement.setAttribute('data-theme', 'dark');
-    }
-
-    const colorGuardado = localStorage.getItem('colorPreferido');
-    if (colorGuardado) {
-        if(colorApp) colorApp.value = colorGuardado;
-        document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
-    }
-
-    // B. Funciones de los botones del panel
-    if (btnAjustes && panelAjustes) {
-        btnAjustes.addEventListener('click', () => {
-            panelAjustes.classList.toggle('hidden');
+        toggleModeBtn.addEventListener("click", () => {
+            isRegisterMode = !isRegisterMode;
+            loginTitle.innerText = isRegisterMode ? "Crear Cuenta Escolar" : "Iniciar Sesión";
+            toggleModeBtn.innerText = isRegisterMode ? "Ya tengo cuenta (Iniciar sesión)" : "Crear nueva cuenta (Registrarme)";
+            mainSubmitBtn.innerText = isRegisterMode ? "Registrarme y Entrar" : "Ingresar";
+            nameGroup.style.display = isRegisterMode ? "block" : "none";
+            errorMessage.innerText = "";
         });
-    }
 
-    if (colorApp) {
-        colorApp.addEventListener('input', (e) => {
-            const nuevoColor = e.target.value;
-            document.documentElement.style.setProperty('--ij-azul-fuerte', nuevoColor);
-            localStorage.setItem('colorPreferido', nuevoColor);
-        });
-    }
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = document.getElementById("emailInput").value.trim();
+            const pass = document.getElementById("passInput").value.trim();
+            const name = document.getElementById("nameInput") ? document.getElementById("nameInput").value.trim() : "";
 
-    if (modoOscuro) {
-        modoOscuro.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('tema', 'dark');
+            if (!email.endsWith("@juventud.edu.mx")) {
+                errorMessage.innerText = "Debes usar un correo con terminación @juventud.edu.mx";
+                return;
+            }
+
+            if (isRegisterMode) {
+                if (!name) { errorMessage.innerText = "Por favor, ingresa tu nombre."; return; }
+                if (localStorage.getItem(`user_${email}`)) {
+                    errorMessage.innerText = "Este correo ya está registrado. Toca 'Ya tengo cuenta'.";
+                } else {
+                    localStorage.setItem(`user_${email}`, pass);
+                    localStorage.setItem(`name_${email}`, name);
+                    localStorage.setItem("app_isLoggedIn", "true"); 
+                    localStorage.setItem("app_currentUserEmail", email);
+                    window.location.href = "/Agenda/novedades.html";
+                }
             } else {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('tema', 'light');
+                const savedPass = localStorage.getItem(`user_${email}`);
+                if (!savedPass) { errorMessage.innerText = "El correo no está registrado. Crea una cuenta primero."; return; }
+                if (savedPass === pass) {
+                    localStorage.setItem("app_failed_attempts", "0"); 
+                    localStorage.setItem("app_isLoggedIn", "true"); 
+                    localStorage.setItem("app_currentUserEmail", email);
+                    window.location.href = "/Agenda/novedades.html"; 
+                } else {
+                    failedAttempts++;
+                    localStorage.setItem("app_failed_attempts", failedAttempts.toString());
+                    if (failedAttempts >= 3) {
+                        form.style.display = "none";
+                        toggleModeBtn.style.display = "none";
+                        document.getElementById("lockScreen").classList.remove("hidden");
+                    } else {
+                        errorMessage.innerText = `Contraseña incorrecta. Intentos restantes: ${3 - failedAttempts}`;
+                    }
+                }
             }
         });
     }
 
-    if (btnCerrarSesion) {
-        btnCerrarSesion.addEventListener('click', () => {
-            localStorage.removeItem("app_isLoggedIn");
-            localStorage.removeItem("app_currentUserEmail");
-            // Ruta absoluta de redirección al salir
-            window.location.href = "/Agenda/index.html"; 
-        });
+    // --- SALUDO EN NOVEDADES ---
+    const tituloNovedades = document.getElementById("tituloNovedades");
+    if (tituloNovedades) {
+        const currentUserEmail = localStorage.getItem("app_currentUserEmail");
+        const currentUserName = localStorage.getItem(`name_${currentUserEmail}`);
+        if (currentUserName) tituloNovedades.innerText = `Hola ${currentUserName}, mira las novedades del día de hoy`;
     }
+
+    // --- LÓGICA DEL HORARIO ---
+    const cells = document.querySelectorAll("td[contenteditable='true']");
+    cells.forEach((cell, i) => {
+        if(localStorage.getItem(`app_horario_${i}`)) cell.innerText = localStorage.getItem(`app_horario_${i}`);
+        cell.addEventListener("input", () => localStorage.setItem(`app_horario_${i}`, cell.innerText));
+    });
+
+    // --- LÓGICA DE LA AGENDA ---
+    const taskList = document.getElementById('taskList');
+    if (taskList) {
+        let tasks = JSON.parse(localStorage.getItem('app_agenda_tareas')) || [{ text: "Bienvenido a tu agenda escolar Ag lucem", done: false }];
+        window.renderTasks = function() {
+            taskList.innerHTML = '';
+            tasks.forEach((t, i) => {
+                const styleCrossed = t.done ? 'text-decoration: line-through; color: #94A3B8;' : '';
+                taskList.innerHTML += `<li class="task-item">
+                    <input type="checkbox" class="task-checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${i})">
+                    <input type="text" class="task-input" value="${t.text}" oninput="updateTask(${i}, this.value)" style="${styleCrossed}">
+                    <button class="btn-delete" onclick="deleteTask(${i})">✖</button>
+                </li>`;
+            });
+            localStorage.setItem('app_agenda_tareas', JSON.stringify(tasks));
+        }
+        window.toggleTask = function(i) { tasks[i].done = !tasks[i].done; renderTasks(); };
+        window.updateTask = function(i, val) { tasks[i].text = val; localStorage.setItem('app_agenda_tareas', JSON.stringify(tasks)); };
+        window.deleteTask = function(i) { tasks.splice(i, 1); renderTasks(); };
+        
+        const btnAdd = document.getElementById('addTaskBtn');
+        if(btnAdd) btnAdd.addEventListener('click', () => { tasks.unshift({ text: "", done: false }); renderTasks(); });
+        renderTasks();
+    }
+    
+    // --- SCROLL DEL MENÚ ---
+    const activeNav = document.querySelector('.nav-btn.active');
+    if (activeNav) activeNav.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+
+    // --- LÓGICA DE LA PESTAÑA DE AJUSTES ---
+    const colorApp = document.getElementById('colorApp');
+    const modoOscuro = document.getElementById('modoOscuro');
+    const fuenteApp = document.getElementById('fuenteApp');
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+
+    if (modoOscuro) modoOscuro.checked = (localStorage.getItem('tema') === 'dark');
+    if (colorApp) colorApp.value = localStorage.getItem('colorPreferido') || '#032A60';
+    if (fuenteApp) fuenteApp.value = localStorage.getItem('fuentePreferida') || "'Segoe UI', sans-serif";
+
+    if (colorApp) colorApp.addEventListener('input', (e) => {
+        document.documentElement.style.setProperty('--ij-azul-fuerte', e.target.value);
+        localStorage.setItem('colorPreferido', e.target.value);
+    });
+
+    if (fuenteApp) fuenteApp.addEventListener('change', (e) => {
+        document.documentElement.style.setProperty('--fuente-app', e.target.value);
+        localStorage.setItem('fuentePreferida', e.target.value);
+    });
+
+    if (modoOscuro) modoOscuro.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('tema', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('tema', 'light');
+        }
+    });
+
+    if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', () => {
+        localStorage.removeItem("app_isLoggedIn");
+        localStorage.removeItem("app_currentUserEmail");
+        window.location.href = "/Agenda/index.html"; 
+    });
 });
