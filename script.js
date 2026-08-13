@@ -2,10 +2,8 @@
 // 1. VERIFICACIÓN DE SEGURIDAD (Sesión Permanente)
 // ==========================================
 const currentPath = window.location.pathname;
-// Validamos exactamente las terminaciones posibles para la página de login en GitHub Pages
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
 
-// Si el alumno no ha iniciado sesión y trata de entrar a otra página, lo expulsamos al login
 if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
     window.location.href = "index.html";
 }
@@ -15,7 +13,6 @@ if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // Registro del motor con la ruta exacta de tu repositorio
         navigator.serviceWorker.register('/Agenda/sw.js', { scope: '/Agenda/' }).then((registration) => {
             console.log('[Araknia PWA] Motor registrado con éxito.');
             registration.update();
@@ -23,11 +20,10 @@ if ('serviceWorker' in navigator) {
             console.log('[Araknia PWA] Error al registrar el motor:', error);
         });
 
-        // Detector de cambios: si sw.js se actualiza (ej. de v3 a v4), recarga la vista
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
-                console.log("[Araknia PWA] Actualización detectada en el código. Reiniciando pantalla...");
+                console.log("[Araknia PWA] Actualización detectada. Reiniciando...");
                 window.location.reload();
                 refreshing = true;
             }
@@ -43,10 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 3. SALUDO PERSONALIZADO EN NOVEDADES ---
     const tituloNovedades = document.getElementById("tituloNovedades");
     if (tituloNovedades) {
-        // Recuperamos el correo activo y buscamos su nombre asociado
         const currentUserEmail = localStorage.getItem("app_currentUserEmail");
         const currentUserName = localStorage.getItem(`name_${currentUserEmail}`);
-        
         if (currentUserName) {
             tituloNovedades.innerText = `Hola ${currentUserName}, mira las novedades del día de hoy`;
         }
@@ -121,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 50);
             });
         }
-
         renderTasks();
     }
     
@@ -129,5 +122,65 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeNav = document.querySelector('.nav-btn.active');
     if (activeNav) {
         activeNav.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+    }
+
+    // ==========================================
+    // 7. MÓDULO GLOBAL DE AJUSTES Y CERRAR SESIÓN
+    // ==========================================
+    const btnAjustes = document.getElementById('btnAjustes');
+    const panelAjustes = document.getElementById('panelAjustes');
+    const colorApp = document.getElementById('colorApp');
+    const modoOscuro = document.getElementById('modoOscuro');
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+
+    // A. Aplicar preferencias guardadas sin importar en qué pantalla estemos
+    const temaGuardado = localStorage.getItem('tema');
+    if (temaGuardado === 'dark') {
+        if(modoOscuro) modoOscuro.checked = true;
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    const colorGuardado = localStorage.getItem('colorPreferido');
+    if (colorGuardado) {
+        if(colorApp) colorApp.value = colorGuardado;
+        document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
+    }
+
+    // B. Lógica de los botones (solo si existen en el HTML actual)
+    if (btnAjustes && panelAjustes) {
+        btnAjustes.addEventListener('click', () => {
+            panelAjustes.classList.toggle('hidden');
+        });
+    }
+
+    if (colorApp) {
+        colorApp.addEventListener('input', (e) => {
+            const nuevoColor = e.target.value;
+            document.documentElement.style.setProperty('--ij-azul-fuerte', nuevoColor);
+            localStorage.setItem('colorPreferido', nuevoColor);
+        });
+    }
+
+    if (modoOscuro) {
+        modoOscuro.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('tema', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('tema', 'light');
+            }
+        });
+    }
+
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', () => {
+            // Eliminar las llaves de seguridad de la sesión
+            localStorage.removeItem("app_isLoggedIn");
+            localStorage.removeItem("app_currentUserEmail");
+            
+            // Redirigir al inicio de sesión
+            window.location.href = "index.html";
+        });
     }
 });
