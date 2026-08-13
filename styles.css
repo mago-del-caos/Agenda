@@ -1,53 +1,377 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Novedades - Ag lucem</title>
+/* =========================================
+   Identidad Gráfica - Instituto Juventud
+   ========================================= */
+:root {
+    --ij-azul-fuerte: #032A60;  
+    --ij-celeste: #00A8FF;      
+    --ij-magenta: #D31A52;      
+    --ij-amarillo: #FFD100;     
+    --ij-verde: #009944;        
     
-    <!-- Meta etiquetas destructoras de caché -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    --fondo-app: #F5F7FA;
+    --blanco: #FFFFFF;
+    --texto-oscuro: #1E293B;
+    --texto-claro: #64748B;
+    --borde: #E2E8F0;
+}
 
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
+/* =========================================
+   Variables para el Modo Oscuro
+   ========================================= */
+[data-theme="dark"] {
+    --fondo-app: #121212;
+    --blanco: #1e1e1e;
+    --texto-oscuro: #e0e0e0;
+    --texto-claro: #a0aab5;
+    --borde: #333333;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--fondo-app);
+    color: var(--texto-oscuro);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================
+   Banner y Navegación
+   ========================================= */
+.app-header {
+    background-color: var(--ij-azul-fuerte);
+    padding: 0; 
+    border-bottom: 5px solid var(--ij-amarillo);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.header-image {
+    width: 100%; 
+    height: auto;
+    max-height: 150px; 
+    object-fit: cover; 
+    display: block; 
+}
+
+.app-nav {
+    display: flex;
+    overflow-x: auto;
+    background-color: var(--blanco);
+    padding: 10px;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    scrollbar-width: none; 
+    transition: background-color 0.3s ease;
+}
+
+.app-nav::-webkit-scrollbar {
+    display: none; 
+}
+
+.nav-btn {
+    flex: 0 0 auto;
+    text-decoration: none;
+    border: 2px solid var(--borde);
+    color: var(--texto-claro);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-btn.active {
+    background-color: var(--ij-azul-fuerte);
+    color: #FFFFFF;
+    border-color: var(--ij-azul-fuerte);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn:hover:not(.active) {
+    background-color: var(--borde);
+    color: var(--texto-oscuro);
+}
+
+/* =========================================
+   Contenedor Principal de la App
+   ========================================= */
+.app-main {
+    padding: 20px 15px 80px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    color: var(--ij-azul-fuerte);
+    margin: 0 0 20px 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Títulos en modo oscuro */
+[data-theme="dark"] .section-title {
+    color: var(--ij-celeste);
+}
+
+.card-elevation {
+    background: var(--blanco);
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+/* =========================================
+   Novedades (Carrusel)
+   ========================================= */
+.carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding-bottom: 10px;
+}
+
+.carousel-slide {
+    flex: 0 0 90%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 16px;
+    scroll-snap-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    object-fit: cover;
+    aspect-ratio: 16/9;
+    background-color: var(--borde);
+}
+
+.swipe-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--texto-claro);
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* =========================================
+   Botones App (Herramientas y Comunicación)
+   ========================================= */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.app-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 10px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.app-btn:active { transform: scale(0.95); }
+.btn-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+.btn-blue { background: linear-gradient(135deg, var(--ij-celeste), var(--ij-azul-fuerte)); }
+.btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo)); color: #1E293B; }
+.btn-magenta { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta)); }
+.btn-green { background: linear-gradient(135deg, #00C65A, var(--ij-verde)); }
+.btn-red-yt { background: linear-gradient(135deg, #FF3333, #CC0000); flex-direction: row; gap: 10px; padding: 15px; }
+
+/* =========================================
+   Horario
+   ========================================= */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th, td { padding: 12px 6px; text-align: center; border: 1px solid var(--borde); font-size: 0.9rem; }
+th { background-color: var(--ij-azul-fuerte); color: #FFFFFF; }
+td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); outline: 2px solid var(--ij-amarillo); }
+
+.hora-col { font-weight: 700; color: var(--ij-azul-fuerte); background-color: var(--fondo-app); font-size: 0.8rem; }
+[data-theme="dark"] .hora-col { color: var(--ij-celeste); }
+
+.row-break td { background-color: var(--ij-amarillo); color: #1E293B; font-weight: bold; letter-spacing: 2px; }
+
+/* =========================================
+   Agenda y Redes
+   ========================================= */
+.task-list { list-style: none; padding: 0; margin: 0; }
+.task-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid var(--borde); }
+.task-checkbox { transform: scale(1.4); margin-right: 15px; accent-color: var(--ij-magenta); cursor: pointer; }
+.task-input { flex-grow: 1; border: none; font-size: 1rem; color: var(--texto-oscuro); background: transparent; outline: none; }
+.btn-delete { background: transparent; border: none; color: var(--ij-magenta); font-size: 1.3rem; padding: 5px; cursor: pointer; }
+
+.video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-bottom: 3px solid var(--ij-amarillo); }
+.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.redes-action { padding: 20px; text-align: center; }
+
+.fab-button {
+    position: fixed; bottom: 25px; right: 25px;
+    width: 60px; height: 60px;
+    background-color: var(--ij-magenta);
+    color: #FFFFFF; border-radius: 50%;
+    border: none; font-size: 30px; font-weight: bold;
+    box-shadow: 0 6px 15px rgba(211, 26, 82, 0.4);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s; z-index: 100;
+}
+.fab-button:active { transform: scale(0.9); }
+
+/* =========================================
+   Estilos de Autenticación (Login)
+   ========================================= */
+.login-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-image: linear-gradient(135deg, var(--ij-azul-fuerte), var(--ij-celeste));
+    transition: background-image 0.3s ease;
+}
+
+[data-theme="dark"] .login-body {
+    background-image: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+}
+
+.login-container {
+    background: var(--blanco);
+    padding: 30px 20px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.login-logo {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 100%; 
+    max-height: 100px;
+    object-fit: contain;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--texto-claro);
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border 0.3s;
+    background: var(--fondo-app);
+    color: var(--texto-oscuro);
+}
+
+.input-group input:focus {
+    border-color: var(--ij-celeste);
+    outline: none;
+}
+
+.error-text {
+    color: var(--ij-magenta);
+    font-size: 0.85rem;
+    text-align: center;
+    font-weight: bold;
+    min-height: 20px;
+    margin-bottom: 15px;
+}
+
+.login-actions {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    color: var(--ij-azul-fuerte);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+[data-theme="dark"] .text-btn {
+    color: var(--ij-celeste);
+}
+
+.lock-screen {
+    text-align: center;
+    padding: 15px 0;
+}
+
+.lock-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.admin-btn {
+    color: var(--texto-claro);
+    font-size: 0.75rem;
+    margin-top: 20px;
+}
+
+/* =========================================
+   Ajustes Responsivos (Móviles y Tablets)
+   ========================================= */
+@media screen and (max-width: 768px) {
+    .app-main { padding: 15px 10px 80px; }
+    .section-title { font-size: 1.2rem; }
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Ag lucem">
-    <link rel="apple-touch-icon" href="icon-192.png">
-</head>
-<body>
-    <header class="app-header">
-        <!-- Ruta relativa forzada para evitar errores 404 de la imagen -->
-        <img src="./Ag.png" alt="Ag lucem" class="header-image">
-    </header>
+    .app-nav { padding: 10px 5px; }
+    .nav-btn { font-size: 0.85rem; padding: 8px 16px; }
 
-    <nav class="app-nav">
-        <a href="novedades.html" class="nav-btn active">Novedades</a>
-        <a href="horario.html" class="nav-btn">Horario</a>
-        <a href="agenda.html" class="nav-btn">Agenda</a>
-        <a href="herramientas.html" class="nav-btn">Herramientas</a>
-        <a href="comunicacion.html" class="nav-btn">Comunicación</a>
-        <a href="redes.html" class="nav-btn">Redes</a>
-    </nav>
+    .table-responsive {
+        border-radius: 12px;
+        -webkit-overflow-scrolling: touch;
+    }
+    table { min-width: 550px; } 
+    th, td { padding: 8px 4px; font-size: 0.8rem; }
+    .hora-col { font-size: 0.75rem; }
 
-    <main class="app-main">
-        <!-- El ID "tituloNovedades" permite que script.js inyecte el nombre aquí -->
-        <h2 class="section-title" id="tituloNovedades">Hola, mira las novedades del día de hoy</h2>
-        
-        <div class="carousel-track">
-            <!-- Rutas relativas forzadas para el carrusel -->
-            <img src="./1.png" alt="Novedad 1" class="carousel-slide">
-            <img src="./2.png" alt="Novedad 2" class="carousel-slide">
-            <img src="./3.png" alt="Novedad 3" class="carousel-slide">
-            <img src="./4.png" alt="Novedad 4" class="carousel-slide">
-            <img src="./5.png" alt="Novedad 5" class="carousel-slide">
-        </div>
-        <p class="swipe-hint">← Desliza para ver más →</p>
-    </main>
+    .app-btn { padding: 20px 10px; font-size: 1rem; }
+    .btn-icon { font-size: 2rem; margin-bottom: 5px; }
+    .button-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+@media screen and (max-width: 480px) {
+    .header-image { max-height: 120px; }
+    .task-item { padding: 10px; }
+    .task-input { font-size: 0.9rem; }
+    .fab-button { width: 50px; height: 50px; font-size: 24px; bottom: 15px; right: 15px; }
+}
