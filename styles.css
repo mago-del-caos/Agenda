@@ -1,5 +1,5 @@
 /* =========================================
-   Identidad Gráfica - Instituto Juventud
+   Identidad Gráfica y Variables Globales
    ========================================= */
 :root {
     --ij-azul-fuerte: #032A60;  
@@ -13,11 +13,11 @@
     --texto-oscuro: #1E293B;
     --texto-claro: #64748B;
     --borde: #E2E8F0;
+
+    /* Nueva variable para la tipografía dinámica */
+    --fuente-app: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* =========================================
-   Variables para el Modo Oscuro
-   ========================================= */
 [data-theme="dark"] {
     --fondo-app: #121212;
     --blanco: #1e1e1e;
@@ -26,23 +26,22 @@
     --borde: #333333;
 }
 
-/* Reseteo de márgenes y modelo de caja (Evita que las cosas se descuadren) */
 * {
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--fuente-app);
     background-color: var(--fondo-app);
     color: var(--texto-oscuro);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, font-family 0.3s ease;
 }
 
 /* =========================================
-   Banner y Navegación
+   Banner y Navegación (Adaptable a Tablets)
    ========================================= */
 .app-header {
     background-color: var(--ij-azul-fuerte);
@@ -50,13 +49,12 @@ body {
     border-bottom: 5px solid var(--ij-amarillo);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     width: 100%;
-    transition: background-color 0.3s ease;
 }
 
 .header-image {
     width: 100%; 
     height: auto;
-    max-height: 150px; 
+    max-height: 180px; 
     object-fit: cover; 
     display: block; 
 }
@@ -65,15 +63,17 @@ body {
     display: flex;
     overflow-x: auto;
     background-color: var(--blanco);
-    padding: 10px;
-    gap: 10px;
+    padding: 12px 15px;
+    gap: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    scrollbar-width: none; /* Ocultar scrollbar en Firefox */
-    transition: background-color 0.3s ease;
+    scrollbar-width: none; 
+    justify-content: flex-start;
 }
+.app-nav::-webkit-scrollbar { display: none; }
 
-.app-nav::-webkit-scrollbar {
-    display: none; /* Ocultar scrollbar en Chrome/Safari */
+/* Centrar navegación en pantallas grandes (Tablets/PC) */
+@media screen and (min-width: 768px) {
+    .app-nav { justify-content: center; }
 }
 
 .nav-btn {
@@ -96,18 +96,14 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.nav-btn:hover:not(.active) {
-    background-color: var(--borde);
-    color: var(--texto-oscuro);
-}
-
 /* =========================================
-   Contenedor Principal de la App
+   Contenedor Principal (Expansión responsiva)
    ========================================= */
 .app-main {
     padding: 20px 15px 80px;
-    max-width: 800px;
+    max-width: 1000px; /* Más ancho para tablets/PC */
     margin: 0 auto;
+    width: 100%;
 }
 
 .section-title {
@@ -116,277 +112,72 @@ body {
     margin: 0 0 20px 0;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-[data-theme="dark"] .section-title {
-    color: var(--ij-celeste);
-}
+[data-theme="dark"] .section-title { color: var(--ij-celeste); }
 
 .card-elevation {
     background: var(--blanco);
     border-radius: 16px;
     box-shadow: 0 6px 15px rgba(0,0,0,0.06);
     overflow: hidden;
-    transition: background-color 0.3s ease;
 }
 
 /* =========================================
-   Novedades (Carrusel)
+   Novedades, Botones y Tablas
    ========================================= */
-.carousel-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 15px;
-    padding-bottom: 10px;
-}
+.carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding-bottom: 10px; }
+.carousel-slide { flex: 0 0 90%; max-width: 600px; height: auto; border-radius: 16px; scroll-snap-align: center; object-fit: cover; aspect-ratio: 16/9; }
+@media screen and (min-width: 768px) { .carousel-slide { flex: 0 0 70%; } }
 
-.carousel-slide {
-    flex: 0 0 90%;
-    max-width: 400px;
-    height: auto;
-    border-radius: 16px;
-    scroll-snap-align: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    object-fit: cover;
-    aspect-ratio: 16/9;
-    background-color: var(--borde);
-}
-
-.swipe-hint {
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--texto-claro);
-    margin-top: 10px;
-    font-weight: 600;
-}
-
-/* =========================================
-   Botones App (Herramientas y Redes)
-   ========================================= */
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-}
-
-.app-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 25px 10px;
-    border-radius: 20px;
-    text-decoration: none;
-    color: #FFFFFF;
-    font-weight: bold;
-    font-size: 1.1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    cursor: pointer;
-    border: none;
-}
-
-.app-btn:active { transform: scale(0.95); }
+.button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+.app-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px 10px; border-radius: 20px; text-decoration: none; color: #FFFFFF; font-weight: bold; font-size: 1.1rem; border: none; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
 .btn-icon { font-size: 2.5rem; margin-bottom: 10px; }
-
 .btn-blue { background: linear-gradient(135deg, var(--ij-celeste), var(--ij-azul-fuerte)); }
-.btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo)); color: #1E293B; }
 .btn-magenta { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta)); }
-.btn-green { background: linear-gradient(135deg, #00C65A, var(--ij-verde)); }
 
-/* =========================================
-   Horario
-   ========================================= */
-.table-responsive { overflow-x: auto; }
+.table-responsive { overflow-x: auto; border-radius: 12px; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
-th, td { padding: 12px 6px; text-align: center; border: 1px solid var(--borde); font-size: 0.9rem; }
+th, td { padding: 15px 10px; text-align: center; border: 1px solid var(--borde); font-size: 0.95rem; }
 th { background-color: var(--ij-azul-fuerte); color: #FFFFFF; }
-td[contenteditable="true"]:focus { background-color: rgba(255, 209, 0, 0.2); outline: 2px solid var(--ij-amarillo); }
-
-.hora-col { font-weight: 700; color: var(--ij-azul-fuerte); background-color: var(--fondo-app); font-size: 0.8rem; }
+.hora-col { font-weight: 700; color: var(--ij-azul-fuerte); background-color: var(--fondo-app); }
 [data-theme="dark"] .hora-col { color: var(--ij-celeste); }
-.row-break td { background-color: var(--ij-amarillo); color: #1E293B; font-weight: bold; letter-spacing: 2px; }
 
 /* =========================================
-   Agenda (Lista de tareas)
+   Agenda y Utilitarios
    ========================================= */
 .task-list { list-style: none; padding: 0; margin: 0; }
 .task-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid var(--borde); }
 .task-checkbox { transform: scale(1.4); margin-right: 15px; accent-color: var(--ij-magenta); cursor: pointer; }
-.task-input { flex-grow: 1; border: none; font-size: 1rem; color: var(--texto-oscuro); background: transparent; outline: none; }
+.task-input { flex-grow: 1; border: none; font-size: 1rem; color: var(--texto-oscuro); background: transparent; outline: none; font-family: var(--fuente-app); }
 .btn-delete { background: transparent; border: none; color: var(--ij-magenta); font-size: 1.3rem; padding: 5px; cursor: pointer; }
 
-/* =========================================
-   Clases Utilitarias y Menú de Ajustes
-   ========================================= */
-.hidden {
-    display: none !important;
-}
-
-/* Estilo para los botones flotantes de las esquinas (Como el de Agregar Tarea o Ajustes) */
-.fab-button {
-    position: fixed; 
-    bottom: 25px; 
-    right: 25px;
-    width: 60px; 
-    height: 60px;
-    background-color: var(--ij-magenta);
-    color: #FFFFFF; 
-    border-radius: 50%;
-    border: none; 
-    font-size: 30px; 
-    font-weight: bold;
-    box-shadow: 0 6px 15px rgba(211, 26, 82, 0.4);
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    transition: transform 0.2s; 
-    z-index: 100;
-}
-
-.fab-button:active { transform: scale(0.9); }
+.hidden { display: none !important; }
 
 /* =========================================
-   Estilos de Autenticación (Login)
+   Pantalla de Login
    ========================================= */
-.login-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-    background-image: linear-gradient(135deg, var(--ij-azul-fuerte), var(--ij-celeste));
-    transition: background-image 0.3s ease;
-}
+.login-body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background-image: linear-gradient(135deg, var(--ij-azul-fuerte), var(--ij-celeste)); }
+[data-theme="dark"] .login-body { background-image: linear-gradient(135deg, #0a0a0a, #1a1a1a); }
 
-[data-theme="dark"] .login-body {
-    background-image: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-}
+.login-container { background: var(--blanco); padding: 40px 30px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.login-logo { display: block; margin: 0 auto 20px auto; width: 100%; max-height: 120px; object-fit: contain; }
 
-.login-container {
-    background: var(--blanco);
-    padding: 30px 20px;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-.login-logo {
-    display: block;
-    margin: 0 auto 20px auto;
-    width: 100%; 
-    max-height: 100px;
-    object-fit: contain;
-}
-
-.input-group {
-    margin-bottom: 15px;
-    text-align: left;
-    width: 100%;
-}
-
-.input-group label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--texto-claro);
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.input-group input[type="text"],
-.input-group input[type="email"],
-.input-group input[type="password"] {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--borde);
-    border-radius: 10px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: border 0.3s;
-    background: var(--fondo-app);
-    color: var(--texto-oscuro);
-}
-
-.input-group input:focus {
-    border-color: var(--ij-celeste);
-    outline: none;
-}
-
-.error-text {
-    color: var(--ij-magenta);
-    font-size: 0.85rem;
-    text-align: center;
-    font-weight: bold;
-    min-height: 20px;
-    margin-bottom: 15px;
-}
-
-.login-actions {
-    text-align: center;
-    margin-top: 15px;
-}
-
-.text-btn {
-    background: none;
-    border: none;
-    color: var(--ij-azul-fuerte);
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.9rem;
-    text-decoration: underline;
-}
-
-[data-theme="dark"] .text-btn {
-    color: var(--ij-celeste);
-}
-
-.lock-screen {
-    text-align: center;
-    padding: 15px 0;
-}
-
-.lock-icon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 10px;
-}
-
-.admin-btn {
-    color: var(--texto-claro);
-    font-size: 0.75rem;
-    margin-top: 20px;
-}
+.input-group { margin-bottom: 20px; text-align: left; width: 100%; }
+.input-group label { display: block; font-size: 0.9rem; color: var(--texto-claro); margin-bottom: 8px; font-weight: bold; }
+.input-group input, .input-group select { width: 100%; padding: 14px; border: 1px solid var(--borde); border-radius: 10px; font-size: 1rem; background: var(--fondo-app); color: var(--texto-oscuro); font-family: var(--fuente-app); }
+.input-group input:focus, .input-group select:focus { border-color: var(--ij-celeste); outline: none; }
+.error-text { color: var(--ij-magenta); font-size: 0.85rem; text-align: center; font-weight: bold; min-height: 20px; margin-bottom: 15px; }
+.text-btn { background: none; border: none; color: var(--ij-azul-fuerte); font-weight: bold; cursor: pointer; font-size: 0.95rem; text-decoration: underline; margin-top: 15px; display: block; width: 100%; }
+[data-theme="dark"] .text-btn { color: var(--ij-celeste); }
 
 /* =========================================
-   Ajustes Responsivos (Móviles y Tablets)
+   Ajustes Responsivos para Móviles Pequeños
    ========================================= */
-@media screen and (max-width: 768px) {
-    .app-main { padding: 15px 10px 80px; }
-    .section-title { font-size: 1.2rem; }
-    
-    .app-nav { padding: 10px 5px; }
-    .nav-btn { font-size: 0.85rem; padding: 8px 16px; }
-
-    .table-responsive {
-        border-radius: 12px;
-        -webkit-overflow-scrolling: touch;
-    }
-    table { min-width: 550px; } 
-    th, td { padding: 8px 4px; font-size: 0.8rem; }
-    .hora-col { font-size: 0.75rem; }
-
-    .app-btn { padding: 20px 10px; font-size: 1rem; }
-    .btn-icon { font-size: 2rem; margin-bottom: 5px; }
-    .button-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
-}
-
 @media screen and (max-width: 480px) {
-    .header-image { max-height: 120px; }
-    .task-item { padding: 10px; }
-    .task-input { font-size: 0.9rem; }
+    .app-main { padding: 15px 10px 80px; }
+    .nav-btn { font-size: 0.85rem; padding: 8px 16px; }
+    .table-responsive { -webkit-overflow-scrolling: touch; }
+    table { min-width: 500px; } 
+    .login-container { padding: 30px 20px; }
 }
