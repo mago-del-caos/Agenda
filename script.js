@@ -41,7 +41,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// EJECUCIÓN AL CARGAR EL HTML (Novedades, Agenda, etc.)
+// EJECUCIÓN AL CARGAR EL HTML 
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -124,4 +124,111 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("app_currentUserEmail");
         window.location.href = "/Agenda/index.html"; 
     });
+
+
+    // ==========================================
+    // 4. MÓDULO DE ALARMA GLOBAL (Para iPhone y Android)
+    // ==========================================
+    const btnToggleAlarma = document.getElementById('btnToggleAlarma');
+    const panelAlarma = document.getElementById('panelAlarma');
+    const btnSetAlarm = document.getElementById('btnSetAlarm');
+    const alarmTimeInput = document.getElementById('alarmTimeInput');
+    const alarmStatus = document.getElementById('alarmStatus');
+    
+    let alarmInterval;
+
+    // Mostrar/Ocultar panel de alarma
+    if (btnToggleAlarma && panelAlarma) {
+        btnToggleAlarma.addEventListener('click', () => {
+            panelAlarma.classList.toggle('hidden');
+        });
+    }
+
+    // Comprobar si hay una alarma guardada al cargar la app
+    const savedAlarm = localStorage.getItem('app_alarma');
+    if (savedAlarm) {
+        if(alarmTimeInput) alarmTimeInput.value = savedAlarm;
+        if(alarmStatus) alarmStatus.innerText = `🔔 Alarma activa: ${savedAlarm}`;
+        if(btnSetAlarm) {
+            btnSetAlarm.innerText = "Desactivar Alarma";
+            btnSetAlarm.classList.replace('btn-green', 'btn-magenta');
+        }
+        startAlarmChecker(savedAlarm);
+    }
+
+    // Interacción con el botón de activar/desactivar
+    if (btnSetAlarm) {
+        btnSetAlarm.addEventListener('click', () => {
+            const isAlarmActive = localStorage.getItem('app_alarma');
+
+            if (isAlarmActive) {
+                // Apagar alarma
+                localStorage.removeItem('app_alarma');
+                clearInterval(alarmInterval);
+                alarmStatus.innerText = "Alarma desactivada";
+                btnSetAlarm.innerText = "Activar Alarma";
+                btnSetAlarm.classList.replace('btn-magenta', 'btn-green');
+            } else {
+                // Encender alarma
+                const time = alarmTimeInput.value;
+                if (!time) {
+                    alert("Por favor, selecciona una hora primero.");
+                    return;
+                }
+                
+                // Truco para iOS: Desbloquear el permiso de audio reproduciendo silencio
+                let audioNode = document.getElementById('alarmSound') || new Audio('/Agenda/alarma.mp3');
+                audioNode.play().then(() => {
+                    audioNode.pause();
+                    audioNode.currentTime = 0;
+                }).catch(err => console.log("Audio pendiente de permiso", err));
+
+                localStorage.setItem('app_alarma', time);
+                alarmStatus.innerText = `🔔 Alarma activa: ${time}`;
+                btnSetAlarm.innerText = "Desactivar Alarma";
+                btnSetAlarm.classList.replace('btn-green', 'btn-magenta');
+                
+                startAlarmChecker(time);
+            }
+        });
+    }
+
+    // Función que vigila la hora constantemente
+    function startAlarmChecker(timeToRing) {
+        clearInterval(alarmInterval);
+        alarmInterval = setInterval(() => {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${hours}:${minutes}`;
+
+            // ¡Es la hora!
+            if (currentTime === timeToRing) {
+                clearInterval(alarmInterval);
+                localStorage.removeItem('app_alarma');
+                
+                if(alarmStatus) alarmStatus.innerText = "¡Es hora!";
+                if(btnSetAlarm) {
+                    btnSetAlarm.innerText = "Activar Alarma";
+                    btnSetAlarm.classList.replace('btn-magenta', 'btn-green');
+                }
+
+                // Disparar sonido
+                let audioNode = document.getElementById('alarmSound');
+                if (audioNode) {
+                    audioNode.play();
+                } else {
+                    // Si están en otra pantalla (como Novedades), creamos el audio en memoria
+                    let tempAudio = new Audio('/Agenda/alarma.mp3');
+                    tempAudio.play();
+                }
+
+                // Mostrar alerta
+                setTimeout(() => {
+                    alert(`⏰ ¡ALARMA! Son las ${currentTime}`);
+                }, 500);
+            }
+        }, 1000); // Revisa cada segundo
+    }
+
 });
