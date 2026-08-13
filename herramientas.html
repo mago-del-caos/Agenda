@@ -19,13 +19,23 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        /* Ajuste para que los iconos de imagen se vean perfectos dentro del botón */
+        /* Logos más grandes */
         .img-icon {
-            width: 55px;
-            height: 55px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
-            margin-bottom: 10px;
-            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.2));
+            margin-bottom: 12px;
+            filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
+        }
+
+        /* Restaurando los fondos de color verde y amarillo directamente aquí */
+        .btn-green { 
+            background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); 
+            color: #FFFFFF !important; 
+        }
+        .btn-yellow { 
+            background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); 
+            color: #1E293B !important; 
         }
     </style>
 </head>
@@ -61,13 +71,13 @@
                 edu-chema
             </a>
 
-            <!-- 3. repositorio IA -->
+            <!-- 3. repositorio IA (Ahora con su fondo verde) -->
             <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" class="app-btn btn-green">
                 <img src="/Agenda/repo.png" alt="Icono repositorio IA" class="img-icon">
                 repositorio IA
             </a>
 
-            <!-- 4. mapa -->
+            <!-- 4. mapa (Ahora con su fondo amarillo) -->
             <a href="https://proyecto-aracknia.neocities.org/Mapajuventud" target="_blank" class="app-btn btn-yellow">
                 <img src="/Agenda/mapa.png" alt="Icono mapa" class="img-icon">
                 mapa
