@@ -15,6 +15,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .img-icon {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
+        }
+        .btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); color: #1E293B !important; }
+    </style>
 </head>
 <body>
     <header class="app-header">
@@ -34,11 +45,10 @@
     <main class="app-main">
         <h2 class="section-title">Comunidad Juventud</h2>
         
-        <!-- Video Integrado -->
-        <div class="card-elevation" style="margin-bottom: 20px; overflow: hidden;">
+        <!-- Video Integrado (Autoplay activado en mute para móviles) -->
+        <div class="card-elevation" style="margin-bottom: 25px; overflow: hidden; border-radius: 16px;">
             <div style="position: relative; padding-bottom: 56.25%; height: 0;">
-                <!-- Cambia el link del embed de YouTube por el de tu escuela -->
-                <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" 
+                <iframe src="https://www.youtube.com/embed/fJyjrPgATlg?autoplay=1&mute=1" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                         allowfullscreen>
@@ -47,13 +57,22 @@
         </div>
 
         <div class="button-grid">
-            <a href="#" target="_blank" class="app-btn btn-blue">
-                <span class="btn-icon">👍</span>
+            <!-- Facebook -->
+            <a href="https://www.facebook.com/InstitutoJuventudMX" target="_blank" class="app-btn btn-blue">
+                <img src="/Agenda/facebook.png" alt="Icono Facebook" class="img-icon">
                 Facebook
             </a>
-            <a href="#" target="_blank" class="app-btn btn-magenta">
-                <span class="btn-icon">📸</span>
+            
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/ijem_mx/" target="_blank" class="app-btn btn-magenta">
+                <img src="/Agenda/instagram.png" alt="Icono Instagram" class="img-icon">
                 Instagram
+            </a>
+
+            <!-- Juventud TV -->
+            <a href="https://www.youtube.com/watch?v=fJyjrPgATlg" target="_blank" class="app-btn btn-yellow">
+                <img src="/Agenda/juventudtv.png" alt="Icono Juventud TV" class="img-icon">
+                Juventud TV
             </a>
         </div>
     </main>
