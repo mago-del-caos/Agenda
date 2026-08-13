@@ -2,7 +2,7 @@
 // SERVICE WORKER: CONTROL DE VERSIONES ESTRICTO
 // ==========================================
 // Cambia este número para FORZAR la actualización en todos los celulares (ej. a v7, v8)
-const APP_VERSION = 'aglucem-v7';
+const APP_VERSION = 'aglucem-v8';
 
 // Rutas ABSOLUTAS obligatorias para GitHub Pages
 const ASSETS_TO_CACHE = [
