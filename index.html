@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - Ag lucem</title>
     
-    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- Rutas Absolutas (Garantizan que siempre encuentre los archivos) -->
     <link rel="stylesheet" href="/Agenda/styles.css">
     <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,33 +18,15 @@
 </head>
 <body class="login-body">
 
-    <!-- Panel Flotante de Ajustes -->
-    <button id="btnAjustes" class="fab-button" style="position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; font-size: 20px; z-index: 1001;" title="Ajustes">⚙️</button>
-    
-    <div id="panelAjustes" class="card-elevation hidden" style="position: absolute; top: 70px; right: 15px; padding: 20px; z-index: 1000; width: 260px; background: var(--blanco);">
-        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ij-azul-fuerte); border-bottom: 2px solid var(--borde); padding-bottom: 10px;">Ajustes Visuales</h3>
-        
-        <div class="input-group" style="margin-bottom: 15px;">
-            <label for="colorApp" style="margin-bottom: 8px;">🎨 Color de la interfaz:</label>
-            <input type="color" id="colorApp" value="#032A60" style="width: 100%; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
-        </div>
-        
-        <div class="input-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0;">
-            <label for="modoOscuro" style="margin: 0; cursor: pointer;">🌙 Modo Oscuro</label>
-            <input type="checkbox" id="modoOscuro" style="width: 22px; height: 22px; accent-color: var(--ij-azul-fuerte); cursor: pointer;">
-        </div>
-    </div>
-
-    <!-- Contenedor Principal de Login -->
     <div class="login-container card-elevation">
-        <!-- Ruta absoluta para el logo -->
         <img src="/Agenda/Ag.png" alt="Ag lucem" class="login-logo">
-        <h2 class="section-title" style="text-align: center; font-size: 1.2rem;" id="loginTitle">Iniciar Sesión</h2>
+        <h2 class="section-title" style="text-align: center; font-size: 1.3rem;" id="loginTitle">Crear Cuenta Escolar</h2>
         
         <form id="authForm">
-            <div class="input-group" id="nameGroup" style="display: none;">
-                <label for="nameInput">Nombre o Apodo</label>
-                <input type="text" id="nameInput" placeholder="Ej. Juan">
+            <!-- El nombre ahora está visible por defecto al abrir la app por primera vez -->
+            <div class="input-group" id="nameGroup">
+                <label for="nameInput">¿Cómo te llamas? (Nombre o Apodo)</label>
+                <input type="text" id="nameInput" placeholder="Ej. Juan Pérez">
             </div>
 
             <div class="input-group">
@@ -57,160 +37,25 @@
                 <label for="passInput">Contraseña</label>
                 <input type="password" id="passInput" placeholder="••••••••" required>
             </div>
+            
             <p id="errorMessage" class="error-text"></p>
-            <button type="submit" class="app-btn btn-blue" style="width: 100%; padding: 15px; border: none; cursor: pointer;">
-                Ingresar
+            
+            <button type="submit" id="mainSubmitBtn" class="app-btn btn-blue" style="width: 100%; padding: 15px; border: none; cursor: pointer;">
+                Registrarme y Entrar
             </button>
         </form>
 
-        <div class="login-actions">
-            <button type="button" id="toggleModeBtn" class="text-btn">Crear nueva cuenta</button>
-        </div>
+        <button type="button" id="toggleModeBtn" class="text-btn">Ya tengo cuenta (Iniciar sesión)</button>
 
         <div id="lockScreen" class="lock-screen hidden">
             <span class="lock-icon">🔒</span>
             <h3>Acceso Bloqueado</h3>
             <p>Has superado el límite de 3 intentos.</p>
-            <p>Por favor, acude al <strong>Departamento de Innovación Educativa</strong> para actualizar tu contraseña.</p>
-            <button type="button" id="adminUnlockBtn" class="text-btn admin-btn">Acceso Administrativo</button>
+            <p>Acude al <strong>Departamento de Innovación Educativa</strong> para actualizar tu contraseña.</p>
         </div>
     </div>
 
-    <!-- Script de autenticación con ruta absoluta al iniciar sesión -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const btnAjustes = document.getElementById('btnAjustes');
-            const panelAjustes = document.getElementById('panelAjustes');
-            const colorApp = document.getElementById('colorApp');
-            const modoOscuro = document.getElementById('modoOscuro');
-
-            const temaGuardado = localStorage.getItem('tema');
-            if (temaGuardado === 'dark') {
-                modoOscuro.checked = true;
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-
-            const colorGuardado = localStorage.getItem('colorPreferido');
-            if (colorGuardado) {
-                colorApp.value = colorGuardado;
-                document.documentElement.style.setProperty('--ij-azul-fuerte', colorGuardado);
-            }
-
-            btnAjustes.addEventListener('click', () => {
-                panelAjustes.classList.toggle('hidden');
-            });
-
-            colorApp.addEventListener('input', (e) => {
-                const nuevoColor = e.target.value;
-                document.documentElement.style.setProperty('--ij-azul-fuerte', nuevoColor);
-                localStorage.setItem('colorPreferido', nuevoColor);
-            });
-
-            modoOscuro.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('tema', 'dark');
-                } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    localStorage.setItem('tema', 'light');
-                }
-            });
-
-            const form = document.getElementById("authForm");
-            const nameGroup = document.getElementById("nameGroup");
-            const nameInput = document.getElementById("nameInput");
-            const emailInput = document.getElementById("emailInput");
-            const passInput = document.getElementById("passInput");
-            const errorMessage = document.getElementById("errorMessage");
-            const toggleModeBtn = document.getElementById("toggleModeBtn");
-            const loginTitle = document.getElementById("loginTitle");
-            const lockScreen = document.getElementById("lockScreen");
-            const adminUnlockBtn = document.getElementById("adminUnlockBtn");
-
-            let isRegisterMode = false;
-            let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
-
-            if (failedAttempts >= 3) showLockScreen();
-
-            toggleModeBtn.addEventListener("click", () => {
-                isRegisterMode = !isRegisterMode;
-                loginTitle.innerText = isRegisterMode ? "Crear Cuenta" : "Iniciar Sesión";
-                toggleModeBtn.innerText = isRegisterMode ? "Ya tengo cuenta (Ingresar)" : "Crear nueva cuenta";
-                nameGroup.style.display = isRegisterMode ? "block" : "none";
-                errorMessage.innerText = "";
-            });
-
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const email = emailInput.value.trim();
-                const pass = passInput.value.trim();
-                const name = nameInput.value.trim();
-
-                if (!email.endsWith("@juventud.edu.mx")) {
-                    errorMessage.innerText = "Error: Debes usar un correo con terminación @juventud.edu.mx";
-                    return;
-                }
-
-                if (isRegisterMode) {
-                    if (!name) {
-                        errorMessage.innerText = "Por favor, ingresa tu nombre.";
-                        return;
-                    }
-                    if (localStorage.getItem(`user_${email}`)) {
-                        errorMessage.innerText = "Este correo ya está registrado.";
-                    } else {
-                        localStorage.setItem(`user_${email}`, pass);
-                        localStorage.setItem(`name_${email}`, name);
-                        alert("Cuenta creada con éxito. Ahora puedes iniciar sesión.");
-                        toggleModeBtn.click(); 
-                    }
-                } else {
-                    const savedPass = localStorage.getItem(`user_${email}`);
-                    if (!savedPass) {
-                        errorMessage.innerText = "El correo no está registrado.";
-                        return;
-                    }
-
-                    if (savedPass === pass) {
-                        localStorage.setItem("app_failed_attempts", "0"); 
-                        localStorage.setItem("app_isLoggedIn", "true"); 
-                        localStorage.setItem("app_currentUserEmail", email);
-                        // ¡Ruta absoluta para redireccionar!
-                        window.location.href = "/Agenda/novedades.html"; 
-                    } else {
-                        failedAttempts++;
-                        localStorage.setItem("app_failed_attempts", failedAttempts.toString());
-                        if (failedAttempts >= 3) {
-                            showLockScreen();
-                        } else {
-                            errorMessage.innerText = `Contraseña incorrecta. Intentos restantes: ${3 - failedAttempts}`;
-                        }
-                    }
-                }
-            });
-
-            function showLockScreen() {
-                form.style.display = "none";
-                document.querySelector(".login-actions").style.display = "none";
-                lockScreen.classList.remove("hidden");
-            }
-
-            adminUnlockBtn.addEventListener("click", () => {
-                const masterPass = prompt("Ingrese la contraseña maestra:");
-                if (masterPass === "L0b0l0b0") {
-                    const targetEmail = prompt("Ingrese el correo del alumno:");
-                    if (targetEmail && localStorage.getItem(`user_${targetEmail}`)) {
-                        const newPass = prompt("Nueva contraseña:");
-                        if (newPass) {
-                            localStorage.setItem(`user_${targetEmail}`, newPass);
-                            localStorage.setItem("app_failed_attempts", "0");
-                            alert("Cuenta desbloqueada.");
-                            window.location.reload();
-                        }
-                    }
-                }
-            });
-        });
-    </script>
+    <!-- Script simplificado, la lógica pesada se fue al global -->
+    <script src="/Agenda/script.js"></script>
 </body>
 </html>
