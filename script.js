@@ -2,9 +2,10 @@
 // 1. VERIFICACIÓN DE SEGURIDAD (Sesión Permanente)
 // ==========================================
 const currentPath = window.location.pathname;
-const isLoginPage = currentPath.indexOf("index.html") !== -1 || currentPath === "/Agenda/" || currentPath === "/Agenda";
+// Validamos exactamente las terminaciones posibles para la página de login en GitHub Pages
+const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
 
-// Usamos localStorage para que la sesión no se borre al cerrar la app
+// Si el alumno no ha iniciado sesión y trata de entrar a otra página, lo expulsamos al login
 if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
     window.location.href = "index.html";
 }
@@ -14,17 +15,19 @@ if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+        // Registro del motor con la ruta exacta de tu repositorio
         navigator.serviceWorker.register('/Agenda/sw.js', { scope: '/Agenda/' }).then((registration) => {
-            console.log('Service Worker (PWA) registrado con éxito.');
+            console.log('[Araknia PWA] Motor registrado con éxito.');
             registration.update();
         }).catch((error) => {
-            console.log('Error al registrar el Service Worker:', error);
+            console.log('[Araknia PWA] Error al registrar el motor:', error);
         });
 
+        // Detector de cambios: si sw.js se actualiza (ej. de v3 a v4), recarga la vista
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
-                alert("Se ha detectado una actualización del sistema escolar. Reiniciando...");
+                console.log("[Araknia PWA] Actualización detectada en el código. Reiniciando pantalla...");
                 window.location.reload();
                 refreshing = true;
             }
@@ -40,16 +43,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 3. SALUDO PERSONALIZADO EN NOVEDADES ---
     const tituloNovedades = document.getElementById("tituloNovedades");
     if (tituloNovedades) {
+        // Recuperamos el correo activo y buscamos su nombre asociado
         const currentUserEmail = localStorage.getItem("app_currentUserEmail");
         const currentUserName = localStorage.getItem(`name_${currentUserEmail}`);
         
-        // Si hay un nombre registrado, lo muestra
         if (currentUserName) {
             tituloNovedades.innerText = `Hola ${currentUserName}, mira las novedades del día de hoy`;
         }
     }
 
-    // --- 4. LÓGICA DEL HORARIO ---
+    // --- 4. LÓGICA DEL HORARIO (Guardado automático) ---
     const cells = document.querySelectorAll("td[contenteditable='true']");
     if (cells.length > 0) {
         cells.forEach((cell, index) => {
@@ -62,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- 5. LÓGICA DE LA AGENDA ---
+    // --- 5. LÓGICA DE LA AGENDA (Guardado en memoria) ---
     const taskList = document.getElementById('taskList');
     const btnAdd = document.getElementById('addTaskBtn');
     
