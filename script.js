@@ -21,7 +21,7 @@ if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
 }
 
 // ==========================================
-// 3. SISTEMA PWA (Actualizador)
+// 3. SISTEMA PWA (Actualizador Automático)
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modoOscuro = document.getElementById('modoOscuro');
     const fuenteApp = document.getElementById('fuenteApp');
     const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    const btnActualizarApp = document.getElementById('btnActualizarApp');
 
     if (modoOscuro) modoOscuro.checked = (localStorage.getItem('tema') === 'dark');
     if (colorApp) colorApp.value = localStorage.getItem('colorPreferido') || '#032A60';
@@ -115,17 +116,79 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem('tema', 'light');
         }
     });
+
     if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', () => {
         localStorage.removeItem("app_isLoggedIn");
         window.location.href = "/Agenda/index.html"; 
     });
 
+    // 💥 NUEVO: BOTÓN DE ACTUALIZACIÓN CON BARRA DE 10 SEGUNDOS
+    if (btnActualizarApp) {
+        btnActualizarApp.addEventListener('click', () => {
+            if (confirm("¿Forzar actualización? El sistema se limpiará y recargará en 10 segundos.")) {
+                
+                const progressContainer = document.getElementById('updateProgressContainer');
+                const progressBar = document.getElementById('updateProgressBar');
+                const progressText = document.getElementById('updateProgressText');
+
+                // Mostrar la barra visualmente y deshabilitar botones
+                progressContainer.classList.remove('hidden');
+                btnActualizarApp.disabled = true;
+                btnActualizarApp.style.opacity = '0.5';
+                if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
+
+                // 1. Iniciar la limpieza pesada en segundo plano
+                (async () => {
+                    try {
+                        if ('serviceWorker' in navigator) {
+                            const registrations = await navigator.serviceWorker.getRegistrations();
+                            for (let registration of registrations) {
+                                await registration.unregister();
+                            }
+                        }
+                        if ('caches' in window) {
+                            const cacheNames = await caches.keys();
+                            for (let name of cacheNames) {
+                                await caches.delete(name);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error limpiando memoria:", error);
+                    }
+                })();
+
+                // 2. Controlar la barra de 10 segundos (10,000 ms)
+                let progress = 0;
+                const totalTime = 10000; 
+                const intervalTime = 100; // Actualizamos cada 100 milisegundos para que sea fluido
+                const increment = (intervalTime / totalTime) * 100;
+
+                const progressTimer = setInterval(() => {
+                    progress += increment;
+                    
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(progressTimer);
+                        progressText.innerText = "¡Sistema listo! Reiniciando...";
+                        progressBar.style.width = "100%";
+                        
+                        // Recargar la página limpia
+                        setTimeout(() => {
+                            window.location.reload(true);
+                        }, 500);
+                    } else {
+                        progressBar.style.width = `${progress}%`;
+                        progressText.innerText = `Limpiando e instalando... ${Math.floor(progress)}%`;
+                    }
+                }, intervalTime);
+            }
+        });
+    }
 
     // ==========================================
     // 5. MÓDULOS DE PRODUCTIVIDAD
     // ==========================================
     
-    // A. Mostrar/Ocultar Paneles
     const setupToggle = (btnId, panelId) => {
         const btn = document.getElementById(btnId);
         const panel = document.getElementById(panelId);
@@ -137,14 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setupToggle('btnNotas', 'panelNotas');
     setupToggle('btnHabitos', 'panelHabitos');
 
-    // B. Notas Rápidas
     const quickNotes = document.getElementById('quickNotes');
     if (quickNotes) {
         quickNotes.value = localStorage.getItem('app_notas_rapidas') || '';
         quickNotes.addEventListener('input', () => localStorage.setItem('app_notas_rapidas', quickNotes.value));
     }
 
-    // C. Top 3 Prioridades
     const prioridades = ['prio1', 'prio2', 'prio3'];
     prioridades.forEach(prio => {
         const input = document.getElementById(prio);
@@ -154,13 +215,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // D. Reto 33 Días (Hábitos Editables)
     const habitosContainer = document.getElementById('habitosContainer');
     if (habitosContainer) {
-        habitosContainer.innerHTML = ''; // Limpiar contenedor
+        habitosContainer.innerHTML = ''; 
         
         for (let i = 1; i <= 3; i++) {
-            // Estructura HTML inyectada por JS
             const row = document.createElement('div');
             row.style.display = 'flex';
             row.style.alignItems = 'center';
@@ -179,36 +238,30 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             habitosContainer.appendChild(row);
 
-            // Lógica para este hábito
             const inputNombre = document.getElementById(`habitoNombre${i}`);
             const textCount = document.getElementById(`habitoCount${i}`);
             const btnMinus = document.getElementById(`btnHabitoMinus${i}`);
             const btnPlus = document.getElementById(`btnHabitoPlus${i}`);
             const btnClear = document.getElementById(`btnHabitoClear${i}`);
 
-            // Cargar datos guardados
             inputNombre.value = localStorage.getItem(`app_habito_nombre_${i}`) || '';
             let count = parseInt(localStorage.getItem(`app_habito_count_${i}`)) || 0;
             textCount.innerText = `${count}/33`;
 
-            // Guardar nombre
             inputNombre.addEventListener('input', () => localStorage.setItem(`app_habito_nombre_${i}`, inputNombre.value));
 
-            // Sumar día
             btnPlus.addEventListener('click', () => {
                 if (count < 33) {
                     count++;
                     localStorage.setItem(`app_habito_count_${i}`, count);
                     textCount.innerText = `${count}/33`;
                     
-                    // Celebración al llegar a 33
                     if (count === 33) {
                         setTimeout(() => alert(`🎉 ¡FELICIDADES!\nHas completado los 33 días de tu hábito: "${inputNombre.value}".\n¡Ya es parte de ti!`), 300);
                     }
                 }
             });
 
-            // Restar día (por si se equivocan)
             btnMinus.addEventListener('click', () => {
                 if (count > 0) {
                     count--;
@@ -217,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // Borrar hábito por completo
             btnClear.addEventListener('click', () => {
                 if (confirm('¿Estás seguro de borrar este hábito y reiniciar su contador?')) {
                     count = 0;
@@ -230,7 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // E. Temporizador Pomodoro
     const timerDisplay = document.getElementById('timerDisplay');
     const btnStartTimer = document.getElementById('btnStartTimer');
     const btnPauseTimer = document.getElementById('btnPauseTimer');
@@ -282,5 +333,4 @@ document.addEventListener("DOMContentLoaded", () => {
             updateDisplay();
         });
     }
-
 });
