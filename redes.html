@@ -17,13 +17,35 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        .img-icon {
+        /* Contenedor estricto para forzar la simetría de todas las imágenes */
+        .icon-wrapper {
             width: 90px;
             height: 90px;
-            object-fit: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 12px;
+        }
+
+        /* La imagen se adaptará al contenedor sin deformarse */
+        .img-icon {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
         }
+
+        /* Forzar que todos los botones tengan la misma altura para alinear el texto */
+        .app-btn {
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
         .btn-yellow { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); color: #1E293B !important; }
     </style>
 </head>
@@ -57,21 +79,27 @@
         </div>
 
         <div class="button-grid">
-            <!-- Facebook -->
+            <!-- 1. Facebook -->
             <a href="https://www.facebook.com/InstitutoJuventudMX" target="_blank" class="app-btn btn-blue">
-                <img src="/Agenda/facebook.png" alt="Icono Facebook" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/facebook.png" alt="Icono Facebook" class="img-icon">
+                </div>
                 Facebook
             </a>
             
-            <!-- Instagram -->
+            <!-- 2. Instagram -->
             <a href="https://www.instagram.com/ijem_mx/" target="_blank" class="app-btn btn-magenta">
-                <img src="/Agenda/instagram.png" alt="Icono Instagram" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/instagram.png" alt="Icono Instagram" class="img-icon">
+                </div>
                 Instagram
             </a>
 
-            <!-- Juventud TV -->
+            <!-- 3. Juventud TV -->
             <a href="https://www.youtube.com/watch?v=fJyjrPgATlg" target="_blank" class="app-btn btn-yellow">
-                <img src="/Agenda/juventudtv.png" alt="Icono Juventud TV" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/juventudtv.png" alt="Icono Juventud TV" class="img-icon">
+                </div>
                 Juventud TV
             </a>
         </div>
