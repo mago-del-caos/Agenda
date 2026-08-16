@@ -1,5 +1,5 @@
 // Nombre y versión de la caché (Sube este número en cada actualización)
-const APP_VERSION = 'aglucem-v22';
+const APP_VERSION = 'aglucem-v23';
 
 // Lista de archivos que la PWA guardará en la memoria del celular
 const ASSETS_TO_CACHE = [
@@ -34,7 +34,9 @@ const ASSETS_TO_CACHE = [
     '/Agenda/juventudtv.png',
     '/Agenda/padlet.png',
     '/Agenda/global.png',
-    '/Agenda/classroom.png'
+    '/Agenda/classroom.png',
+    '/Agenda/calculadora.png',
+    '/Agenda/goblin.png'
 ];
 
 // 1. EVENTO DE INSTALACIÓN (Descarga los archivos)
@@ -81,7 +83,6 @@ self.addEventListener('fetch', event => {
                 return response || fetch(event.request);
             })
             .catch(() => {
-                // Opcional: Podrías redirigir a una página de "Sin conexión" si falla
                 console.log('[PWA] Estás sin conexión y el archivo no está en caché.');
             })
     );
