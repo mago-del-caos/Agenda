@@ -19,16 +19,36 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        /* Logos más grandes */
-        .img-icon {
+        /* Contenedor estricto para forzar la simetría de todas las imágenes */
+        .icon-wrapper {
             width: 90px;
             height: 90px;
-            object-fit: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 12px;
+        }
+
+        /* La imagen se adaptará al contenedor sin deformarse */
+        .img-icon {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
         }
 
-        /* Restaurando los fondos de color verde y amarillo directamente aquí */
+        /* Forzar que todos los botones tengan la misma altura para alinear el texto */
+        .app-btn {
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Colores manuales de los botones de abajo */
         .btn-green { 
             background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); 
             color: #FFFFFF !important; 
@@ -61,38 +81,50 @@
             
             <!-- 1. Chemini -->
             <a href="https://chemini.aracknia.com/" target="_blank" class="app-btn btn-blue">
-                <img src="/Agenda/Chemini.png" alt="Icono Chemini" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/Chemini.png" alt="Icono Chemini" class="img-icon">
+                </div>
                 Chemini
             </a>
 
             <!-- 2. Edu-chema -->
             <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" class="app-btn btn-magenta">
-                <img src="/Agenda/Edu.png" alt="Icono Edu-chema" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/Edu.png" alt="Icono Edu-chema" class="img-icon">
+                </div>
                 Edu-chema
             </a>
 
             <!-- 3. Repositorio IA -->
             <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" class="app-btn btn-green">
-                <img src="/Agenda/repo.png" alt="Icono Repositorio IA" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/repo.png" alt="Icono Repositorio IA" class="img-icon">
+                </div>
                 Repositorio IA
             </a>
 
             <!-- 4. Mapa -->
             <a href="https://proyecto-aracknia.neocities.org/Mapajuventud" target="_blank" class="app-btn btn-yellow">
-                <img src="/Agenda/mapa.png" alt="Icono Mapa" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/mapa.png" alt="Icono Mapa" class="img-icon">
+                </div>
                 Mapa
             </a>
 
-            <!-- 5. Calculadora Juventud (NUEVO) -->
+            <!-- 5. Calculadora Juventud -->
             <a href="https://departamentoinnovacioneducativa-del.github.io/Calculadora-juventud-2.0/" target="_blank" class="app-btn btn-blue">
-                <img src="/Agenda/calculadora.png" alt="Icono Calculadora" class="img-icon">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/calculadora.png" alt="Icono Calculadora" class="img-icon">
+                </div>
                 Calculadora Juventud
             </a>
 
-            <!-- 6. Goblin Tools (NUEVO) -->
+            <!-- 6. Goblin tools -->
             <a href="https://goblin.tools/" target="_blank" class="app-btn btn-magenta">
-                <img src="/Agenda/goblin.png" alt="Icono Goblin Tools" class="img-icon">
-                Goblin Tools
+                <div class="icon-wrapper">
+                    <img src="/Agenda/goblin.png" alt="Icono Goblin Tools" class="img-icon">
+                </div>
+                Goblin tools
             </a>
 
         </div>
