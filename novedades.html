@@ -10,23 +10,70 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- Rutas Absolutas (Garantizan que siempre encuentre los archivos) -->
     <link rel="stylesheet" href="/Agenda/styles.css">
     <link rel="manifest" href="/Agenda/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Sistema de Carrusel Táctil Uno a Uno */
+        .carrusel-contenedor {
+            width: 100%;
+            margin: 0 auto 20px auto;
+            position: relative;
+        }
+        .carrusel {
+            display: flex;
+            overflow-x: auto;
+            /* El secreto del deslizamiento perfecto */
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Oculta la barra en Firefox */
+            -ms-overflow-style: none; /* Oculta la barra en IE y Edge */
+            gap: 15px; /* Separación entre imágenes */
+            padding-bottom: 5px;
+        }
+        .carrusel::-webkit-scrollbar {
+            display: none; /* Oculta la barra en Chrome, Safari, Opera */
+        }
+        .slide {
+            /* flex: 0 0 100% obliga a que cada imagen ocupe exactamente toda la pantalla del celular */
+            flex: 0 0 100%; 
+            scroll-snap-align: center; /* Engancha la imagen al centro */
+            aspect-ratio: 1 / 1; /* FORZA EL FORMATO CUADRADO PERFECTO */
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            background-color: var(--fondo-app, #f8f9fa);
+            position: relative;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            /* 'cover' llena el cuadrado perfecto. Si tus imágenes originales no son muy cuadradas y ves que recorta información importante, cambia la palabra 'cover' por 'contain' */
+            object-fit: cover; 
+        }
+        .indicador-deslizamiento {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--texto-claro);
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-
-    <!-- Banner -->
     <header class="app-header">
         <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
     </header>
 
-    <!-- Navegación con Rutas Absolutas y la nueva pestaña de Ajustes -->
     <nav class="app-nav">
+        <!-- Novedades activo -->
         <a href="/Agenda/novedades.html" class="nav-btn active">Novedades</a>
         <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
         <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
@@ -37,20 +84,27 @@
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title" id="tituloNovedades">Hola, mira las novedades del día de hoy</h2>
+        <!-- El saludo personalizado lo inyecta el script.js aquí -->
+        <h2 id="tituloNovedades" class="section-title" style="margin-bottom: 25px; color: var(--ij-azul-fuerte);">Hola, mira las novedades de hoy</h2>
         
-        <div class="carousel-track">
-            <!-- Imágenes con Rutas Absolutas -->
-            <img src="/Agenda/1.png" alt="Novedad 1" class="carousel-slide">
-            <img src="/Agenda/2.png" alt="Novedad 2" class="carousel-slide">
-            <img src="/Agenda/3.png" alt="Novedad 3" class="carousel-slide">
-            <img src="/Agenda/4.png" alt="Novedad 4" class="carousel-slide">
-            <img src="/Agenda/5.png" alt="Novedad 5" class="carousel-slide">
+        <div class="carrusel-contenedor">
+            <div class="carrusel">
+                <div class="slide"><img src="/Agenda/1.png" alt="Novedad 1"></div>
+                <div class="slide"><img src="/Agenda/2.png" alt="Novedad 2"></div>
+                <div class="slide"><img src="/Agenda/3.png" alt="Novedad 3"></div>
+                <div class="slide"><img src="/Agenda/4.png" alt="Novedad 4"></div>
+                <div class="slide"><img src="/Agenda/5.png" alt="Novedad 5"></div>
+            </div>
+            
+            <div class="indicador-deslizamiento">
+                <span>⬅️</span>
+                <span>Desliza para ver más</span>
+                <span>➡️</span>
+            </div>
         </div>
-        <p class="swipe-hint">← Desliza para ver más →</p>
+        
     </main>
 
-    <!-- Script Central (Ruta absoluta) -->
     <script src="/Agenda/script.js"></script>
 </body>
 </html>
