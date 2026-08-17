@@ -102,22 +102,61 @@
 
         <div class="input-group">
             <label class="input-label" for="userName">Nombre Completo</label>
-            <input type="text" id="userName" class="standard-input" placeholder="Ej. Juan Pérez">
+            <!-- Evento de teclado para aceptar la tecla ENTER -->
+            <input type="text" id="userName" class="standard-input" placeholder="Ej. Juan Pérez" onkeypress="verificarEnter(event)">
         </div>
 
         <div class="input-group">
             <label class="input-label" for="userEmailPrefix">Correo Institucional</label>
             <div class="email-input-container">
-                <input type="text" id="userEmailPrefix" placeholder="tu.usuario">
+                <input type="text" id="userEmailPrefix" placeholder="tu.usuario" onkeypress="verificarEnter(event)">
                 <span class="email-domain">@juventud.edu.mx</span>
             </div>
         </div>
 
-        <button id="btnLogin" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; flex-direction: row; justify-content: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer;">
+        <!-- ID cambiado a btnEntrarDirecto y función onclick aislada -->
+        <button id="btnEntrarDirecto" onclick="procesarAcceso()" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; justify-content: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
             Entrar a la Agenda
         </button>
     </div>
 
+    <!-- SCRIPT DE ACCESO BLINDADO (Inmune a problemas de caché) -->
+    <script>
+        // Función para permitir entrar presionando Enter
+        function verificarEnter(event) {
+            if (event.key === "Enter") {
+                procesarAcceso();
+            }
+        }
+
+        // Motor principal de acceso independiente
+        function procesarAcceso() {
+            const inputNombre = document.getElementById('userName');
+            const inputPrefijo = document.getElementById('userEmailPrefix');
+
+            const nombre = inputNombre.value.trim();
+            // Convierte todo a minúscula y elimina espacios
+            const prefijo = inputPrefijo.value.trim().toLowerCase().replace(/\s+/g, '');
+
+            if (nombre === "" || prefijo === "") {
+                alert("Por favor, ingresa tu nombre y la primera parte de tu correo institucional.");
+                return;
+            }
+
+            // Unimos el texto del usuario con el dominio obligatorio
+            const correoCompleto = prefijo + "@juventud.edu.mx";
+
+            // Guardamos la autorización en el celular
+            localStorage.setItem('app_isLoggedIn', 'true');
+            localStorage.setItem('app_currentUserEmail', correoCompleto);
+            localStorage.setItem('name_' + correoCompleto, nombre);
+
+            // Forzamos el salto a la página de Novedades (replace evita que puedan regresar con el botón "Atrás")
+            window.location.replace("/Agenda/novedades.html");
+        }
+    </script>
+
+    <!-- Sigue cargando script.js general para que la PWA siga activa -->
     <script src="/Agenda/script.js"></script>
 </body>
 </html>
