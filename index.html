@@ -17,21 +17,23 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        /* Centrado de la pantalla de inicio */
+        /* Fondo Azul Marino Institucional */
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             justify-content: center;
             align-items: center;
-            background-color: var(--fondo-app, #f0f4f8);
+            background: linear-gradient(135deg, #032A60, #000F25);
             padding: 20px;
+            margin: 0;
+            font-family: var(--fuente-app, sans-serif);
         }
         .login-card {
-            background: var(--blanco, #ffffff);
+            background: #ffffff;
             padding: 30px 20px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 400px;
             text-align: center;
@@ -48,7 +50,7 @@
         .input-label {
             display: block;
             margin-bottom: 8px;
-            color: var(--texto-oscuro, #1e293b);
+            color: #1e293b;
             font-weight: bold;
             font-size: 0.95rem;
         }
@@ -56,10 +58,10 @@
         .email-input-container {
             display: flex;
             align-items: center;
-            border: 1px solid var(--borde, #cbd5e1);
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             overflow: hidden;
-            background: var(--fondo-app, #f8fafc);
+            background: #f8fafc;
         }
         .email-input-container input {
             flex: 1;
@@ -67,28 +69,27 @@
             border: none;
             outline: none;
             background: transparent;
-            font-family: var(--fuente-app);
             font-size: 1rem;
-            color: var(--texto-oscuro);
+            color: #1e293b;
         }
         .email-domain {
             background: #e2e8f0;
             color: #475569;
             padding: 12px;
             font-weight: bold;
-            border-left: 1px solid var(--borde, #cbd5e1);
+            border-left: 1px solid #cbd5e1;
             font-size: 0.9rem;
+            pointer-events: none; /* Evita que el usuario borre el dominio */
         }
         .standard-input {
             width: 100%;
             padding: 12px;
-            border: 1px solid var(--borde, #cbd5e1);
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
-            font-family: var(--fuente-app);
             font-size: 1rem;
             box-sizing: border-box;
-            background: var(--fondo-app, #f8fafc);
-            color: var(--texto-oscuro);
+            background: #f8fafc;
+            color: #1e293b;
         }
     </style>
 </head>
@@ -96,8 +97,8 @@
 
     <div class="login-card">
         <img src="/Agenda/Ag.png" alt="Ag lucem Logo" class="login-logo">
-        <h2 style="color: var(--ij-azul-fuerte, #032A60); margin-top: 0; margin-bottom: 5px;">Bienvenido</h2>
-        <p style="color: var(--texto-claro, #64748b); font-size: 0.9rem; margin-bottom: 25px;">Ingresa tus datos institucionales</p>
+        <h2 style="color: #032A60; margin-top: 0; margin-bottom: 5px;">Bienvenido</h2>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa tus datos institucionales</p>
 
         <div class="input-group">
             <label class="input-label" for="userName">Nombre Completo</label>
@@ -112,7 +113,7 @@
             </div>
         </div>
 
-        <button id="btnLogin" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; flex-direction: row; justify-content: center;">
+        <button id="btnLogin" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; flex-direction: row; justify-content: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer;">
             Entrar a la Agenda
         </button>
     </div>
