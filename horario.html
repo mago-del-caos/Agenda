@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Horario - Ag lucem</title>
-    
+
+    <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -15,6 +16,57 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Contenedor responsivo para la tabla */
+        .schedule-container {
+            overflow-x: auto;
+            background: var(--blanco, #ffffff);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* Evita que las celdas se aplasten demasiado en celular */
+        }
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-family: var(--fuente-app, sans-serif);
+        }
+        .schedule-table th {
+            background-color: var(--ij-azul-fuerte, #032A60);
+            color: white;
+            font-weight: bold;
+        }
+        .schedule-table td[contenteditable="true"] {
+            cursor: text;
+            transition: background 0.2s;
+            color: var(--texto-oscuro, #1e293b);
+        }
+        .schedule-table td[contenteditable="true"]:focus {
+            background-color: #f0f9ff;
+            outline: 2px solid #00A8FF;
+        }
+        .time-col {
+            font-weight: bold;
+            background-color: #f8fafc;
+            color: #334155;
+            white-space: nowrap;
+        }
+        /* Diseño especial para Descanso y Receso */
+        .break-row td {
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
     <header class="app-header">
@@ -32,35 +84,78 @@
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title">Tu Horario Escolar</h2>
-        <div class="card-elevation" style="padding: 10px;">
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Hora</th>
-                            <th>Lunes</th>
-                            <th>Martes</th>
-                            <th>Miércoles</th>
-                            <th>Jueves</th>
-                            <th>Viernes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="hora-col">07:00 - 07:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr><td class="hora-col">07:50 - 08:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr><td class="hora-col">08:40 - 09:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr class="row-break"><td colspan="6">RECESO</td></tr>
-                        <tr><td class="hora-col">10:00 - 10:50</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr><td class="hora-col">10:50 - 11:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr><td class="hora-col">11:40 - 12:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr class="row-break"><td colspan="6">RECESO</td></tr>
-                        <tr><td class="hora-col">12:50 - 13:40</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                        <tr><td class="hora-col">13:40 - 14:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <h2 class="section-title">Horario de Clases</h2>
+        
+        <div class="schedule-container">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Bloque 1 -->
+                    <tr>
+                        <td class="time-col">7:00 - 7:50</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">7:50 - 8:40</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">8:40 - 9:30</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">9:30 - 10:20</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    
+                    <!-- Primer Corte: DESCANSO -->
+                    <tr class="break-row">
+                        <td class="time-col">10:20 - 10:50</td>
+                        <td colspan="5">DESCANSO</td>
+                    </tr>
+                    
+                    <!-- Bloque 2 -->
+                    <tr>
+                        <td class="time-col">10:50 - 11:40</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">11:40 - 12:30</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    
+                    <!-- Segundo Corte: RECESO -->
+                    <tr class="break-row">
+                        <td class="time-col">12:30 - 12:50</td>
+                        <td colspan="5">RECESO</td>
+                    </tr>
+                    
+                    <!-- Bloque 3 -->
+                    <tr>
+                        <td class="time-col">12:50 - 13:40</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">13:40 - 14:30</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">14:30 - 15:20</td>
+                        <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+        
     </main>
 
     <script src="/Agenda/script.js"></script>
