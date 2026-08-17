@@ -1,5 +1,5 @@
 // Nombre y versión de la caché (Sube este número en cada actualización)
-const APP_VERSION = 'aglucem-v32';
+const APP_VERSION = 'aglucem-v33';
 
 // Lista de archivos que la PWA guardará en la memoria del celular
 const ASSETS_TO_CACHE = [
