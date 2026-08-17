@@ -1,11 +1,9 @@
 {
-  "name": "Ag lucem - Instituto Juventud",
+  "name": "Ag lucem",
   "short_name": "Ag lucem",
-  "description": "Panel Central de Gestión y Agenda Escolar",
   "start_url": "/Agenda/index.html",
-  "scope": "/Agenda/",
   "display": "standalone",
-  "background_color": "#F5F7FA",
+  "background_color": "#032A60",
   "theme_color": "#032A60",
   "orientation": "portrait",
   "icons": [
