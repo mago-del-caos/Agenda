@@ -17,7 +17,6 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        /* Fondo Azul Marino Institucional */
         body {
             display: flex;
             flex-direction: column;
@@ -38,49 +37,9 @@
             max-width: 400px;
             text-align: center;
         }
-        .login-logo {
-            width: 120px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .input-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #1e293b;
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-        /* El truco visual para el dominio bloqueado */
-        .email-input-container {
-            display: flex;
-            align-items: center;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #f8fafc;
-        }
-        .email-input-container input {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 1rem;
-            color: #1e293b;
-        }
-        .email-domain {
-            background: #e2e8f0;
-            color: #475569;
-            padding: 12px;
-            font-weight: bold;
-            border-left: 1px solid #cbd5e1;
-            font-size: 0.9rem;
-            pointer-events: none; /* Evita que el usuario borre el dominio */
-        }
+        .login-logo { width: 120px; height: auto; margin-bottom: 20px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-label { display: block; margin-bottom: 8px; color: #1e293b; font-weight: bold; font-size: 0.95rem; }
         .standard-input {
             width: 100%;
             padding: 12px;
@@ -98,65 +57,41 @@
     <div class="login-card">
         <img src="/Agenda/Ag.png" alt="Ag lucem Logo" class="login-logo">
         <h2 style="color: #032A60; margin-top: 0; margin-bottom: 5px;">Bienvenido</h2>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa tus datos institucionales</p>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa tu correo institucional completo</p>
 
         <div class="input-group">
             <label class="input-label" for="userName">Nombre Completo</label>
-            <!-- Evento de teclado para aceptar la tecla ENTER -->
             <input type="text" id="userName" class="standard-input" placeholder="Ej. Juan Pérez" onkeypress="verificarEnter(event)">
         </div>
 
         <div class="input-group">
-            <label class="input-label" for="userEmailPrefix">Correo Institucional</label>
-            <div class="email-input-container">
-                <input type="text" id="userEmailPrefix" placeholder="tu.usuario" onkeypress="verificarEnter(event)">
-                <span class="email-domain">@juventud.edu.mx</span>
-            </div>
+            <label class="input-label" for="userEmail">Correo Institucional</label>
+            <input type="email" id="userEmail" class="standard-input" placeholder="usuario@juventud.edu.mx" onkeypress="verificarEnter(event)">
         </div>
 
-        <!-- ID cambiado a btnEntrarDirecto y función onclick aislada -->
-        <button id="btnEntrarDirecto" onclick="procesarAcceso()" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; justify-content: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+        <button id="btnEntrar" onclick="procesarAcceso()" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
             Entrar a la Agenda
         </button>
     </div>
 
-    <!-- SCRIPT DE ACCESO BLINDADO (Inmune a problemas de caché) -->
     <script>
-        // Función para permitir entrar presionando Enter
-        function verificarEnter(event) {
-            if (event.key === "Enter") {
-                procesarAcceso();
-            }
-        }
+        function verificarEnter(event) { if (event.key === "Enter") procesarAcceso(); }
 
-        // Motor principal de acceso independiente
         function procesarAcceso() {
-            const inputNombre = document.getElementById('userName');
-            const inputPrefijo = document.getElementById('userEmailPrefix');
+            const nombre = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim().toLowerCase();
 
-            const nombre = inputNombre.value.trim();
-            // Convierte todo a minúscula y elimina espacios
-            const prefijo = inputPrefijo.value.trim().toLowerCase().replace(/\s+/g, '');
-
-            if (nombre === "" || prefijo === "") {
-                alert("Por favor, ingresa tu nombre y la primera parte de tu correo institucional.");
+            if (nombre === "" || email === "") {
+                alert("Por favor, rellena todos los campos.");
                 return;
             }
 
-            // Unimos el texto del usuario con el dominio obligatorio
-            const correoCompleto = prefijo + "@juventud.edu.mx";
-
-            // Guardamos la autorización en el celular
             localStorage.setItem('app_isLoggedIn', 'true');
-            localStorage.setItem('app_currentUserEmail', correoCompleto);
-            localStorage.setItem('name_' + correoCompleto, nombre);
-
-            // Forzamos el salto a la página de Novedades (replace evita que puedan regresar con el botón "Atrás")
+            localStorage.setItem('app_currentUserEmail', email);
+            localStorage.setItem('name_' + email, nombre);
             window.location.replace("/Agenda/novedades.html");
         }
     </script>
-
-    <!-- Sigue cargando script.js general para que la PWA siga activa -->
     <script src="/Agenda/script.js"></script>
 </body>
 </html>
