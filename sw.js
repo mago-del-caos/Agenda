@@ -1,7 +1,8 @@
-// Nombre y versión de la caché (Sube este número en cada actualización)
-const APP_VERSION = 'aglucem-v43';
+// Nombre y versión de la caché (Subido a v44 para forzar el cambio)
+const APP_VERSION = 'aglucem-v44';
 
 // Lista de archivos que la PWA guardará en la memoria del celular
+// (Se eliminaron las imágenes de Novedades porque ahora viven en Neocities)
 const ASSETS_TO_CACHE = [
     '/Agenda/',
     '/Agenda/index.html',
@@ -18,11 +19,6 @@ const ASSETS_TO_CACHE = [
     '/Agenda/Ag.png',
     '/Agenda/icon-192.png',
     '/Agenda/icon-512.png',
-    '/Agenda/1.png',
-    '/Agenda/2.png',
-    '/Agenda/3.png',
-    '/Agenda/4.png',
-    '/Agenda/5.png',
     '/Agenda/Chemini.png',
     '/Agenda/Edu.png',
     '/Agenda/repo.png',
@@ -74,16 +70,27 @@ self.addEventListener('activate', event => {
     );
 });
 
-// 3. EVENTO DE PETICIÓN (Responde desde la caché si no hay internet)
+// 3. EVENTO DE PETICIÓN (Estrategia: RED PRIMERO, luego caché)
 self.addEventListener('fetch', event => {
+    // Solo aplicamos esta lógica a los archivos de nuestra propia aplicación
+    // (Ignoramos peticiones a YouTube, Neocities u otros servidores para evitar errores de seguridad)
+    if (!event.request.url.startsWith(self.location.origin)) {
+        return;
+    }
+
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Si el archivo está en la caché, lo entrega; si no, lo busca en internet
-                return response || fetch(event.request);
+        fetch(event.request)
+            .then(networkResponse => {
+                // Si hay internet y responde bien, actualizamos la caché de forma silenciosa
+                return caches.open(APP_VERSION).then(cache => {
+                    cache.put(event.request, networkResponse.clone());
+                    return networkResponse;
+                });
             })
             .catch(() => {
-                console.log('[PWA] Estás sin conexión y el archivo no está en caché.');
+                // Si NO hay internet o la red falla, sacamos el archivo de la caché de emergencia
+                console.log('[PWA] Sin conexión, cargando desde la caché: ', event.request.url);
+                return caches.match(event.request);
             })
     );
 });
