@@ -15,138 +15,108 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Centrado de la pantalla de inicio */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--fondo-app, #f0f4f8);
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--blanco, #ffffff);
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--texto-oscuro, #1e293b);
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        /* El truco visual para el dominio bloqueado */
+        .email-input-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--borde, #cbd5e1);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--fondo-app, #f8fafc);
+        }
+        .email-input-container input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: var(--fuente-app);
+            font-size: 1rem;
+            color: var(--texto-oscuro);
+        }
+        .email-domain {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 12px;
+            font-weight: bold;
+            border-left: 1px solid var(--borde, #cbd5e1);
+            font-size: 0.9rem;
+        }
+        .standard-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--borde, #cbd5e1);
+            border-radius: 8px;
+            font-family: var(--fuente-app);
+            font-size: 1rem;
+            box-sizing: border-box;
+            background: var(--fondo-app, #f8fafc);
+            color: var(--texto-oscuro);
+        }
+    </style>
 </head>
-<body class="login-body">
+<body>
 
-    <div class="login-container card-elevation">
-        <img src="/Agenda/Ag.png" alt="Ag lucem" class="login-logo">
-        <h2 class="section-title" style="text-align: center; font-size: 1.3rem;" id="loginTitle">Iniciar Sesión</h2>
-        
-        <form id="authForm">
-            <!-- El nombre inicia oculto -->
-            <div class="input-group" id="nameGroup" style="display: none;">
-                <label for="nameInput">¿Cómo te llamas? (Nombre o Apodo)</label>
-                <input type="text" id="nameInput" placeholder="Ej. Juan Pérez">
-            </div>
+    <div class="login-card">
+        <img src="/Agenda/Ag.png" alt="Ag lucem Logo" class="login-logo">
+        <h2 style="color: var(--ij-azul-fuerte, #032A60); margin-top: 0; margin-bottom: 5px;">Bienvenido</h2>
+        <p style="color: var(--texto-claro, #64748b); font-size: 0.9rem; margin-bottom: 25px;">Ingresa tus datos institucionales</p>
 
-            <div class="input-group">
-                <label for="emailInput">Correo Institucional</label>
-                <input type="email" id="emailInput" placeholder="usuario@juventud.edu.mx" required>
-            </div>
-            <div class="input-group">
-                <label for="passInput">Contraseña</label>
-                <input type="password" id="passInput" placeholder="••••••••" required>
-            </div>
-            
-            <p id="errorMessage" class="error-text"></p>
-            
-            <button type="submit" id="mainSubmitBtn" class="app-btn btn-blue" style="width: 100%; padding: 15px; border: none; cursor: pointer;">
-                Ingresar
-            </button>
-        </form>
-
-        <div style="text-align: center; margin-top: 20px;">
-            <button type="button" id="toggleModeBtn" class="text-btn" style="display: inline-block; width: auto; margin: 0 auto;">Crear nueva cuenta (Registrarme)</button>
+        <div class="input-group">
+            <label class="input-label" for="userName">Nombre Completo</label>
+            <input type="text" id="userName" class="standard-input" placeholder="Ej. Juan Pérez">
         </div>
 
-        <div id="lockScreen" class="lock-screen hidden">
-            <span class="lock-icon">🔒</span>
-            <h3>Acceso Bloqueado</h3>
-            <p>Has superado el límite de 3 intentos.</p>
-            <p>Acude al <strong>Departamento de Innovación Educativa</strong> para actualizar tu contraseña.</p>
+        <div class="input-group">
+            <label class="input-label" for="userEmailPrefix">Correo Institucional</label>
+            <div class="email-input-container">
+                <input type="text" id="userEmailPrefix" placeholder="tu.usuario">
+                <span class="email-domain">@juventud.edu.mx</span>
+            </div>
         </div>
+
+        <button id="btnLogin" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; flex-direction: row; justify-content: center;">
+            Entrar a la Agenda
+        </button>
     </div>
 
-    <!-- LÓGICA DE AUTENTICACIÓN INCRUSTADA (Inmune a desincronización) -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("authForm");
-            const nameGroup = document.getElementById("nameGroup");
-            const loginTitle = document.getElementById("loginTitle");
-            const toggleModeBtn = document.getElementById("toggleModeBtn");
-            const mainSubmitBtn = document.getElementById("mainSubmitBtn");
-            const errorMessage = document.getElementById("errorMessage");
-            const lockScreen = document.getElementById("lockScreen");
-            
-            let isRegisterMode = false;
-            let failedAttempts = parseInt(localStorage.getItem("app_failed_attempts")) || 0;
-
-            if (failedAttempts >= 3) {
-                form.style.display = "none";
-                toggleModeBtn.style.display = "none";
-                lockScreen.classList.remove("hidden");
-            }
-
-            // Cambiar entre Iniciar Sesión y Registro
-            toggleModeBtn.addEventListener("click", () => {
-                isRegisterMode = !isRegisterMode;
-                loginTitle.innerText = isRegisterMode ? "Crear Cuenta Escolar" : "Iniciar Sesión";
-                toggleModeBtn.innerText = isRegisterMode ? "Ya tengo cuenta (Iniciar sesión)" : "Crear nueva cuenta (Registrarme)";
-                mainSubmitBtn.innerText = isRegisterMode ? "Registrarme y Entrar" : "Ingresar";
-                nameGroup.style.display = isRegisterMode ? "block" : "none";
-                errorMessage.innerText = ""; // Limpiar errores
-            });
-
-            // Procesar el formulario
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const emailInput = document.getElementById("emailInput");
-                const passInput = document.getElementById("passInput");
-                const nameInput = document.getElementById("nameInput");
-
-                const email = emailInput.value.trim();
-                const pass = passInput.value.trim();
-                const name = nameInput ? nameInput.value.trim() : "";
-
-                // FILTRO DE SEGURIDAD ESTRICTO
-                if (!email.endsWith("@juventud.edu.mx")) {
-                    errorMessage.innerText = "Error: Debes usar un correo con terminación @juventud.edu.mx";
-                    return;
-                }
-
-                if (isRegisterMode) {
-                    if (!name) {
-                        errorMessage.innerText = "Por favor, ingresa tu nombre o apodo.";
-                        return;
-                    }
-                    if (localStorage.getItem(`user_${email}`)) {
-                        errorMessage.innerText = "Este correo ya está registrado. Toca 'Ya tengo cuenta'.";
-                    } else {
-                        localStorage.setItem(`user_${email}`, pass);
-                        localStorage.setItem(`name_${email}`, name);
-                        localStorage.setItem("app_isLoggedIn", "true"); 
-                        localStorage.setItem("app_currentUserEmail", email);
-                        window.location.href = "/Agenda/novedades.html";
-                    }
-                } else {
-                    const savedPass = localStorage.getItem(`user_${email}`);
-                    if (!savedPass) {
-                        errorMessage.innerText = "No existe una cuenta con este correo. Crea una nueva cuenta primero.";
-                        return;
-                    }
-
-                    if (savedPass === pass) {
-                        localStorage.setItem("app_failed_attempts", "0"); 
-                        localStorage.setItem("app_isLoggedIn", "true"); 
-                        localStorage.setItem("app_currentUserEmail", email);
-                        window.location.href = "/Agenda/novedades.html"; 
-                    } else {
-                        failedAttempts++;
-                        localStorage.setItem("app_failed_attempts", failedAttempts.toString());
-                        if (failedAttempts >= 3) {
-                            form.style.display = "none";
-                            toggleModeBtn.style.display = "none";
-                            lockScreen.classList.remove("hidden");
-                        } else {
-                            errorMessage.innerText = `Contraseña incorrecta. Intentos restantes: ${3 - failedAttempts}`;
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-    
-    <!-- Cargar el resto del motor global -->
     <script src="/Agenda/script.js"></script>
 </body>
 </html>
