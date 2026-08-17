@@ -11,13 +11,20 @@ const fuenteGuardada = localStorage.getItem('fuentePreferida');
 if (fuenteGuardada) document.documentElement.style.setProperty('--fuente-app', fuenteGuardada);
 
 // ==========================================
-// 2. VERIFICACIÓN DE SEGURIDAD
+// 2. VERIFICACIÓN DE SEGURIDAD Y ACCESO
 // ==========================================
 const currentPath = window.location.pathname;
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
+const isLoggedIn = localStorage.getItem("app_isLoggedIn");
 
-if (!localStorage.getItem("app_isLoggedIn") && !isLoginPage) {
+// Si no está logueado y trata de entrar a otra página, lo regresa al index
+if (!isLoggedIn && !isLoginPage) {
     window.location.href = "/Agenda/index.html"; 
+}
+
+// Si ya está logueado y entra al index, lo manda directo a novedades
+if (isLoggedIn && isLoginPage) {
+    window.location.href = "/Agenda/novedades.html";
 }
 
 // ==========================================
@@ -45,6 +52,38 @@ if ('serviceWorker' in navigator) {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
+    // --- LÓGICA DE LOGIN (Solo en index.html) ---
+    const btnLogin = document.getElementById('btnLogin');
+    if (btnLogin) {
+        btnLogin.addEventListener('click', () => {
+            const nombreInput = document.getElementById('userName');
+            const emailPrefixInput = document.getElementById('userEmailPrefix');
+
+            if (nombreInput && emailPrefixInput) {
+                const nombre = nombreInput.value.trim();
+                // Limpia espacios y convierte a minúsculas
+                const prefijo = emailPrefixInput.value.trim().toLowerCase().replace(/\s+/g, ''); 
+
+                // ¡AQUÍ ESTÁ LA CORRECCIÓN! Verifica que hayan escrito algo
+                if (nombre === "" || prefijo === "") {
+                    alert("Por favor, ingresa tu nombre y tu usuario del correo institucional.");
+                    return;
+                }
+
+                // Une el prefijo con el dominio fijo
+                const correoCompleto = `${prefijo}@juventud.edu.mx`;
+
+                // Guarda los datos en la memoria del celular
+                localStorage.setItem('app_isLoggedIn', 'true');
+                localStorage.setItem('app_currentUserEmail', correoCompleto);
+                localStorage.setItem(`name_${correoCompleto}`, nombre);
+
+                // Da acceso a la aplicación
+                window.location.href = "/Agenda/novedades.html";
+            }
+        });
+    }
+
     // --- SALUDO EN NOVEDADES ---
     const tituloNovedades = document.getElementById("tituloNovedades");
     if (tituloNovedades) {
@@ -122,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "/Agenda/index.html"; 
     });
 
-    // 💥 NUEVO: BOTÓN DE ACTUALIZACIÓN CON BARRA DE 10 SEGUNDOS
+    // 💥 BOTÓN DE ACTUALIZACIÓN CON BARRA DE 10 SEGUNDOS
     if (btnActualizarApp) {
         btnActualizarApp.addEventListener('click', () => {
             if (confirm("¿Forzar actualización? El sistema se limpiará y recargará en 10 segundos.")) {
@@ -131,13 +170,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const progressBar = document.getElementById('updateProgressBar');
                 const progressText = document.getElementById('updateProgressText');
 
-                // Mostrar la barra visualmente y deshabilitar botones
                 progressContainer.classList.remove('hidden');
                 btnActualizarApp.disabled = true;
                 btnActualizarApp.style.opacity = '0.5';
                 if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
 
-                // 1. Iniciar la limpieza pesada en segundo plano
                 (async () => {
                     try {
                         if ('serviceWorker' in navigator) {
@@ -157,10 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 })();
 
-                // 2. Controlar la barra de 10 segundos (10,000 ms)
                 let progress = 0;
                 const totalTime = 10000; 
-                const intervalTime = 100; // Actualizamos cada 100 milisegundos para que sea fluido
+                const intervalTime = 100;
                 const increment = (intervalTime / totalTime) * 100;
 
                 const progressTimer = setInterval(() => {
@@ -172,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         progressText.innerText = "¡Sistema listo! Reiniciando...";
                         progressBar.style.width = "100%";
                         
-                        // Recargar la página limpia
                         setTimeout(() => {
                             window.location.reload(true);
                         }, 500);
@@ -188,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 5. MÓDULOS DE PRODUCTIVIDAD
     // ==========================================
-    
     const setupToggle = (btnId, panelId) => {
         const btn = document.getElementById(btnId);
         const panel = document.getElementById(panelId);
