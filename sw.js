@@ -1,5 +1,5 @@
-// Nombre y versión de la caché (Subido a v45 para forzar el cambio)
-const APP_VERSION = 'aglucem-v46';
+// Nombre y versión de la caché (Subido a v47 para forzar el cambio)
+const APP_VERSION = 'aglucem-v47';
 
 // Lista de archivos que la PWA guardará en la memoria del celular
 // (Se eliminaron las imágenes de Novedades porque ahora viven en Neocities)
