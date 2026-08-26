@@ -1,96 +1,112 @@
-// Nombre y versión de la caché (Subido a v51 para forzar el cambio)
-const APP_VERSION = 'aglucem-v51';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Agenda - Ag lucem</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
-// Lista de archivos que la PWA guardará en la memoria del celular
-// (Se eliminaron las imágenes de Novedades porque ahora viven en Neocities)
-const ASSETS_TO_CACHE = [
-    '/Agenda/',
-    '/Agenda/index.html',
-    '/Agenda/novedades.html',
-    '/Agenda/horario.html',
-    '/Agenda/agenda.html',
-    '/Agenda/herramientas.html',
-    '/Agenda/comunicacion.html',
-    '/Agenda/redes.html',
-    '/Agenda/ajustes.html',
-    '/Agenda/styles.css',
-    '/Agenda/script.js',
-    '/Agenda/manifest.json',
-    '/Agenda/Ag.png',
-    '/Agenda/icon-192.png',
-    '/Agenda/icon-512.png',
-    '/Agenda/Chemini.png',
-    '/Agenda/Edu.png',
-    '/Agenda/repo.png',
-    '/Agenda/mapa.png',
-    '/Agenda/DIE.png',
-    '/Agenda/IJEM.png',
-    '/Agenda/facebook.png',
-    '/Agenda/instagram.png',
-    '/Agenda/juventudtv.png',
-    '/Agenda/padlet.png',
-    '/Agenda/global.png',
-    '/Agenda/classroom.png',
-    '/Agenda/calculadora.png',
-    '/Agenda/goblin.png'
-];
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
 
-// 1. EVENTO DE INSTALACIÓN (Descarga los archivos)
-self.addEventListener('install', event => {
-    // ¡CLAVE! Fuerza al Service Worker a instalarse de inmediato sin esperar
-    self.skipWaiting();
+    <nav class="app-nav">
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/agenda.html" class="nav-btn active">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
 
-    event.waitUntil(
-        caches.open(APP_VERSION)
-            .then(cache => {
-                console.log('[PWA] Guardando archivos en caché');
-                return cache.addAll(ASSETS_TO_CACHE);
-            })
-            .catch(err => console.log('[PWA] Error al guardar en caché:', err))
-    );
-});
+    <main class="app-main">
+        <h2 class="section-title">Centro de Productividad</h2>
+        
+        <!-- Panel Superior: Menú de Herramientas Rápidas -->
+        <div class="button-grid" style="margin-bottom: 20px;">
+            <a href="https://calendar.google.com/" target="_blank" class="app-btn" style="padding: 15px; font-size: 1rem; text-align: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: #FFF;">
+                <span style="font-size: 1.8rem; margin-bottom: 5px;">📅</span> Agenda
+            </a>
+            <button id="btnPomodoro" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #FF4D79, #D31A52); color: #FFF;">
+                <span style="font-size: 1.8rem; margin-bottom: 5px;">🍅</span> Enfoque
+            </button>
+            <button id="btnNotas" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #FFE047, #FFD100); color: #1E293B;">
+                <span style="font-size: 1.8rem; margin-bottom: 5px;">📝</span> Notas
+            </button>
+            <button id="btnHabitos" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #00C65A, #009944); color: #FFF;">
+                <span style="font-size: 1.8rem; margin-bottom: 5px; font-weight: 900; font-family: monospace;">33</span> Hábitos
+            </button>
+        </div>
 
-// 2. EVENTO DE ACTIVACIÓN (Limpia la basura vieja y toma el control)
-self.addEventListener('activate', event => {
-    // ¡CLAVE! Fuerza al nuevo Service Worker a tomar el control de la app al instante
-    event.waitUntil(self.clients.claim());
+        <!-- Panel: Temporizador Pomodoro -->
+        <div id="panelPomodoro" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; text-align: center; background: var(--blanco);">
+            <h3 style="margin-top: 0; color: var(--ij-magenta);">Técnica Pomodoro</h3>
+            <div id="timerDisplay" style="font-size: 3.5rem; font-weight: bold; margin: 10px 0; font-family: monospace; color: var(--texto-oscuro);">25:00</div>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="btnStartTimer" class="app-btn btn-green" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">▶ Iniciar</button>
+                <button id="btnPauseTimer" class="app-btn btn-yellow" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">⏸ Pausa</button>
+                <button id="btnResetTimer" class="app-btn btn-magenta" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">🔄 25 min</button>
+                <button id="btnDescanso" class="app-btn btn-blue" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">☕ 5 min</button>
+            </div>
+        </div>
 
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    // Si la caché no es la versión actual, bórrala
-                    if (cacheName !== APP_VERSION) {
-                        console.log('[PWA] Borrando caché antigua:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
-    );
-});
+        <!-- Panel: Bloc de Notas -->
+        <div id="panelNotas" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; background: var(--blanco);">
+            <h3 style="margin-top: 0; color: #FFD100;">Notas Rápidas</h3>
+            <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 10px;">Se guardan automáticamente.</p>
+            <textarea id="quickNotes" style="width: 100%; height: 120px; padding: 12px; border-radius: 8px; border: 1px solid var(--borde); font-family: var(--fuente-app); background: var(--fondo-app); color: var(--texto-oscuro); font-size: 1rem; resize: vertical;" placeholder="Escribe ideas sueltas, enlaces o recordatorios..."></textarea>
+        </div>
 
-// 3. EVENTO DE PETICIÓN (Estrategia: RED PRIMERO, luego caché)
-self.addEventListener('fetch', event => {
-    // Solo aplicamos esta lógica a los archivos de nuestra propia aplicación
-    // (Ignoramos peticiones a YouTube, Neocities u otros servidores para evitar errores de seguridad)
-    if (!event.request.url.startsWith(self.location.origin)) {
-        return;
-    }
+        <!-- Panel: Rastreador de Hábitos (RENOVADO PARA 33 DÍAS) -->
+        <div id="panelHabitos" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; background: var(--blanco);">
+            <h3 style="margin-top: 0; color: var(--ij-verde);">Reto: 33 Días</h3>
+            <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 15px;">Escribe un hábito y suma +1 cada día que lo cumplas.</p>
+            
+            <div id="habitosContainer">
+                <!-- Se inyectan desde script.js para no repetir código HTML -->
+            </div>
+        </div>
 
-    event.respondWith(
-        fetch(event.request)
-            .then(networkResponse => {
-                // Si hay internet y responde bien, actualizamos la caché de forma silenciosa
-                return caches.open(APP_VERSION).then(cache => {
-                    cache.put(event.request, networkResponse.clone());
-                    return networkResponse;
-                });
-            })
-            .catch(() => {
-                // Si NO hay internet o la red falla, sacamos el archivo de la caché de emergencia
-                console.log('[PWA] Sin conexión, cargando desde la caché: ', event.request.url);
-                return caches.match(event.request);
-            })
-    );
-});
+        <!-- ⭐ Top 3 Prioridades -->
+        <h3 style="font-size: 1.1rem; color: var(--ij-azul-fuerte); margin-bottom: 10px;">⭐ Las 3 prioridades de hoy</h3>
+        <div class="card-elevation" style="margin-bottom: 20px; padding: 15px; background: var(--blanco);">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 1.3rem; margin-right: 10px; font-weight: bold; color: var(--ij-magenta);">1.</span>
+                <input type="text" id="prio1" class="task-input" placeholder="Lo más urgente e importante..." style="font-weight: bold;">
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 1.3rem; margin-right: 10px; font-weight: bold; color: var(--ij-amarillo);">2.</span>
+                <input type="text" id="prio2" class="task-input" placeholder="Segunda tarea clave...">
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span style="font-size: 1.3rem; margin-right: 10px; font-weight: bold; color: var(--ij-verde);">3.</span>
+                <input type="text" id="prio3" class="task-input" placeholder="Tercera tarea clave...">
+            </div>
+        </div>
+
+        <!-- Lista de Pendientes (General) -->
+        <h3 style="font-size: 1.1rem; color: var(--texto-claro); margin-bottom: 10px;">📋 Otros pendientes:</h3>
+        <div class="card-elevation">
+            <ul id="taskList" class="task-list">
+                <!-- Tareas inyectadas por JS -->
+            </ul>
+        </div>
+    </main>
+
+    <button id="addTaskBtn" class="fab-button" title="Agregar Nueva Tarea">➕</button>
+
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
