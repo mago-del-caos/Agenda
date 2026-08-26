@@ -59,12 +59,24 @@
         <!-- El saludo personalizado lo inyecta el script.js aquí -->
         <h2 id="tituloNovedades" class="section-title" style="margin-bottom: 25px; color: var(--ij-azul-fuerte);">Hola, mira las novedades de hoy</h2>
         
-        <!-- Ventana conectada en tiempo real a Neocities -->
+        <!-- Ventana conectada en tiempo real a Neocities con inyección anti-caché -->
         <div class="iframe-container">
-            <iframe src="https://proyecto-aracknia.neocities.org/carrete" class="carrete-iframe" title="Carrete de Novedades" allowfullscreen></iframe>
+            <iframe id="neocitiesFrame" class="carrete-iframe" title="Carrete de Novedades" allowfullscreen></iframe>
         </div>
         
     </main>
+
+    <script>
+        // TRUCO TÁCTICO ANTI-CACHÉ PARA EL IFRAME:
+        // Añade una estampa de tiempo (timestamp) en vivo para obligar a Neocities a entregar la última versión
+        document.addEventListener("DOMContentLoaded", () => {
+            const iframe = document.getElementById('neocitiesFrame');
+            if (iframe) {
+                const timestamp = new Date().getTime();
+                iframe.src = `https://proyecto-aracknia.neocities.org/carrete?v=${timestamp}`;
+            }
+        });
+    </script>
 
     <script src="/Agenda/script.js"></script>
 </body>
