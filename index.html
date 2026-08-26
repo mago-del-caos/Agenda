@@ -57,16 +57,16 @@
     <div class="login-card">
         <img src="/Agenda/Ag.png" alt="Ag lucem Logo" class="login-logo">
         <h2 style="color: #032A60; margin-top: 0; margin-bottom: 5px;">Bienvenido</h2>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa tu correo institucional completo</p>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa tus credenciales institucionales</p>
 
         <div class="input-group">
-            <label class="input-label" for="userName">Nombre Completo</label>
-            <input type="text" id="userName" class="standard-input" placeholder="Ej. Juan Pérez" onkeypress="verificarEnter(event)">
+            <label class="input-label" for="userEmail">Correo o Usuario</label>
+            <input type="text" id="userEmail" class="standard-input" placeholder="usuario@juventud.edu.mx" onkeypress="verificarEnter(event)">
         </div>
 
         <div class="input-group">
-            <label class="input-label" for="userEmail">Correo Institucional</label>
-            <input type="email" id="userEmail" class="standard-input" placeholder="usuario@juventud.edu.mx" onkeypress="verificarEnter(event)">
+            <label class="input-label" for="userPassword">Contraseña</label>
+            <input type="password" id="userPassword" class="standard-input" placeholder="••••••••" onkeypress="verificarEnter(event)">
         </div>
 
         <button id="btnEntrar" onclick="procesarAcceso()" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
@@ -75,23 +75,32 @@
     </div>
 
     <script>
-        function verificarEnter(event) { if (event.key === "Enter") procesarAcceso(); }
+        // Si ya hay una sesión activa guardada, evita que aparezca el login y manda directo a novedades
+        if (localStorage.getItem('app_isLoggedIn') === 'true') {
+            window.location.replace("/Agenda/novedades.html");
+        }
+
+        function verificarEnter(event) { 
+            if (event.key === "Enter") procesarAcceso(); 
+        }
 
         function procesarAcceso() {
-            const nombre = document.getElementById('userName').value.trim();
-            const email = document.getElementById('userEmail').value.trim().toLowerCase();
+            const email = document.getElementById('userEmail').value.trim();
+            const pass = document.getElementById('userPassword').value.trim();
 
-            if (nombre === "" || email === "") {
-                alert("Por favor, rellena todos los campos.");
+            if (email === "" || pass === "") {
+                alert("Por favor, ingresa tu usuario y contraseña.");
                 return;
             }
 
+            // Aquí posteriormente conectaremos con tu API en Node.js sobre Debian/Cloudflare.
+            // Por ahora, guardamos el estado para que NUNCA vuelva a pedir credenciales en este dispositivo:
             localStorage.setItem('app_isLoggedIn', 'true');
             localStorage.setItem('app_currentUserEmail', email);
-            localStorage.setItem('name_' + email, nombre);
+
+            // Salto definitivo a novedades
             window.location.replace("/Agenda/novedades.html");
         }
     </script>
-    <script src="/Agenda/script.js"></script>
 </body>
 </html>
