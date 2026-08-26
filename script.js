@@ -11,20 +11,20 @@ const fuenteGuardada = localStorage.getItem('fuentePreferida');
 if (fuenteGuardada) document.documentElement.style.setProperty('--fuente-app', fuenteGuardada);
 
 // ==========================================
-// 2. VERIFICACIÓN DE SEGURIDAD Y ACCESO
+// 2. VERIFICACIÓN DE SEGURIDAD Y ACCESO (Con persistencia permanente)
 // ==========================================
 const currentPath = window.location.pathname;
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
 const isLoggedIn = localStorage.getItem("app_isLoggedIn");
 
-// Si no está logueado y trata de entrar a otra página, lo regresa al index
-if (!isLoggedIn && !isLoginPage) {
-    window.location.href = "/Agenda/index.html"; 
+// Si ya está logueado y entra al index, lo manda directo a novedades
+if (isLoggedIn === 'true' && isLoginPage) {
+    window.location.replace("/Agenda/novedades.html");
 }
 
-// Si ya está logueado y entra al index, lo manda directo a novedades
-if (isLoggedIn && isLoginPage) {
-    window.location.href = "/Agenda/novedades.html";
+// Si no está logueado y trata de entrar a otra página, lo regresa al index
+if (isLoggedIn !== 'true' && !isLoginPage) {
+    window.location.replace("/Agenda/index.html"); 
 }
 
 // ==========================================
@@ -52,34 +52,29 @@ if ('serviceWorker' in navigator) {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- LÓGICA DE LOGIN (Solo en index.html) ---
-    const btnLogin = document.getElementById('btnLogin');
-    if (btnLogin) {
-        btnLogin.addEventListener('click', () => {
+    // --- LÓGICA DE LOGIN (Correo completo) ---
+    const btnEntrar = document.getElementById('btnEntrar');
+    if (btnEntrar) {
+        btnEntrar.addEventListener('click', () => {
             const nombreInput = document.getElementById('userName');
-            const emailPrefixInput = document.getElementById('userEmailPrefix');
+            const emailInput = document.getElementById('userEmail');
 
-            if (nombreInput && emailPrefixInput) {
+            if (nombreInput && emailInput) {
                 const nombre = nombreInput.value.trim();
-                // Limpia espacios y convierte a minúsculas
-                const prefijo = emailPrefixInput.value.trim().toLowerCase().replace(/\s+/g, ''); 
+                const email = emailInput.value.trim().toLowerCase();
 
-                // ¡AQUÍ ESTÁ LA CORRECCIÓN! Verifica que hayan escrito algo
-                if (nombre === "" || prefijo === "") {
-                    alert("Por favor, ingresa tu nombre y tu usuario del correo institucional.");
+                if (nombre === "" || email === "") {
+                    alert("Por favor, rellena todos los campos.");
                     return;
                 }
 
-                // Une el prefijo con el dominio fijo
-                const correoCompleto = `${prefijo}@juventud.edu.mx`;
-
-                // Guarda los datos en la memoria del celular
+                // Guarda la sesión de forma permanente en el dispositivo
                 localStorage.setItem('app_isLoggedIn', 'true');
-                localStorage.setItem('app_currentUserEmail', correoCompleto);
-                localStorage.setItem(`name_${correoCompleto}`, nombre);
+                localStorage.setItem('app_currentUserEmail', email);
+                localStorage.setItem(`name_${email}`, nombre);
 
-                // Da acceso a la aplicación
-                window.location.href = "/Agenda/novedades.html";
+                // Da acceso definitivo a la aplicación
+                window.location.replace("/Agenda/novedades.html");
             }
         });
     }
@@ -170,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const progressBar = document.getElementById('updateProgressBar');
                 const progressText = document.getElementById('updateProgressText');
 
-                progressContainer.classList.remove('hidden');
+                if (progressContainer) progressContainer.classList.remove('hidden');
                 btnActualizarApp.disabled = true;
                 btnActualizarApp.style.opacity = '0.5';
                 if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
@@ -205,15 +200,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (progress >= 100) {
                         progress = 100;
                         clearInterval(progressTimer);
-                        progressText.innerText = "¡Sistema listo! Reiniciando...";
-                        progressBar.style.width = "100%";
+                        if (progressText) progressText.innerText = "¡Sistema listo! Reiniciando...";
+                        if (progressBar) progressBar.style.width = "100%";
                         
                         setTimeout(() => {
                             window.location.reload(true);
                         }, 500);
                     } else {
-                        progressBar.style.width = `${progress}%`;
-                        progressText.innerText = `Limpiando e instalando... ${Math.floor(progress)}%`;
+                        if (progressBar) progressBar.style.width = `${progress}%`;
+                        if (progressText) progressText.innerText = `Limpiando e instalando... ${Math.floor(progress)}%`;
                     }
                 }, intervalTime);
             }
@@ -333,38 +328,46 @@ document.addEventListener("DOMContentLoaded", () => {
             timerDisplay.innerText = `${min}:${sec}`;
         };
 
-        btnStartTimer.addEventListener('click', () => {
-            if (isRunning) return;
-            isRunning = true;
-            timerInterval = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    isRunning = false;
-                    alert("⏰ ¡Tiempo de enfoque terminado! Toma un descanso.");
-                }
-            }, 1000);
-        });
+        if (btnStartTimer) {
+            btnStartTimer.addEventListener('click', () => {
+                if (isRunning) return;
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        alert("⏰ ¡Tiempo de enfoque terminado! Toma un descanso.");
+                    }
+                }, 1000);
+            });
+        }
 
-        btnPauseTimer.addEventListener('click', () => {
-            clearInterval(timerInterval);
-            isRunning = false;
-        });
+        if (btnPauseTimer) {
+            btnPauseTimer.addEventListener('click', () => {
+                clearInterval(timerInterval);
+                isRunning = false;
+            });
+        }
 
-        btnResetTimer.addEventListener('click', () => {
-            clearInterval(timerInterval);
-            isRunning = false;
-            timeLeft = 25 * 60;
-            updateDisplay();
-        });
+        if (btnResetTimer) {
+            btnResetTimer.addEventListener('click', () => {
+                clearInterval(timerInterval);
+                isRunning = false;
+                timeLeft = 25 * 60;
+                updateDisplay();
+            });
+        }
 
-        btnDescanso.addEventListener('click', () => {
-            clearInterval(timerInterval);
-            isRunning = false;
-            timeLeft = 5 * 60;
-            updateDisplay();
-        });
+        if (btnDescanso) {
+            btnDescanso.addEventListener('click', () => {
+                clearInterval(timerInterval);
+                isRunning = false;
+                timeLeft = 5 * 60;
+                updateDisplay();
+            });
+        }
     }
 });
