@@ -1,7 +1,7 @@
-// Nombre y versión de la caché (Actualizado a v61 para forzar el cambio)
-const APP_VERSION = 'aglucem-v61';
+// Nombre y versión de la caché (Actualizado a v59 para forzar el cambio automático)
+const APP_VERSION = 'aglucem-v59';
 
-// Lista de archivos que la PWA guardará en la memoria del celular
+// Lista de archivos esenciales que la PWA guardará en la memoria
 const ASSETS_TO_CACHE = [
     '/Agenda/',
     '/Agenda/index.html',
@@ -34,45 +34,44 @@ const ASSETS_TO_CACHE = [
     '/Agenda/goblin.png'
 ];
 
-// 1. EVENTO DE INSTALACIÓN (Descarga los archivos)
+// 1. INSTALACIÓN INMEDIATA (Fuerza al navegador a aceptar la v59 sin esperar)
 self.addEventListener('install', event => {
-    self.skipWaiting();
-
+    self.skipWaiting(); // Obliga al nuevo Service Worker a instalarse ya
     event.waitUntil(
         caches.open(APP_VERSION)
             .then(cache => {
-                console.log('[PWA] Guardando archivos en caché v58');
+                console.log('[PWA] Instalando nueva versión: ' + APP_VERSION);
                 return cache.addAll(ASSETS_TO_CACHE);
             })
-            .catch(err => console.log('[PWA] Error al guardar en caché:', err))
+            .catch(err => console.log('[PWA] Error en caché:', err))
     );
 });
 
-// 2. EVENTO DE ACTIVACIÓN (Limpia la basura vieja y toma el control)
+// 2. ACTIVACIÓN Y PURGA TOTAL (Borra cualquier versión anterior de golpe)
 self.addEventListener('activate', event => {
-    event.waitUntil(self.clients.claim());
-
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheName !== APP_VERSION) {
-                        console.log('[PWA] Borrando caché antigua:', cacheName);
+                        console.log('[PWA] Destruyendo caché obsoleta:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
+        }).then(() => {
+            // Toma el control absoluto de todas las pestañas abiertas al instante
+            return self.clients.claim();
         })
     );
 });
 
-// 3. EVENTO DE PETICIÓN (Estrategia: RED PRIMERO con bypass para Novedades y páginas)
+// 3. INTERcepción DE PETICIONES (Garantiza lectura limpia)
 self.addEventListener('fetch', event => {
     if (!event.request.url.startsWith(self.location.origin)) {
         return;
     }
 
-    // Forzar la carga actualizada asegurando que las páginas (incluyendo novedades) prioricen la red
     event.respondWith(
         fetch(event.request)
             .then(networkResponse => {
@@ -82,7 +81,6 @@ self.addEventListener('fetch', event => {
                 });
             })
             .catch(() => {
-                console.log('[PWA] Sin conexión, cargando desde la caché: ', event.request.url);
                 return caches.match(event.request);
             })
     );
