@@ -1,27 +1,198 @@
-Cuarto 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sociograma</title>
+    <!-- Tailwind CSS for rapid styling and responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sky-blue': '#87CEEB',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ensuring smooth transitions for hover effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-sky-blue min-h-screen flex flex-col items-center font-sans antialiased p-4 sm:p-6 lg:p-10">
 
-A: https://forms.gle/mYLwuSypzWQxqrMW9	
+    <!-- Header Section -->
+    <header class="w-full max-w-4xl mb-10 text-center">
+        <!-- Main Header Image -->
+        <img 
+            src="sociograma.jpeg" 
+            alt="Sociograma Principal" 
+            class="w-full h-auto rounded-2xl shadow-lg border-4 border-white/40 object-cover"
+            onerror="this.onerror=null; this.src='https://placehold.co/1200x400/2563eb/ffffff?text=Imagen+Principal+(sociograma.jpeg)';"
+        />
+    </header>
 
-B: https://forms.gle/VaZUiTD2eG5MS3zJ8
+    <!-- Main Content Section (Buttons & Submenus) -->
+    <main class="w-full max-w-6xl">
+        <!-- Grid layout: 1 column on mobile, 2 on tablet, 4 on desktop -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
+            
+            <!-- Group 1: Cuarto -->
+            <div class="flex flex-col items-center w-full">
+                <button onclick="toggleMenu('menu4')" class="hover-lift w-full rounded-2xl overflow-hidden shadow-md bg-white/20 backdrop-blur-sm border-2 border-white/30 focus:outline-none cursor-pointer">
+                    <img 
+                        src="sociograma4.jpeg" 
+                        alt="Sociograma 4" 
+                        class="w-full h-auto object-cover"
+                        onerror="this.onerror=null; this.src='https://placehold.co/600x600/3b82f6/ffffff?text=Botón+1+(sociograma4.jpeg)';"
+                    />
+                </button>
+                <!-- Submenu 4 -->
+                <div id="menu4" class="w-full max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out flex flex-col gap-3 px-1">
+                    <a href="https://forms.gle/mYLwuSypzWQxqrMW9" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Cuarto A</a>
+                    <a href="https://forms.gle/VaZUiTD2eG5MS3zJ8" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Cuarto B</a>
+                    <a href="https://forms.gle/uhJg5uJQRXyLQJBf7" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Cuarto C</a>
+                </div>
+            </div>
 
-C:  https://forms.gle/uhJg5uJQRXyLQJBf7
-	
-Quinto 
+            <!-- Group 2: Quinto -->
+            <div class="flex flex-col items-center w-full">
+                <button onclick="toggleMenu('menu5')" class="hover-lift w-full rounded-2xl overflow-hidden shadow-md bg-white/20 backdrop-blur-sm border-2 border-white/30 focus:outline-none cursor-pointer">
+                    <img 
+                        src="sociograma5.jpeg" 
+                        alt="Sociograma 5" 
+                        class="w-full h-auto object-cover"
+                        onerror="this.onerror=null; this.src='https://placehold.co/600x600/1d4ed8/ffffff?text=Botón+2+(sociograma5.jpeg)';"
+                    />
+                </button>
+                <!-- Submenu 5 -->
+                <div id="menu5" class="w-full max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out flex flex-col gap-3 px-1">
+                    <a href="https://forms.gle/5mHudpJzAKLKviHy7" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Quinto A</a>
+                    <a href="https://forms.gle/DWGvb287Y5SF5M6F6" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Quinto B</a>
+                    <a href="https://forms.gle/AqN6kASuwGfVU4as8" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Quinto C</a>
+                </div>
+            </div>
 
-A: https://forms.gle/5mHudpJzAKLKviHy7
+            <!-- Group 3: Sexto -->
+            <div class="flex flex-col items-center w-full">
+                <button onclick="toggleMenu('menu6')" class="hover-lift w-full rounded-2xl overflow-hidden shadow-md bg-white/20 backdrop-blur-sm border-2 border-white/30 focus:outline-none cursor-pointer">
+                    <img 
+                        src="sociograma6.jpeg" 
+                        alt="Sociograma 6" 
+                        class="w-full h-auto object-cover"
+                        onerror="this.onerror=null; this.src='https://placehold.co/600x600/1e40af/ffffff?text=Botón+3+(sociograma6.jpeg)';"
+                    />
+                </button>
+                <!-- Submenu 6 -->
+                <div id="menu6" class="w-full max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out flex flex-col gap-3 px-1">
+                    <a href="https://forms.gle/k4iw5yMW3peFwKRA9" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Sexto A</a>
+                    <a href="https://forms.gle/eWwhaJmXAXMz6G6KA" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Sexto B</a>
+                    <a href="https://forms.gle/M8GWfC4TWNwCLH8Q9" target="_blank" class="w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">Sexto C</a>
+                </div>
+            </div>
 
-B: https://forms.gle/DWGvb287Y5SF5M6F6
+            <!-- Group 4: QR (No Submenu) -->
+            <div class="flex flex-col items-center w-full">
+                <div class="hover-lift w-full rounded-2xl overflow-hidden shadow-md bg-white/20 backdrop-blur-sm border-2 border-white/30">
+                    <img 
+                        src="sociogramaqr.png" 
+                        alt="Sociograma QR" 
+                        class="w-full h-auto object-cover"
+                        onerror="this.onerror=null; this.src='https://placehold.co/600x600/172554/ffffff?text=Botón+4+(sociogramaqr.png)';"
+                    />
+                </div>
+            </div>
 
-C: https://forms.gle/AqN6kASuwGfVU4as8
+        </div>
+    </main>
 
+    <!-- Optional Footer -->
+    <footer class="mt-16 text-white/70 text-sm text-center">
+        <p>Selecciona una de las opciones anteriores para continuar.</p>
+    </footer>
 
-Sexto
+    <!-- Custom Modal for Date Restriction (No usar alert) -->
+    <div id="date-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+        <div class="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full text-center transform transition-all">
+            <div class="text-sky-500 mb-4">
+                <svg class="w-14 h-14 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Acceso Restringido</h3>
+            <p class="text-gray-600 mb-6">El acceso a estos formularios estará disponible a partir del <span class="font-bold">6 de noviembre</span>.</p>
+            <button onclick="closeModal()" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-600 transition-colors shadow-md">Entendido</button>
+        </div>
+    </div>
 
-A:  https://forms.gle/k4iw5yMW3peFwKRA9
+    <!-- Script to handle smooth toggling -->
+    <script>
+        function toggleMenu(menuId) {
+            const menus = ['menu4', 'menu5', 'menu6'];
+            const targetMenu = document.getElementById(menuId);
+            
+            // Cierra los otros menús si están abiertos
+            menus.forEach(id => {
+                if (id !== menuId) {
+                    const menu = document.getElementById(id);
+                    if (menu) {
+                        menu.classList.remove('max-h-[500px]', 'opacity-100', 'mt-4', 'pb-4');
+                        menu.classList.add('max-h-0', 'opacity-0');
+                    }
+                }
+            });
 
-B: https://forms.gle/eWwhaJmXAXMz6G6KA
+            // Alterna el menú seleccionado (abrir/cerrar)
+            if (targetMenu.classList.contains('max-h-0')) {
+                targetMenu.classList.remove('max-h-0', 'opacity-0');
+                targetMenu.classList.add('max-h-[500px]', 'opacity-100', 'mt-4', 'pb-4');
+            } else {
+                targetMenu.classList.remove('max-h-[500px]', 'opacity-100', 'mt-4', 'pb-4');
+                targetMenu.classList.add('max-h-0', 'opacity-0');
+            }
+        }
 
-C: https://forms.gle/M8GWfC4TWNwCLH8Q9
+        // --- Lógica de Restricción de Fecha ---
+        // Configurado para el 6 de Noviembre de 2026 a las 00:00:00
+        const unlockDate = new Date('2026-11-06T00:00:00'); 
 
+        function checkDate(event) {
+            const now = new Date();
+            if (now < unlockDate) {
+                event.preventDefault(); // Evita que se abra la URL de Google Forms
+                showModal();            // Muestra el mensaje personalizado
+            }
+        }
 
- 
+        function showModal() {
+            const modal = document.getElementById('date-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('date-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Aplicar la restricción a todos los enlaces de los submenús al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('#menu4 a, #menu5 a, #menu6 a');
+            links.forEach(link => {
+                link.addEventListener('click', checkDate);
+            });
+        });
+    </script>
+
+</body>
+</html>
