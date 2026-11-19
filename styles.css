@@ -181,3 +181,62 @@ th { background-color: var(--ij-azul-fuerte); color: #FFFFFF; }
     table { min-width: 500px; } 
     .login-container { padding: 30px 20px; }
 }
+/* =========================================
+   Mejoras visuales 2026-11-19 (sin cambio de paleta)
+   1) Navegación fija con pista de desplazamiento
+   2) Banner compacto en pantallas chicas
+   4) Columna de hora fija en el horario
+   5) Contraste del texto secundario y pila tipográfica
+   6) Encabezados de tabla consistentes en modo oscuro
+   ========================================= */
+
+/* 5 · Tipografía predecible y mejor contraste del texto secundario */
+:root {
+    --texto-claro: #52637A;
+    --fuente-app: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+[data-theme="dark"] {
+    --texto-claro: #B3BECB;
+}
+
+/* 1 · Navegación siempre visible al hacer scroll */
+.app-nav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+}
+
+@media screen and (max-width: 767px) {
+    /* 1 · Pista visual de que hay más botones a la derecha */
+    .app-nav {
+        -webkit-mask-image: linear-gradient(to right, #000 96%, transparent 100%);
+        mask-image: linear-gradient(to right, #000 96%, transparent 100%);
+    }
+    /* 2 · Banner compacto en móvil */
+    .header-image {
+        max-height: 110px;
+    }
+}
+
+/* 4 · Columna de hora fija al desplazar el horario horizontalmente */
+.schedule-table .time-col {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+.schedule-table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+}
+[data-theme="dark"] .schedule-table .time-col {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+/* 6 · Encabezados de tabla con el acento del tema oscuro */
+[data-theme="dark"] th,
+[data-theme="dark"] .schedule-table th {
+    background-color: #08203F;
+    color: var(--ij-celeste);
+}
