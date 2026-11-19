@@ -4,17 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Agenda - Ag lucem</title>
-    
+
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
     <link rel="stylesheet" href="/Agenda/styles.css">
     <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ag lucem">
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Cuadrícula de accesos rápidos (2x2 en móvil, 4 columnas en tablet/PC) */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        @media (min-width: 600px) {
+            .quick-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .quick-btn {
+            padding: 16px 10px;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            min-height: 92px;
+            border-radius: 18px;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .quick-btn:active {
+            transform: scale(0.96);
+        }
+
+        .quick-emoji {
+            font-size: 1.85rem;
+            line-height: 1;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .quick-badge {
+            font-size: 1.75rem;
+            font-weight: 900;
+            font-family: monospace;
+            line-height: 1;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* Paneles desplegables (Pomodoro, Notas, Hábitos) */
+        .tool-panel {
+            margin-bottom: 22px;
+            padding: 20px;
+            background: var(--blanco, #FFFFFF);
+            border-top: 4px solid var(--ij-azul-fuerte, #032A60);
+            animation: slideDown 0.25s ease;
+        }
+
+        .tool-panel.hidden {
+            display: none !important;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-pomodoro { border-top-color: var(--ij-magenta, #D31A52); text-align: center; }
+        .panel-notas { border-top-color: var(--ij-amarillo, #FFD100); }
+        .panel-habitos { border-top-color: var(--ij-verde, #009944); }
+
+        .panel-title {
+            margin: 0 0 6px 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .panel-subtitle {
+            font-size: 0.85rem;
+            color: var(--texto-claro, #64748B);
+            margin: 0 0 14px 0;
+        }
+
+        /* Temporizador Pomodoro */
+        .timer-display {
+            font-size: 3.4rem;
+            font-weight: 800;
+            margin: 12px 0 18px;
+            font-family: monospace;
+            letter-spacing: 2px;
+            color: var(--texto-oscuro, #1E293B);
+        }
+
+        .timer-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        @media (min-width: 520px) {
+            .timer-controls {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .timer-btn {
+            padding: 11px 10px;
+            font-size: 0.9rem;
+            flex-direction: row;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        /* Bloc de Notas */
+        .quick-notes-area {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 130px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1.5px solid var(--borde, #E2E8F0);
+            font-family: var(--fuente-app, inherit);
+            background: var(--fondo-app, #F5F7FA);
+            color: var(--texto-oscuro, #1E293B);
+            font-size: 0.98rem;
+            line-height: 1.45;
+            resize: vertical;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .quick-notes-area:focus {
+            outline: none;
+            border-color: var(--ij-amarillo, #FFD100);
+            background: var(--blanco, #FFFFFF);
+        }
+
+        /* Subtítulos de secciones */
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--ij-azul-fuerte, #032A60);
+            margin: 0 0 10px 4px;
+        }
+
+        .subsection-title.muted {
+            color: var(--texto-claro, #64748B);
+        }
+
+        /* Top 3 Prioridades */
+        .priorities-card {
+            margin-bottom: 24px;
+            padding: 14px 16px;
+            background: var(--blanco, #FFFFFF);
+        }
+
+        .priority-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--borde, #E2E8F0);
+        }
+
+        .priority-row:last-child {
+            border-bottom: none;
+        }
+
+        .prio-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            color: #FFFFFF;
+        }
+
+        .prio-1 { background: var(--ij-magenta, #D31A52); }
+        .prio-2 { background: var(--ij-amarillo, #FFD100); color: #1E293B; }
+        .prio-3 { background: var(--ij-verde, #009944); }
+
+        .priorities-card .task-input {
+            padding: 6px 4px;
+            width: 100%;
+        }
+
+        .priorities-card .task-input:focus {
+            border-bottom: 2px solid var(--ij-celeste, #00A8FF);
+        }
+    </style>
 </head>
 <body>
     <header class="app-header">
@@ -33,70 +231,74 @@
 
     <main class="app-main">
         <h2 class="section-title">Centro de Productividad</h2>
-        
+
         <!-- Panel Superior: Menú de Herramientas Rápidas -->
-        <div class="button-grid" style="margin-bottom: 20px;">
-            <a href="https://calendar.google.com/" target="_blank" class="app-btn" style="padding: 15px; font-size: 1rem; text-align: center; background: linear-gradient(135deg, #00A8FF, #032A60); color: #FFF;">
-                <span style="font-size: 1.8rem; margin-bottom: 5px;">📅</span> Agenda
+        <div class="quick-grid">
+            <a href="https://mago-del-caos.github.io/calendarioIJEM/" target="_blank" rel="noopener noreferrer" class="app-btn btn-blue quick-btn">
+                <span class="quick-emoji">📅</span>
+                <span>Agenda</span>
             </a>
-            <button id="btnPomodoro" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #FF4D79, #D31A52); color: #FFF;">
-                <span style="font-size: 1.8rem; margin-bottom: 5px;">🍅</span> Enfoque
+            <button type="button" id="btnPomodoro" class="app-btn btn-magenta quick-btn">
+                <span class="quick-emoji">🍅</span>
+                <span>Enfoque</span>
             </button>
-            <button id="btnNotas" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #FFE047, #FFD100); color: #1E293B;">
-                <span style="font-size: 1.8rem; margin-bottom: 5px;">📝</span> Notas
+            <button type="button" id="btnNotas" class="app-btn btn-yellow quick-btn">
+                <span class="quick-emoji">📝</span>
+                <span>Notas</span>
             </button>
-            <button id="btnHabitos" class="app-btn" style="padding: 15px; font-size: 1rem; border: none; cursor: pointer; background: linear-gradient(135deg, #00C65A, #009944); color: #FFF;">
-                <span style="font-size: 1.8rem; margin-bottom: 5px; font-weight: 900; font-family: monospace;">33</span> Hábitos
+            <button type="button" id="btnHabitos" class="app-btn btn-green quick-btn">
+                <span class="quick-badge">33</span>
+                <span>Hábitos</span>
             </button>
         </div>
 
         <!-- Panel: Temporizador Pomodoro -->
-        <div id="panelPomodoro" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; text-align: center; background: var(--blanco);">
-            <h3 style="margin-top: 0; color: var(--ij-magenta);">Técnica Pomodoro</h3>
-            <div id="timerDisplay" style="font-size: 3.5rem; font-weight: bold; margin: 10px 0; font-family: monospace; color: var(--texto-oscuro);">25:00</div>
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                <button id="btnStartTimer" class="app-btn btn-green" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">▶ Iniciar</button>
-                <button id="btnPauseTimer" class="app-btn btn-yellow" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">⏸ Pausa</button>
-                <button id="btnResetTimer" class="app-btn btn-magenta" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">🔄 25 min</button>
-                <button id="btnDescanso" class="app-btn btn-blue" style="padding: 10px; font-size: 0.9rem; flex-direction: row; flex: 1; min-width: 100px;">☕ 5 min</button>
+        <section id="panelPomodoro" class="card-elevation tool-panel panel-pomodoro hidden" aria-label="Temporizador Pomodoro">
+            <h3 class="panel-title" style="color: var(--ij-magenta, #D31A52);">Técnica Pomodoro</h3>
+            <div id="timerDisplay" class="timer-display">25:00</div>
+            <div class="timer-controls">
+                <button type="button" id="btnStartTimer" class="app-btn btn-green timer-btn">▶ Iniciar</button>
+                <button type="button" id="btnPauseTimer" class="app-btn btn-yellow timer-btn">⏸ Pausa</button>
+                <button type="button" id="btnResetTimer" class="app-btn btn-magenta timer-btn">🔄 25 min</button>
+                <button type="button" id="btnDescanso" class="app-btn btn-blue timer-btn">☕ 5 min</button>
             </div>
-        </div>
+        </section>
 
         <!-- Panel: Bloc de Notas -->
-        <div id="panelNotas" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; background: var(--blanco);">
-            <h3 style="margin-top: 0; color: #FFD100;">Notas Rápidas</h3>
-            <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 10px;">Se guardan automáticamente.</p>
-            <textarea id="quickNotes" style="width: 100%; height: 120px; padding: 12px; border-radius: 8px; border: 1px solid var(--borde); font-family: var(--fuente-app); background: var(--fondo-app); color: var(--texto-oscuro); font-size: 1rem; resize: vertical;" placeholder="Escribe ideas sueltas, enlaces o recordatorios..."></textarea>
-        </div>
+        <section id="panelNotas" class="card-elevation tool-panel panel-notas hidden" aria-label="Notas Rápidas">
+            <h3 class="panel-title" style="color: #B89600;">Notas Rápidas</h3>
+            <p class="panel-subtitle">Se guardan automáticamente en tu dispositivo.</p>
+            <textarea id="quickNotes" class="quick-notes-area" placeholder="Escribe ideas sueltas, enlaces o recordatorios..."></textarea>
+        </section>
 
         <!-- Panel: Rastreador de Hábitos -->
-        <div id="panelHabitos" class="card-elevation hidden" style="margin-bottom: 20px; padding: 20px; background: var(--blanco);">
-            <h3 style="margin-top: 0; color: var(--ij-verde);">Reto: 33 Días</h3>
-            <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 15px;">Escribe un hábito y suma +1 cada día que lo cumplas.</p>
+        <section id="panelHabitos" class="card-elevation tool-panel panel-habitos hidden" aria-label="Reto de 33 días">
+            <h3 class="panel-title" style="color: var(--ij-verde, #009944);">Reto: 33 Días</h3>
+            <p class="panel-subtitle">Escribe un hábito y suma +1 cada día que lo cumplas.</p>
             <div id="habitosContainer">
-                <!-- Se inyectan desde script.js para no repetir código HTML -->
+                <!-- Se inyectan desde script.js -->
             </div>
-        </div>
+        </section>
 
-        <!-- ⭐ Top 3 Prioridades -->
-        <h3 style="font-size: 1.1rem; color: var(--ij-azul-fuerte); margin-bottom: 10px;">⭐ Las 3 prioridades de hoy</h3>
-        <div class="card-elevation" style="margin-bottom: 20px; padding: 15px; background: var(--blanco);">
-            <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                <span style="font-size: 1.3rem; margin-right: 10px; font-weight: bold; color: var(--ij-magenta);">1.</span>
-                <input type="text" id="prio1" class="task-input" placeholder="Lo más urgente e importante..." style="font-weight: bold;">
+        <!-- Top 3 Prioridades -->
+        <h3 class="subsection-title">⭐ Las 3 prioridades de hoy</h3>
+        <div class="card-elevation priorities-card">
+            <div class="priority-row">
+                <span class="prio-badge prio-1">1</span>
+                <input type="text" id="prio1" class="task-input" placeholder="Lo más urgente e importante..." style="font-weight: 700;">
             </div>
-            <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                <span style="font-size: 1.3rem; margin-right: 10px; font-weight: bold; color: var(--ij-amarillo);">2.</span>
+            <div class="priority-row">
+                <span class="prio-badge prio-2">2</span>
                 <input type="text" id="prio2" class="task-input" placeholder="Segunda tarea clave...">
             </div>
-            <div style="display: flex; align-items: center;">
-                <span style="font-size: 1.3rem; margin-right: 10px; font-weight: bold; color: var(--ij-verde);">3.</span>
+            <div class="priority-row">
+                <span class="prio-badge prio-3">3</span>
                 <input type="text" id="prio3" class="task-input" placeholder="Tercera tarea clave...">
             </div>
         </div>
 
-        <!-- Lista de Pendientes (General) -->
-        <h3 style="font-size: 1.1rem; color: var(--texto-claro); margin-bottom: 10px;">📋 Otros pendientes:</h3>
+        <!-- Lista de Pendientes -->
+        <h3 class="subsection-title muted">📋 Otros pendientes</h3>
         <div class="card-elevation">
             <ul id="taskList" class="task-list">
                 <!-- Tareas inyectadas por JS -->
@@ -104,7 +306,7 @@
         </div>
     </main>
 
-    <button id="addTaskBtn" class="fab-button" title="Agregar Nueva Tarea">➕</button>
+    <button type="button" id="addTaskBtn" class="fab-button" title="Agregar Nueva Tarea" aria-label="Agregar Nueva Tarea">➕</button>
 
     <script src="/Agenda/script.js"></script>
 </body>
