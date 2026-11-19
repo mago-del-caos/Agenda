@@ -18,433 +18,479 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        :root {
-            --hud-dark: #071326;
-            --hud-panel: #0d1f3c;
-            --hud-border: rgba(0, 168, 255, 0.22);
-            --glow-cyan: 0 0 18px rgba(0, 168, 255, 0.28);
-            --glow-magenta: 0 0 18px rgba(211, 26, 82, 0.28);
-            --glow-green: 0 0 18px rgba(0, 153, 68, 0.28);
-            --glow-gold: 0 0 18px rgba(255, 209, 0, 0.28);
+        /* =========================================================
+           Centro de Productividad Ag lucem — Diseño de Alta Gama
+           Alineado a la identidad gráfica institucional
+           ========================================================= */
+        .prod-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 92px;
         }
 
-        /* Barra de telemetría superior de productividad */
-        .hud-banner {
-            background: linear-gradient(135deg, var(--hud-dark) 0%, var(--ij-azul-fuerte, #032A60) 65%, #0b2d5c 100%);
-            color: #FFFFFF;
-            border-radius: 20px;
-            padding: 18px 20px;
-            margin-bottom: 18px;
-            border: 1px solid var(--hud-border);
-            box-shadow: 0 12px 28px rgba(3, 42, 96, 0.18);
+        /* Tarjeta principal luminosa con acento superior tricolor/dorado */
+        .hero-card {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F9FBFF 100%);
+            border: 1px solid rgba(3, 42, 96, 0.1);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 10px 28px rgba(3, 42, 96, 0.07);
             position: relative;
             overflow: hidden;
         }
 
-        .hud-banner::after {
+        .hero-card::before {
             content: "";
             position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at top right, rgba(0, 168, 255, 0.2), transparent 55%);
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--ij-azul-fuerte, #032A60), var(--ij-celeste, #00A8FF), var(--ij-amarillo, #FFD100), var(--ij-verde, #009944));
         }
 
-        .hud-top-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hud-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            color: var(--ij-celeste, #00A8FF);
-            background: rgba(0, 168, 255, 0.12);
-            border: 1px solid rgba(0, 168, 255, 0.35);
-            padding: 5px 11px;
-            border-radius: 999px;
-        }
-
-        .hud-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--ij-verde, #009944);
-            box-shadow: 0 0 8px var(--ij-verde, #009944);
-            animation: pulseDot 1.8s infinite;
-        }
-
-        @keyframes pulseDot {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.35); opacity: 0.65; }
-        }
-
-        .hud-date {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.78);
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        .hud-title {
-            margin: 10px 0 6px;
-            font-size: 1.45rem;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hud-subtitle {
-            margin: 0 0 14px;
-            font-size: 0.88rem;
-            color: rgba(255, 255, 255, 0.75);
-            position: relative;
-            z-index: 1;
-        }
-
-        .hud-progress-wrap {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hud-progress-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--ij-amarillo, #FFD100);
-            margin-bottom: 6px;
-        }
-
-        .hud-progress-track {
-            width: 100%;
-            height: 8px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.14);
-            overflow: hidden;
-        }
-
-        .hud-progress-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, var(--ij-celeste, #00A8FF), var(--ij-amarillo, #FFD100), var(--ij-verde, #009944));
-            transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        /* Selector de técnicas (3 módulos dinámicos) */
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 520px) {
-            .tech-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .tech-card {
-            background: #FFFFFF;
-            border: 1.5px solid #E2E8F0;
-            border-radius: 18px;
-            padding: 16px 14px;
-            text-align: left;
-            cursor: pointer;
+        .hero-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+            flex-wrap: wrap;
+            margin-bottom: 10px;
         }
 
-        .tech-card:hover {
-            transform: translateY(-3px);
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--ij-azul-fuerte, #032A60);
+            background: rgba(0, 168, 255, 0.12);
+            border: 1px solid rgba(0, 168, 255, 0.25);
         }
 
-        .tech-card:active {
+        .hero-date {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--texto-claro, #64748B);
+            text-transform: capitalize;
+        }
+
+        .hero-heading {
+            margin: 0 0 6px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--ij-azul-fuerte, #032A60);
+        }
+
+        .hero-sub {
+            margin: 0 0 18px;
+            font-size: 0.9rem;
+            line-height: 1.45;
+            color: var(--texto-claro, #64748B);
+        }
+
+        .focus-meter {
+            background: #F1F5F9;
+            border-radius: 14px;
+            padding: 12px 14px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .focus-meter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--ij-azul-fuerte, #032A60);
+            margin-bottom: 8px;
+        }
+
+        .focus-meter-count {
+            color: var(--ij-verde, #009944);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .focus-track {
+            height: 7px;
+            border-radius: 999px;
+            background: #DCE5F0;
+            overflow: hidden;
+        }
+
+        .focus-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--ij-celeste, #00A8FF), var(--ij-verde, #009944));
+            transition: width 0.35s ease;
+        }
+
+        /* Selector de técnicas estilo app nativa de alta gama */
+        .method-switcher {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 560px) {
+            .method-switcher {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .method-tile {
+            appearance: none;
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            text-align: left;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+            transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .method-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(3, 42, 96, 0.08);
+        }
+
+        .method-tile:active {
             transform: scale(0.98);
         }
 
-        .tech-card-left {
+        .method-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .tech-icon-box {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
+        .method-orb {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            font-size: 1.25rem;
             font-weight: 900;
             flex-shrink: 0;
         }
 
-        .tech-pomodoro .tech-icon-box {
-            background: rgba(211, 26, 82, 0.12);
+        .tile-pomodoro .method-orb {
+            background: rgba(211, 26, 82, 0.1);
             color: var(--ij-magenta, #D31A52);
         }
 
-        .tech-notas .tech-icon-box {
+        .tile-notas .method-orb {
             background: rgba(255, 209, 0, 0.22);
-            color: #9A7B00;
+            color: #8A6D00;
         }
 
-        .tech-habitos .tech-icon-box {
-            background: rgba(0, 153, 68, 0.14);
+        .tile-habitos .method-orb {
+            background: rgba(0, 153, 68, 0.12);
             color: var(--ij-verde, #009944);
             font-family: monospace;
         }
 
-        .tech-name {
+        .method-title {
             display: block;
             font-size: 0.98rem;
             font-weight: 800;
             color: #0F172A;
         }
 
-        .tech-method {
+        .method-desc {
             display: block;
-            font-size: 0.74rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #64748B;
             margin-top: 2px;
         }
 
-        .tech-chevron {
-            font-size: 0.85rem;
+        .method-indicator {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.8rem;
             font-weight: 800;
             color: #94A3B8;
-            transition: transform 0.2s ease, color 0.2s ease;
+            background: #F8FAFC;
+            transition: all 0.2s ease;
         }
 
-        .tech-card.is-open.tech-pomodoro {
+        .method-tile.active.tile-pomodoro {
             border-color: var(--ij-magenta, #D31A52);
-            box-shadow: var(--glow-magenta);
+            background: #FFFBFD;
+        }
+        .method-tile.active.tile-pomodoro .method-indicator {
+            background: var(--ij-magenta, #D31A52);
+            color: #FFFFFF;
         }
 
-        .tech-card.is-open.tech-notas {
-            border-color: var(--ij-amarillo, #FFD100);
-            box-shadow: var(--glow-gold);
+        .method-tile.active.tile-notas {
+            border-color: #EAB308;
+            background: #FFFDF5;
+        }
+        .method-tile.active.tile-notas .method-indicator {
+            background: var(--ij-amarillo, #FFD100);
+            color: #0F172A;
         }
 
-        .tech-card.is-open.tech-habitos {
+        .method-tile.active.tile-habitos {
             border-color: var(--ij-verde, #009944);
-            box-shadow: var(--glow-green);
+            background: #F6FCF9;
+        }
+        .method-tile.active.tile-habitos .method-indicator {
+            background: var(--ij-verde, #009944);
+            color: #FFFFFF;
         }
 
-        .tech-card.is-open .tech-chevron {
-            transform: rotate(90deg);
-            color: var(--ij-azul-fuerte, #032A60);
-        }
-
-        /* Paneles desplegables de alta precisión */
-        .tech-panel {
+        /* Paneles desplegables con acabado editorial limpio */
+        .drawer-card {
             background: #FFFFFF;
             border-radius: 20px;
             padding: 20px;
-            margin-bottom: 22px;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07);
-            animation: panelReveal 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+            animation: drawerIn 0.22s ease;
         }
 
-        .tech-panel.hidden {
+        .drawer-card.hidden {
             display: none !important;
         }
 
-        @keyframes panelReveal {
-            from { opacity: 0; transform: translateY(-8px) scale(0.99); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes drawerIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .panel-header-bar {
+        .drawer-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
             border-bottom: 1px solid #F1F5F9;
         }
 
-        .panel-badge {
-            font-size: 0.7rem;
+        .drawer-head h3 {
+            margin: 0;
+            font-size: 1.05rem;
             font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: #F1F5F9;
             color: var(--ij-azul-fuerte, #032A60);
         }
 
-        .pomodoro-core {
-            text-align: center;
-            padding: 8px 0 4px;
+        .drawer-pill {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #F1F5F9;
+            color: #475569;
         }
 
-        .pomodoro-ring {
+        /* Pomodoro refinado */
+        .pomo-stage {
+            text-align: center;
+        }
+
+        .pomo-clock-box {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-width: 190px;
-            padding: 16px 26px;
-            border-radius: 24px;
-            background: linear-gradient(180deg, #FFF5F8 0%, #FFFFFF 100%);
-            border: 2px solid rgba(211, 26, 82, 0.25);
-            margin: 6px 0 16px;
+            padding: 16px 32px;
+            border-radius: 22px;
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+            margin-bottom: 16px;
         }
 
-        .pomodoro-mode-label {
+        .pomo-phase {
             font-size: 0.72rem;
             font-weight: 800;
-            letter-spacing: 1.4px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
             color: var(--ij-magenta, #D31A52);
             margin-bottom: 4px;
         }
 
         #timerDisplay {
-            font-size: 3.2rem;
+            font-size: 3.1rem;
             font-weight: 900;
             line-height: 1.05;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             color: var(--ij-azul-fuerte, #032A60);
         }
 
-        .pomodoro-actions {
+        .pomo-grid-btns {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
 
         @media (min-width: 540px) {
-            .pomodoro-actions {
+            .pomo-grid-btns {
                 grid-template-columns: repeat(4, 1fr);
             }
         }
 
-        .pomo-btn {
+        .pomo-action {
             border: none;
-            border-radius: 14px;
-            padding: 12px 10px;
-            font-weight: 800;
+            border-radius: 13px;
+            padding: 11px 12px;
             font-size: 0.88rem;
+            font-weight: 800;
             cursor: pointer;
-            transition: transform 0.15s ease, filter 0.2s ease;
+            transition: transform 0.14s ease, filter 0.18s ease;
         }
 
-        .pomo-btn:hover { filter: brightness(1.04); transform: translateY(-1px); }
-        .pomo-btn:active { transform: scale(0.97); }
+        .pomo-action:hover { filter: brightness(1.04); transform: translateY(-1px); }
+        .pomo-action:active { transform: scale(0.97); }
 
-        .pomo-start { background: var(--ij-verde, #009944); color: #FFF; }
-        .pomo-pause { background: var(--ij-amarillo, #FFD100); color: #0F172A; }
-        .pomo-reset { background: var(--ij-magenta, #D31A52); color: #FFF; }
-        .pomo-break { background: var(--ij-celeste, #00A8FF); color: #FFF; }
+        .act-start { background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); color: #FFF; }
+        .act-pause { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); color: #0F172A; }
+        .act-reset { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta, #D31A52)); color: #FFF; }
+        .act-break { background: linear-gradient(135deg, var(--ij-celeste, #00A8FF), var(--ij-azul-fuerte, #032A60)); color: #FFF; }
 
-        .notes-textarea {
+        /* Bloc de notas con acabado de papel limpio */
+        .notes-box {
             width: 100%;
             box-sizing: border-box;
-            min-height: 130px;
+            min-height: 135px;
             padding: 14px;
             border-radius: 14px;
             border: 1.5px solid #E2E8F0;
-            background: #F8FAFC;
+            background: #FCFDFE;
             color: #0F172A;
             font-size: 0.96rem;
-            line-height: 1.5;
+            line-height: 1.55;
             resize: vertical;
-            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .notes-textarea:focus {
+        .notes-box:focus {
             outline: none;
-            background: #FFFFFF;
             border-color: var(--ij-celeste, #00A8FF);
-            box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.14);
         }
 
-        /* Secciones de ejecución diaria: MITs y Pendientes */
-        .section-kicker {
+        .notes-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #64748B;
+        }
+
+        /* Hábitos 33 días: estilos limpios para elementos inyectados por script.js */
+        #habitosContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #habitosContainer input[type="text"] {
+            border-radius: 10px;
+            border: 1.5px solid #E2E8F0;
+            padding: 8px 10px;
+            font-size: 0.92rem;
+            color: #0F172A;
+            background: #F8FAFC;
+        }
+
+        #habitosContainer input[type="text"]:focus {
+            outline: none;
+            border-color: var(--ij-verde, #009944);
+            background: #FFFFFF;
+        }
+
+        #habitosContainer button {
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Bloques de ejecución: Prioridades MIT y Pendientes */
+        .block-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 20px 2px 10px;
+            margin-bottom: 10px;
+            padding: 0 2px;
         }
 
-        .section-kicker h3 {
+        .block-header h3 {
             margin: 0;
-            font-size: 1rem;
+            font-size: 1.02rem;
             font-weight: 800;
             color: var(--ij-azul-fuerte, #032A60);
-            letter-spacing: 0.2px;
         }
 
-        .section-kicker span {
+        .block-meta {
             font-size: 0.72rem;
             font-weight: 700;
-            color: #64748B;
+            letter-spacing: 0.6px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            color: #64748B;
         }
 
-        .mit-card {
+        .mit-surface {
             background: #FFFFFF;
             border-radius: 20px;
-            padding: 10px 16px;
+            padding: 8px 16px;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
         }
 
-        .mit-item {
+        .mit-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 11px 4px;
+            padding: 11px 2px;
             border-bottom: 1px solid #F1F5F9;
         }
 
-        .mit-item:last-child {
+        .mit-row:last-child {
             border-bottom: none;
         }
 
-        .mit-rank {
+        .mit-tag {
             width: 30px;
             height: 30px;
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+            font-size: 0.82rem;
             font-weight: 900;
             flex-shrink: 0;
-            color: #FFFFFF;
         }
 
-        .rank-1 { background: linear-gradient(135deg, #FF4D79, var(--ij-magenta, #D31A52)); }
-        .rank-2 { background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); color: #0F172A; }
-        .rank-3 { background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); }
+        .mit-tag-1 { background: rgba(211, 26, 82, 0.14); color: var(--ij-magenta, #D31A52); }
+        .mit-tag-2 { background: rgba(255, 209, 0, 0.25); color: #8A6D00; }
+        .mit-tag-3 { background: rgba(0, 153, 68, 0.14); color: var(--ij-verde, #009944); }
 
-        .mit-item .task-input {
+        .mit-row .task-input {
             width: 100%;
             border: none;
             background: transparent;
@@ -453,23 +499,17 @@
             padding: 6px 4px;
         }
 
-        .mit-item .task-input:focus {
+        .mit-row .task-input:focus {
             outline: none;
             border-bottom: 2px solid var(--ij-celeste, #00A8FF);
         }
 
-        .tasks-shell {
+        .pending-surface {
             background: #FFFFFF;
             border-radius: 20px;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
             overflow: hidden;
-            margin-bottom: 84px;
-        }
-
-        #addTaskBtn {
-            box-shadow: 0 10px 24px rgba(211, 26, 82, 0.38);
-            border: 2px solid rgba(255, 255, 255, 0.85);
         }
     </style>
 </head>
@@ -488,132 +528,138 @@
         <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
     </nav>
 
-    <main class="app-main">
-        <!-- Cabecera Tecnológica de Enfoque y Progreso -->
-        <section class="hud-banner" aria-label="Estado de productividad">
-            <div class="hud-top-row">
-                <span class="hud-tag">
-                    <span class="hud-dot"></span>
-                    SISTEMA DE ENFOQUE ACTIVO
-                </span>
-                <span id="hudFecha" class="hud-date"></span>
+    <main class="app-main prod-shell">
+        <!-- Encabezado Editorial de Alta Gama -->
+        <section class="hero-card" aria-label="Resumen de productividad">
+            <div class="hero-top">
+                <span class="hero-badge">✦ Centro de Productividad</span>
+                <span id="fechaHoy" class="hero-date"></span>
             </div>
-            <h2 class="hud-title">Centro de Productividad</h2>
-            <p class="hud-subtitle">Ejecución por bloques, captura rápida y constancia de 33 días.</p>
-            <div class="hud-progress-wrap">
-                <div class="hud-progress-meta">
-                    <span>PROGRESO DE PRIORIDADES MIT</span>
-                    <span id="mitProgressLabel">0 / 3</span>
+            <h2 class="hero-heading">Enfoque y Ejecución Diaria</h2>
+            <p class="hero-sub">Organiza tus prioridades clave, trabaja por intervalos y sostén tus hábitos día a día.</p>
+
+            <div class="focus-meter">
+                <div class="focus-meter-header">
+                    <span>Prioridades del día definidas</span>
+                    <span id="mitCounter" class="focus-meter-count">0 / 3</span>
                 </div>
-                <div class="hud-progress-track">
-                    <div id="mitProgressBar" class="hud-progress-fill"></div>
+                <div class="focus-track">
+                    <div id="mitBar" class="focus-fill"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Módulos de Técnicas de Productividad -->
-        <div class="tech-grid">
-            <button type="button" id="btnPomodoro" class="tech-card tech-pomodoro" aria-expanded="false" aria-controls="panelPomodoro">
-                <div class="tech-card-left">
-                    <span class="tech-icon-box">🍅</span>
-                    <div>
-                        <span class="tech-name">Enfoque</span>
-                        <span class="tech-method">Pomodoro 25/5</span>
-                    </div>
-                </div>
-                <span class="tech-chevron">›</span>
+        <!-- Selector Limpio de Técnicas -->
+        <div class="method-switcher" role="group" aria-label="Técnicas de productividad">
+            <button type="button" id="btnPomodoro" class="method-tile tile-pomodoro" aria-expanded="false" aria-controls="panelPomodoro">
+                <span class="method-left">
+                    <span class="method-orb">🍅</span>
+                    <span>
+                        <span class="method-title">Enfoque</span>
+                        <span class="method-desc">Pomodoro 25 / 5</span>
+                    </span>
+                </span>
+                <span class="method-indicator">+</span>
             </button>
 
-            <button type="button" id="btnNotas" class="tech-card tech-notas" aria-expanded="false" aria-controls="panelNotas">
-                <div class="tech-card-left">
-                    <span class="tech-icon-box">⚡</span>
-                    <div>
-                        <span class="tech-name">Notas</span>
-                        <span class="tech-method">Captura Rápida</span>
-                    </div>
-                </div>
-                <span class="tech-chevron">›</span>
+            <button type="button" id="btnNotas" class="method-tile tile-notas" aria-expanded="false" aria-controls="panelNotas">
+                <span class="method-left">
+                    <span class="method-orb">📝</span>
+                    <span>
+                        <span class="method-title">Notas</span>
+                        <span class="method-desc">Captura rápida</span>
+                    </span>
+                </span>
+                <span class="method-indicator">+</span>
             </button>
 
-            <button type="button" id="btnHabitos" class="tech-card tech-habitos" aria-expanded="false" aria-controls="panelHabitos">
-                <div class="tech-card-left">
-                    <span class="tech-icon-box">33</span>
-                    <div>
-                        <span class="tech-name">Hábitos</span>
-                        <span class="tech-method">Ciclo 33 Días</span>
-                    </div>
-                </div>
-                <span class="tech-chevron">›</span>
+            <button type="button" id="btnHabitos" class="method-tile tile-habitos" aria-expanded="false" aria-controls="panelHabitos">
+                <span class="method-left">
+                    <span class="method-orb">33</span>
+                    <span>
+                        <span class="method-title">Hábitos</span>
+                        <span class="method-desc">Constancia 33 días</span>
+                    </span>
+                </span>
+                <span class="method-indicator">+</span>
             </button>
         </div>
 
         <!-- Panel: Temporizador Pomodoro -->
-        <section id="panelPomodoro" class="tech-panel hidden" aria-label="Temporizador Pomodoro">
-            <div class="panel-header-bar">
-                <strong style="color: var(--ij-magenta, #D31A52); font-size: 1rem;">⏱️ Cronómetro de Enfoque</strong>
-                <span class="panel-badge">Deep Work</span>
+        <section id="panelPomodoro" class="drawer-card hidden" aria-label="Temporizador Pomodoro">
+            <div class="drawer-head">
+                <h3>🍅 Temporizador Pomodoro</h3>
+                <span class="drawer-pill">Intervalos</span>
             </div>
-            <div class="pomodoro-core">
-                <div class="pomodoro-ring">
-                    <span id="pomodoroModo" class="pomodoro-mode-label">SESIÓN DE ENFOQUE</span>
+            <div class="pomo-stage">
+                <div class="pomo-clock-box">
+                    <span id="pomoEtiqueta" class="pomo-phase">Bloque de enfoque</span>
                     <div id="timerDisplay">25:00</div>
                 </div>
-                <div class="pomodoro-actions">
-                    <button type="button" id="btnStartTimer" class="pomo-btn pomo-start">▶ Iniciar</button>
-                    <button type="button" id="btnPauseTimer" class="pomo-btn pomo-pause">⏸ Pausa</button>
-                    <button type="button" id="btnResetTimer" class="pomo-btn pomo-reset">🔄 25 min</button>
-                    <button type="button" id="btnDescanso" class="pomo-btn pomo-break">☕ 5 min</button>
+                <div class="pomo-grid-btns">
+                    <button type="button" id="btnStartTimer" class="pomo-action act-start">▶ Iniciar</button>
+                    <button type="button" id="btnPauseTimer" class="pomo-action act-pause">⏸ Pausa</button>
+                    <button type="button" id="btnResetTimer" class="pomo-action act-reset">🔄 25 min</button>
+                    <button type="button" id="btnDescanso" class="pomo-action act-break">☕ 5 min</button>
                 </div>
             </div>
         </section>
 
-        <!-- Panel: Bloc de Notas -->
-        <section id="panelNotas" class="tech-panel hidden" aria-label="Notas Rápidas">
-            <div class="panel-header-bar">
-                <strong style="color: var(--ij-azul-fuerte, #032A60); font-size: 1rem;">⚡ Brain Dump / Notas</strong>
-                <span class="panel-badge">Auto-guardado</span>
+        <!-- Panel: Notas Rápidas -->
+        <section id="panelNotas" class="drawer-card hidden" aria-label="Notas Rápidas">
+            <div class="drawer-head">
+                <h3>📝 Notas Rápidas</h3>
+                <span class="drawer-pill">Guardado automático</span>
             </div>
-            <textarea id="quickNotes" class="notes-textarea" placeholder="Vacía aquí ideas, recordatorios de clase o enlaces sin perder el hilo..."></textarea>
+            <textarea id="quickNotes" class="notes-box" placeholder="Anota ideas, acuerdos, recordatorios o enlaces clave..."></textarea>
+            <div class="notes-footer">
+                <span>Sincronizado en tu navegador</span>
+                <span id="notesChars">0 caracteres</span>
+            </div>
         </section>
 
-        <!-- Panel: Rastreador de Hábitos -->
-        <section id="panelHabitos" class="tech-panel hidden" aria-label="Reto de 33 días">
-            <div class="panel-header-bar">
-                <strong style="color: var(--ij-verde, #009944); font-size: 1rem;">🔥 Reto de Constancia: 33 Días</strong>
-                <span class="panel-badge">+1 Diario</span>
+        <!-- Panel: Rastreador de Hábitos (33 Días) -->
+        <section id="panelHabitos" class="drawer-card hidden" aria-label="Reto de 33 días">
+            <div class="drawer-head">
+                <h3>🌱 Reto de 33 Días</h3>
+                <span class="drawer-pill">Progreso diario</span>
             </div>
-            <p style="font-size: 0.84rem; color: #64748B; margin: 0 0 14px;">Define tu hábito y suma +1 cada día completado.</p>
+            <p style="font-size: 0.85rem; color: #64748B; margin: 0 0 14px;">Registra un hábito y suma +1 cada día que lo completes.</p>
             <div id="habitosContainer"></div>
         </section>
 
-        <!-- Técnica MIT: Las 3 Prioridades Clave -->
-        <div class="section-kicker">
-            <h3>🎯 Top 3 Prioridades (MIT)</h3>
-            <span>Alto Impacto</span>
-        </div>
-        <div class="mit-card">
-            <div class="mit-item">
-                <span class="mit-rank rank-1">01</span>
-                <input type="text" id="prio1" class="task-input mit-field" placeholder="Objetivo principal del día..." style="font-weight: 700;">
+        <!-- Top 3 Prioridades del Día -->
+        <section aria-label="Las 3 prioridades de hoy">
+            <div class="block-header">
+                <h3>⭐ Las 3 prioridades de hoy</h3>
+                <span class="block-meta">Enfoque esencial</span>
             </div>
-            <div class="mit-item">
-                <span class="mit-rank rank-2">02</span>
-                <input type="text" id="prio2" class="task-input mit-field" placeholder="Segunda prioridad clave...">
+            <div class="mit-surface">
+                <div class="mit-row">
+                    <span class="mit-tag mit-tag-1">1</span>
+                    <input type="text" id="prio1" class="task-input" placeholder="Lo más importante para hoy..." style="font-weight: 700;">
+                </div>
+                <div class="mit-row">
+                    <span class="mit-tag mit-tag-2">2</span>
+                    <input type="text" id="prio2" class="task-input" placeholder="Segunda prioridad del día...">
+                </div>
+                <div class="mit-row">
+                    <span class="mit-tag mit-tag-3">3</span>
+                    <input type="text" id="prio3" class="task-input" placeholder="Tercera prioridad del día...">
+                </div>
             </div>
-            <div class="mit-item">
-                <span class="mit-rank rank-3">03</span>
-                <input type="text" id="prio3" class="task-input mit-field" placeholder="Tercera prioridad clave...">
-            </div>
-        </div>
+        </section>
 
         <!-- Lista de Pendientes -->
-        <div class="section-kicker">
-            <h3>📋 Cola de Pendientes</h3>
-            <span>Ejecución</span>
-        </div>
-        <div class="tasks-shell">
-            <ul id="taskList" class="task-list"></ul>
-        </div>
+        <section aria-label="Otros pendientes">
+            <div class="block-header">
+                <h3>📋 Otros pendientes</h3>
+                <span class="block-meta">Lista de tareas</span>
+            </div>
+            <div class="pending-surface">
+                <ul id="taskList" class="task-list"></ul>
+            </div>
+        </section>
     </main>
 
     <button type="button" id="addTaskBtn" class="fab-button" title="Agregar Nueva Tarea" aria-label="Agregar Nueva Tarea">➕</button>
@@ -621,72 +667,88 @@
     <script src="/Agenda/script.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Fecha actual en la barra HUD
-            const hudFecha = document.getElementById("hudFecha");
-            if (hudFecha) {
-                hudFecha.textContent = new Date().toLocaleDateString("es-MX", {
+            const fechaEl = document.getElementById("fechaHoy");
+            if (fechaEl) {
+                fechaEl.textContent = new Date().toLocaleDateString("es-MX", {
                     weekday: "long",
                     day: "numeric",
-                    month: "short"
+                    month: "long"
                 });
             }
 
-            // Estado visual activo en tarjetas de técnicas
-            const mapPanels = [
-                { btn: "btnPomodoro", panel: "panelPomodoro", modoLabel: "SESIÓN DE ENFOQUE" },
+            // Sincronizar estado visual de las tarjetas con los paneles abiertos/cerrados
+            const tiles = [
+                { btn: "btnPomodoro", panel: "panelPomodoro" },
                 { btn: "btnNotas", panel: "panelNotas" },
                 { btn: "btnHabitos", panel: "panelHabitos" }
             ];
 
-            mapPanels.forEach(({ btn, panel }) => {
-                const b = document.getElementById(btn);
-                const p = document.getElementById(panel);
-                if (!b || !p) return;
+            tiles.forEach(({ btn, panel }) => {
+                const buttonEl = document.getElementById(btn);
+                const panelEl = document.getElementById(panel);
+                if (!buttonEl || !panelEl) return;
 
-                b.addEventListener("click", () => {
-                    setTimeout(() => {
-                        const isHidden = p.classList.contains("hidden");
-                        b.classList.toggle("is-open", !isHidden);
-                        b.setAttribute("aria-expanded", String(!isHidden));
-                    }, 20);
+                buttonEl.addEventListener("click", () => {
+                    requestAnimationFrame(() => {
+                        const opened = !panelEl.classList.contains("hidden");
+                        buttonEl.classList.toggle("active", opened);
+                        buttonEl.setAttribute("aria-expanded", String(opened));
+                        const indicator = buttonEl.querySelector(".method-indicator");
+                        if (indicator) indicator.textContent = opened ? "−" : "+";
+                    });
                 });
             });
 
-            // Etiqueta de modo en Pomodoro al cambiar a descanso o reset
-            const modoEl = document.getElementById("pomodoroModo");
+            // Etiqueta de fase en Pomodoro
+            const pomoEtiqueta = document.getElementById("pomoEtiqueta");
             const btnDescanso = document.getElementById("btnDescanso");
             const btnResetTimer = document.getElementById("btnResetTimer");
-            if (modoEl && btnDescanso) {
+            if (pomoEtiqueta && btnDescanso) {
                 btnDescanso.addEventListener("click", () => {
-                    modoEl.textContent = "PAUSA ACTIVA (5 MIN)";
-                    modoEl.style.color = "var(--ij-celeste, #00A8FF)";
+                    pomoEtiqueta.textContent = "Descanso breve (5 min)";
+                    pomoEtiqueta.style.color = "var(--ij-celeste, #00A8FF)";
                 });
             }
-            if (modoEl && btnResetTimer) {
+            if (pomoEtiqueta && btnResetTimer) {
                 btnResetTimer.addEventListener("click", () => {
-                    modoEl.textContent = "SESIÓN DE ENFOQUE";
-                    modoEl.style.color = "var(--ij-magenta, #D31A52)";
+                    pomoEtiqueta.textContent = "Bloque de enfoque";
+                    pomoEtiqueta.style.color = "var(--ij-magenta, #D31A52)";
                 });
             }
 
-            // Barra de progreso de las 3 prioridades (MIT)
-            const mitInputs = ["prio1", "prio2", "prio3"].map((id) => document.getElementById(id));
-            const progressBar = document.getElementById("mitProgressBar");
-            const progressLabel = document.getElementById("mitProgressLabel");
-
-            function updateMitProgress() {
-                const filled = mitInputs.filter((el) => el && el.value.trim().length > 0).length;
-                if (progressBar) progressBar.style.width = `${(filled / 3) * 100}%`;
-                if (progressLabel) progressLabel.textContent = `${filled} / 3`;
+            // Contador de caracteres en notas
+            const notesInput = document.getElementById("quickNotes");
+            const notesChars = document.getElementById("notesChars");
+            const updateCharCount = () => {
+                if (notesInput && notesChars) {
+                    notesChars.textContent = `${notesInput.value.length} caracteres`;
+                }
+            };
+            if (notesInput) {
+                notesInput.addEventListener("input", updateCharCount);
+                setTimeout(updateCharCount, 120);
             }
 
-            mitInputs.forEach((input) => {
-                if (!input) return;
-                input.addEventListener("input", updateMitProgress);
-                input.addEventListener("change", updateMitProgress);
+            // Progreso de las 3 prioridades
+            const prioIds = ["prio1", "prio2", "prio3"];
+            const mitBar = document.getElementById("mitBar");
+            const mitCounter = document.getElementById("mitCounter");
+            const updatePriorities = () => {
+                const count = prioIds.reduce((acc, id) => {
+                    const el = document.getElementById(id);
+                    return acc + (el && el.value.trim().length > 0 ? 1 : 0);
+                }, 0);
+                if (mitBar) mitBar.style.width = `${(count / 3) * 100}%`;
+                if (mitCounter) mitCounter.textContent = `${count} / 3`;
+            };
+            prioIds.forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("input", updatePriorities);
+                    el.addEventListener("change", updatePriorities);
+                }
             });
-
-            setTimeout(updateMitProgress, 120);
+            setTimeout(updatePriorities, 120);
         });
     </script>
 </body>
