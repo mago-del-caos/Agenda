@@ -62,6 +62,64 @@
 
         .news-weather b { color: #FFFFFF; }
 
+        .wx-edit {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            vertical-align: middle;
+        }
+
+        .wx-editor { flex-basis: 100%; margin-top: 4px; animation: news-despliegue 0.25s ease; }
+
+        .wx-editor-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .wx-input {
+            flex: 1;
+            min-width: 180px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            color: #1E293B;
+        }
+
+        .wx-btn {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 7px 13px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .wx-resultados { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+
+        .wx-opcion {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #FFFFFF;
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .wx-nota { font-size: 0.84rem; color: rgba(255, 255, 255, 0.8); }
+
         .news-band-top {
             display: flex;
             align-items: center;
@@ -251,7 +309,15 @@
         <section class="news-band" aria-label="Noticias de hoy">
             <div class="news-weather" aria-label="Clima de hoy">
                 <span id="wxNaucalpan">🌡️ <b>Naucalpan de Juárez</b>: cargando clima…</span>
-                <span id="wxTlatelolco">🌡️ <b>Nonoalco Tlatelolco</b>: cargando clima…</span>
+                <span><span id="wxLugar2">🌡️ <b>Nonoalco Tlatelolco</b>: cargando clima…</span> <button id="wxCambiar" class="wx-edit" type="button" title="Cambiar la segunda ubicación">✎ Cambiar</button></span>
+                <div class="wx-editor" id="wxEditor" hidden>
+                    <div class="wx-editor-row">
+                        <input id="wxBuscar" class="wx-input" type="text" placeholder="Escribe una ciudad o lugar…" autocomplete="off">
+                        <button id="wxGeo" class="wx-btn" type="button">📍 Mi ubicación</button>
+                        <button id="wxDefecto" class="wx-btn" type="button">Volver a Nonoalco</button>
+                    </div>
+                    <div id="wxResultados" class="wx-resultados"></div>
+                </div>
             </div>
             <div class="news-band-top">
                 <span class="news-label">📰 Noticias de hoy</span>
@@ -420,11 +486,8 @@
                 if (codigo >= 95) return ['⛈️', 'Tormenta'];
                 return ['🌡️', 'Sin dato'];
             }
-            [
-                { id: 'wxNaucalpan', nombre: 'Naucalpan de Juárez', lat: 19.4785, lon: -99.2396 },
-                { id: 'wxTlatelolco', nombre: 'Nonoalco Tlatelolco', lat: 19.4551, lon: -99.1416 }
-            ].forEach(function (l) {
-                var el = document.getElementById(l.id);
+            function pintarClima(el, l) {
+                el.innerHTML = '<b>' + escapar(l.nombre) + '</b> · cargando clima…';
                 var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + l.lat + '&longitude=' + l.lon +
                     '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FMexico_City&forecast_days=1';
                 fetch(url)
@@ -434,9 +497,90 @@
                         var desc = descripcionClima(d.current.weather_code);
                         var max = Math.round(d.daily.temperature_2m_max[0]);
                         var min = Math.round(d.daily.temperature_2m_min[0]);
-                        el.innerHTML = '<b>' + l.nombre + '</b> · ' + desc[0] + ' <b>' + ahora + '°</b> ahora · hoy ' + min + '°–' + max + '° · ' + desc[1];
+                        el.innerHTML = '<b>' + escapar(l.nombre) + '</b> · ' + desc[0] + ' <b>' + ahora + '°</b> ahora · hoy ' + min + '°–' + max + '° · ' + desc[1];
                     })
-                    .catch(function () { el.innerHTML = '<b>' + l.nombre + '</b> · clima no disponible'; });
+                    .catch(function () { el.innerHTML = '<b>' + escapar(l.nombre) + '</b> · clima no disponible'; });
+            }
+
+            // Primera ubicación, fija: Naucalpan de Juárez.
+            pintarClima(document.getElementById('wxNaucalpan'), { nombre: 'Naucalpan de Juárez', lat: 19.4785, lon: -99.2396 });
+
+            // Segunda ubicación: la elige el usuario; la de cajón es Nonoalco Tlatelolco.
+            var CLAVE_CLIMA2 = 'aglucem_clima_lugar2';
+            var LUGAR2_DEFECTO = { nombre: 'Nonoalco Tlatelolco', lat: 19.4551, lon: -99.1416 };
+            function lugar2() {
+                try {
+                    var g = JSON.parse(localStorage.getItem(CLAVE_CLIMA2) || 'null');
+                    if (g && g.nombre && typeof g.lat === 'number' && typeof g.lon === 'number') return g;
+                } catch (e) {}
+                return LUGAR2_DEFECTO;
+            }
+            function guardarLugar2(l) {
+                try {
+                    if (l) localStorage.setItem(CLAVE_CLIMA2, JSON.stringify(l));
+                    else localStorage.removeItem(CLAVE_CLIMA2);
+                } catch (e) {}
+                pintarClima(document.getElementById('wxLugar2'), lugar2());
+            }
+            pintarClima(document.getElementById('wxLugar2'), lugar2());
+
+            // Editor de la segunda ubicación: buscar por nombre o usar la del dispositivo
+            var wxEditor = document.getElementById('wxEditor');
+            var wxBuscar = document.getElementById('wxBuscar');
+            var wxResultados = document.getElementById('wxResultados');
+            document.getElementById('wxCambiar').addEventListener('click', function () {
+                wxEditor.hidden = !wxEditor.hidden;
+                if (!wxEditor.hidden) wxBuscar.focus();
+            });
+            var wxTemporizador = null;
+            wxBuscar.addEventListener('input', function () {
+                clearTimeout(wxTemporizador);
+                var q = wxBuscar.value.trim();
+                if (q.length < 3) { wxResultados.innerHTML = ''; return; }
+                wxTemporizador = setTimeout(function () {
+                    fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(q) + '&count=5&language=es&format=json')
+                        .then(function (r) { return r.json(); })
+                        .then(function (d) {
+                            var res = d.results || [];
+                            wxResultados.innerHTML = '';
+                            if (!res.length) {
+                                wxResultados.innerHTML = '<span class="wx-nota">Sin resultados para «' + escapar(q) + '».</span>';
+                                return;
+                            }
+                            res.forEach(function (x) {
+                                var etiqueta = x.name + (x.admin1 ? ', ' + x.admin1 : '') + (x.country ? ' · ' + x.country : '');
+                                var b = document.createElement('button');
+                                b.type = 'button';
+                                b.className = 'wx-opcion';
+                                b.textContent = '📍 ' + etiqueta;
+                                b.addEventListener('click', function () {
+                                    guardarLugar2({ nombre: x.name, lat: x.latitude, lon: x.longitude });
+                                    wxEditor.hidden = true;
+                                    wxBuscar.value = '';
+                                    wxResultados.innerHTML = '';
+                                });
+                                wxResultados.appendChild(b);
+                            });
+                        })
+                        .catch(function () { wxResultados.innerHTML = '<span class="wx-nota">No se pudo buscar. Revisa tu conexión.</span>'; });
+                }, 350);
+            });
+            document.getElementById('wxGeo').addEventListener('click', function () {
+                if (!navigator.geolocation) { wxResultados.innerHTML = '<span class="wx-nota">Este dispositivo no comparte ubicación.</span>'; return; }
+                wxResultados.innerHTML = '<span class="wx-nota">Buscando tu ubicación…</span>';
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    guardarLugar2({ nombre: 'Mi ubicación', lat: pos.coords.latitude, lon: pos.coords.longitude });
+                    wxEditor.hidden = true;
+                    wxResultados.innerHTML = '';
+                }, function () {
+                    wxResultados.innerHTML = '<span class="wx-nota">No se pudo obtener tu ubicación.</span>';
+                });
+            });
+            document.getElementById('wxDefecto').addEventListener('click', function () {
+                guardarLugar2(null);
+                wxEditor.hidden = true;
+                wxBuscar.value = '';
+                wxResultados.innerHTML = '';
             });
         })();
     </script>
