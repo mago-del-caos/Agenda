@@ -50,18 +50,18 @@
             position: relative;
         }
 
-        /* El presentador de Notijem, en círculo en la esquina superior derecha */
+        /* El presentador de Notijem completo, en miniatura en la esquina superior izquierda */
         .news-presenter {
             position: absolute;
             top: 10px;
-            right: 12px;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
+            left: 12px;
+            width: 56px;
+            height: 75px;
+            border-radius: 10px;
             object-fit: cover;
             border: 2px solid var(--ij-amarillo, #FFD100);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-            background: #0b3063;
+            background: #071326;
             z-index: 2;
         }
 
@@ -71,7 +71,7 @@
             gap: 6px 18px;
             padding-bottom: 9px;
             margin-bottom: 9px;
-            margin-right: 62px;
+            margin-left: 68px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.18);
             font-size: 0.86rem;
             color: rgba(255, 255, 255, 0.92);
@@ -143,6 +143,7 @@
             gap: 10px;
             flex-wrap: wrap;
             margin-bottom: 8px;
+            margin-left: 68px;
         }
 
         .news-label {
@@ -324,7 +325,7 @@
 
         <!-- Banda de noticias: edición que se actualiza cada hora, filtrada por los temas del usuario -->
         <section class="news-band" aria-label="Noticias de hoy">
-            <img src="/Agenda/notijem-presentador.jpg" alt="Presentador de Notijem" class="news-presenter">
+            <img src="/Agenda/notijem-completo.jpg" alt="Presentador de Notijem" class="news-presenter">
             <div class="news-weather" aria-label="Clima de hoy">
                 <span id="wxNaucalpan">🌡️ <b>Naucalpan de Juárez</b>: cargando clima…</span>
                 <span><span id="wxLugar2">🌡️ <b>Nonoalco Tlatelolco</b>: cargando clima…</span> <button id="wxCambiar" class="wx-edit" type="button" title="Cambiar la segunda ubicación">✎ Cambiar</button></span>
