@@ -99,7 +99,7 @@
             display: inline-flex;
             align-items: center;
             white-space: nowrap;
-            animation: news-scroll 60s linear infinite;
+            animation: news-scroll 120s linear infinite;
             will-change: transform;
         }
 
@@ -139,6 +139,12 @@
             padding: 16px;
             margin-bottom: 15px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+            animation: news-despliegue 0.25s ease;
+        }
+
+        @keyframes news-despliegue {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .news-pregunta {
@@ -269,7 +275,7 @@
                 { id: 'ambiente',    nombre: 'Medio ambiente', emoji: '🌱' },
                 { id: 'deportes',    nombre: 'Deportes', emoji: '⚽' },
                 { id: 'videojuegos', nombre: 'Videojuegos', emoji: '🎮' },
-                { id: 'religion',    nombre: 'Religión y esoterismo', emoji: '🔮' },
+                { id: 'religion',    nombre: 'Religión', emoji: '⛪' },
                 { id: 'seguridad',   nombre: 'Seguridad y justicia', emoji: '⚖️' }
             ];
             var CLAVE = 'aglucem_temas_noticias';
@@ -334,9 +340,10 @@
                 }).join('');
                 // El contenido se duplica para que el desplazamiento sea un bucle continuo
                 track.innerHTML = html + html;
-                track.style.animationDuration = Math.max(30, items.length * 7) + 's';
+                track.style.animationDuration = Math.max(60, items.length * 14) + 's';
                 var f = String(datosNoticias.actualizado || '');
                 fecha.textContent = f ? ('Edición de hoy · actualizada ' + f.slice(0, 10) + ' a las ' + f.slice(11) + ' h') : '';
+                if (!elegidos.length) fecha.textContent += ' · Portada general: personalízala en «Tus temas»';
             }
 
             function pintarPicker() {
@@ -375,12 +382,7 @@
                 if (!p.hidden) pintarPicker();
             });
 
-            // Sin temas guardados, la pregunta se muestra desde la primera visita
-            if (!temasGuardados().length) {
-                document.getElementById('newsPicker').hidden = false;
-                pintarPicker();
-            }
-
+            // El selector queda plegado: se despliega con el botón «Tus temas» de la banda
             fetch('/Agenda/noticias.json?v=' + new Date().toISOString().slice(0, 10))
                 .then(function (r) { if (!r.ok) throw new Error('sin edición'); return r.json(); })
                 .then(function (d) { datosNoticias = d; pintarBanda(); })

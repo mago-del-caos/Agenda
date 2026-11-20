@@ -34,7 +34,7 @@ TEMAS = {
     "ambiente":    ("Medio ambiente", "medio ambiente cambio climático"),
     "deportes":    ("Deportes", "deportes México fútbol"),
     "videojuegos": ("Videojuegos", "videojuegos gaming industria"),
-    "religion":    ("Religión y esoterismo", "religión espiritualidad esoterismo"),
+    "religion":    ("Religión", "religión espiritualidad México"),
     "seguridad":   ("Seguridad y justicia", "seguridad justicia México"),
 }
 
