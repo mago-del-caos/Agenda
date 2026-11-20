@@ -37,6 +37,167 @@
             border: none;
             display: block;
         }
+
+        /* ===== Banda de noticias diarias (se actualiza a las 7:00) ===== */
+        .news-band {
+            background: linear-gradient(135deg, var(--ij-azul-fuerte, #032A60) 0%, #0b3063 100%);
+            border-bottom: 4px solid var(--ij-amarillo, #FFD100);
+            border-radius: 16px;
+            padding: 12px 14px 10px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 15px rgba(3, 42, 96, 0.25);
+            color: #FFFFFF;
+        }
+
+        .news-band-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .news-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--ij-azul-fuerte, #032A60);
+            background: var(--ij-amarillo, #FFD100);
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .news-fecha {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            flex: 1;
+        }
+
+        .news-config {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .news-config:active { transform: scale(0.96); }
+
+        .news-ticker {
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+        }
+
+        .news-track {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            animation: news-scroll 60s linear infinite;
+            will-change: transform;
+        }
+
+        .news-ticker:hover .news-track,
+        .news-ticker:active .news-track { animation-play-state: paused; }
+
+        @keyframes news-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .news-item {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 2px 0;
+        }
+
+        .news-item .news-tema {
+            color: var(--ij-celeste, #00A8FF);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 0.6px;
+        }
+
+        .news-item .news-fuente { color: rgba(255, 255, 255, 0.65); font-weight: 400; font-size: 0.82rem; }
+
+        .news-sep { color: var(--ij-amarillo, #FFD100); margin: 0 18px; font-size: 0.8rem; }
+
+        /* ===== Selector de temas de interés ===== */
+        .news-picker {
+            background: var(--blanco, #FFFFFF);
+            border: 1px solid var(--borde, #E2E8F0);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .news-pregunta {
+            margin: 0 0 12px;
+            font-size: 0.95rem;
+            line-height: 1.45;
+            color: var(--texto-oscuro, #1E293B);
+        }
+
+        .news-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .news-chip {
+            border: 2px solid var(--borde, #E2E8F0);
+            background: var(--fondo-app, #F5F7FA);
+            color: var(--texto-oscuro, #1E293B);
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 8px 13px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+
+        .news-chip.sel {
+            background: var(--ij-azul-fuerte, #032A60);
+            border-color: var(--ij-azul-fuerte, #032A60);
+            color: #FFFFFF;
+        }
+
+        .news-picker-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .news-count { font-size: 0.85rem; font-weight: 700; color: var(--texto-claro, #64748B); }
+
+        .news-save {
+            background: var(--ij-verde, #009944);
+            color: #FFFFFF;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 800;
+            padding: 9px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .news-save:disabled { background: #94A3B8; cursor: not-allowed; }
+        .news-save:not(:disabled):active { transform: scale(0.96); }
     </style>
 </head>
 <body>
@@ -60,13 +221,171 @@
     <main class="app-main">
         <!-- El saludo personalizado lo inyecta el script.js aquí -->
         <h2 id="tituloNovedades" class="section-title" style="margin-bottom: 25px; color: var(--ij-azul-fuerte);">Hola, mira las novedades de hoy</h2>
-        
+
+        <!-- Banda de noticias: edición diaria de las 7:00, filtrada por los 3 temas del usuario -->
+        <section class="news-band" aria-label="Noticias de hoy">
+            <div class="news-band-top">
+                <span class="news-label">📰 Noticias de hoy</span>
+                <span class="news-fecha" id="newsFecha">Cargando la edición de hoy…</span>
+                <button class="news-config" id="newsConfigBtn" type="button">⚙️ Tus temas</button>
+            </div>
+            <div class="news-ticker">
+                <div class="news-track" id="newsTrack"><span class="news-item">Cargando noticias…</span></div>
+            </div>
+        </section>
+
+        <!-- Selector de temas: el usuario elige 3 de 15 -->
+        <section class="news-picker" id="newsPicker" hidden aria-label="Elige tus temas de noticias">
+            <p class="news-pregunta">¿Qué temas te interesan? Elige <b>3 temas</b> de la lista y la banda mostrará cada día, a las 7:00, las noticias más importantes relacionadas con ellos.</p>
+            <div class="news-chips" id="newsChips"></div>
+            <div class="news-picker-foot">
+                <span class="news-count" id="newsCount">0 de 3 elegidos</span>
+                <button class="news-save" id="newsSave" type="button" disabled>Guardar mis temas</button>
+            </div>
+        </section>
+
         <!-- Ventana conectada en tiempo real a Neocities con inyección anti-caché -->
         <div class="iframe-container">
             <iframe id="neocitiesFrame" class="carrete-iframe" title="Carrete de Novedades" allowfullscreen></iframe>
         </div>
         
     </main>
+
+    <script>
+        // ===== BANDA DE NOTICIAS: edición diaria 7:00 + 3 temas del usuario =====
+        (function () {
+            var TEMAS_DISPONIBLES = [
+                { id: 'educacion',   nombre: 'Educación', emoji: '📚' },
+                { id: 'tecnologia',  nombre: 'Tecnología e IA', emoji: '🤖' },
+                { id: 'ciencia',     nombre: 'Ciencia', emoji: '🔬' },
+                { id: 'filosofia',   nombre: 'Filosofía y humanidades', emoji: '🏛️' },
+                { id: 'politica',    nombre: 'Política de México', emoji: '🗳️' },
+                { id: 'economia',    nombre: 'Economía y negocios', emoji: '💰' },
+                { id: 'salud',       nombre: 'Salud y bienestar', emoji: '🩺' },
+                { id: 'cultura',     nombre: 'Cultura y arte', emoji: '🎭' },
+                { id: 'literatura',  nombre: 'Libros y literatura', emoji: '📖' },
+                { id: 'mundo',       nombre: 'Mundo', emoji: '🌎' },
+                { id: 'ambiente',    nombre: 'Medio ambiente', emoji: '🌱' },
+                { id: 'deportes',    nombre: 'Deportes', emoji: '⚽' },
+                { id: 'videojuegos', nombre: 'Videojuegos', emoji: '🎮' },
+                { id: 'religion',    nombre: 'Religión y esoterismo', emoji: '🔮' },
+                { id: 'seguridad',   nombre: 'Seguridad y justicia', emoji: '⚖️' }
+            ];
+            var CLAVE = 'aglucem_temas_noticias';
+            var datosNoticias = null;
+
+            function temasGuardados() {
+                try {
+                    var t = JSON.parse(localStorage.getItem(CLAVE) || '[]');
+                    return Array.isArray(t) ? t.filter(function (id) {
+                        return TEMAS_DISPONIBLES.some(function (x) { return x.id === id; });
+                    }).slice(0, 3) : [];
+                } catch (e) { return []; }
+            }
+
+            function escapar(s) {
+                return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            function intercalar(listas) {
+                var salida = [], i = 0, quedan = true;
+                while (quedan && salida.length < 15) {
+                    quedan = false;
+                    for (var j = 0; j < listas.length; j++) {
+                        if (listas[j].noticias[i]) {
+                            salida.push({ tema: listas[j].nombre, noticia: listas[j].noticias[i] });
+                            quedan = true;
+                        }
+                    }
+                    i++;
+                }
+                return salida;
+            }
+
+            function pintarBanda() {
+                var track = document.getElementById('newsTrack');
+                var fecha = document.getElementById('newsFecha');
+                if (!datosNoticias) {
+                    track.innerHTML = '<span class="news-item">No se pudo cargar la edición de hoy. Revisa tu conexión.</span>';
+                    return;
+                }
+                var elegidos = temasGuardados();
+                var items;
+                if (elegidos.length) {
+                    var listas = elegidos.map(function (id) {
+                        var t = (datosNoticias.temas || {})[id];
+                        return { nombre: t ? t.nombre : id, noticias: t ? t.noticias : [] };
+                    });
+                    items = intercalar(listas);
+                } else {
+                    items = (datosNoticias.portada || []).map(function (n) { return { tema: 'Portada', noticia: n }; });
+                }
+                if (!items.length) {
+                    track.innerHTML = '<span class="news-item">La edición de hoy aún no trae noticias de tus temas.</span>';
+                    return;
+                }
+                var html = items.map(function (it) {
+                    var n = it.noticia;
+                    return '<a class="news-item" href="' + escapar(n.enlace) + '" target="_blank" rel="noopener noreferrer">' +
+                        '<span class="news-tema">' + escapar(it.tema) + '</span> · ' + escapar(n.titulo) +
+                        (n.fuente ? ' <span class="news-fuente">(' + escapar(n.fuente) + (n.hora ? ' · ' + escapar(n.hora) : '') + ')</span>' : '') +
+                        '</a><span class="news-sep">✦</span>';
+                }).join('');
+                // El contenido se duplica para que el desplazamiento sea un bucle continuo
+                track.innerHTML = html + html;
+                track.style.animationDuration = Math.max(30, items.length * 7) + 's';
+                var f = String(datosNoticias.actualizado || '');
+                fecha.textContent = f ? ('Edición de hoy · actualizada ' + f.slice(0, 10) + ' a las ' + f.slice(11) + ' h') : '';
+            }
+
+            function pintarPicker() {
+                var cont = document.getElementById('newsChips');
+                var elegidos = temasGuardados();
+                var seleccion = elegidos.slice();
+                cont.innerHTML = '';
+                TEMAS_DISPONIBLES.forEach(function (t) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'news-chip' + (seleccion.indexOf(t.id) !== -1 ? ' sel' : '');
+                    b.textContent = t.emoji + ' ' + t.nombre;
+                    b.addEventListener('click', function () {
+                        var i = seleccion.indexOf(t.id);
+                        if (i !== -1) { seleccion.splice(i, 1); b.classList.remove('sel'); }
+                        else if (seleccion.length < 3) { seleccion.push(t.id); b.classList.add('sel'); }
+                        actualizarPie();
+                    });
+                    cont.appendChild(b);
+                });
+                function actualizarPie() {
+                    document.getElementById('newsCount').textContent = seleccion.length + ' de 3 elegidos';
+                    document.getElementById('newsSave').disabled = seleccion.length !== 3;
+                }
+                document.getElementById('newsSave').onclick = function () {
+                    try { localStorage.setItem(CLAVE, JSON.stringify(seleccion)); } catch (e) {}
+                    document.getElementById('newsPicker').hidden = true;
+                    pintarBanda();
+                };
+                actualizarPie();
+            }
+
+            document.getElementById('newsConfigBtn').addEventListener('click', function () {
+                var p = document.getElementById('newsPicker');
+                p.hidden = !p.hidden;
+                if (!p.hidden) pintarPicker();
+            });
+
+            // Sin temas guardados, la pregunta se muestra desde la primera visita
+            if (!temasGuardados().length) {
+                document.getElementById('newsPicker').hidden = false;
+                pintarPicker();
+            }
+
+            fetch('/Agenda/noticias.json?v=' + new Date().toISOString().slice(0, 10))
+                .then(function (r) { if (!r.ok) throw new Error('sin edición'); return r.json(); })
+                .then(function (d) { datosNoticias = d; pintarBanda(); })
+                .catch(function () { pintarBanda(); });
+        })();
+    </script>
 
     <script>
         // TRUCO TÁCTICO ANTI-CACHÉ PARA EL IFRAME:
