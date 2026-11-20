@@ -1,0 +1,28 @@
+name: Noticias diarias de Ag Lucem
+
+# 7:00 AM en Ciudad de México (UTC-6, sin horario de verano) = 13:00 UTC
+on:
+  schedule:
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generar la edición del día
+        run: python scripts/actualizar_noticias.py
+      - name: Publicar si cambió
+        run: |
+          git config user.name "Ag Lucem Noticias"
+          git config user.email "noticias@aglucem.local"
+          git add noticias.json
+          git diff --cached --quiet || git commit -m "Noticias del día"
+          git push
