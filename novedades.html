@@ -222,6 +222,12 @@
         <!-- El saludo personalizado lo inyecta el script.js aquí -->
         <h2 id="tituloNovedades" class="section-title" style="margin-bottom: 25px; color: var(--ij-azul-fuerte);">Hola, mira las novedades de hoy</h2>
 
+
+        <!-- Ventana conectada en tiempo real a Neocities con inyección anti-caché -->
+        <div class="iframe-container">
+            <iframe id="neocitiesFrame" class="carrete-iframe" title="Carrete de Novedades" allowfullscreen></iframe>
+        </div>
+
         <!-- Banda de noticias: edición diaria de las 7:00, filtrada por los 3 temas del usuario -->
         <section class="news-band" aria-label="Noticias de hoy">
             <div class="news-band-top">
@@ -243,11 +249,6 @@
                 <button class="news-save" id="newsSave" type="button" disabled>Guardar mis temas</button>
             </div>
         </section>
-
-        <!-- Ventana conectada en tiempo real a Neocities con inyección anti-caché -->
-        <div class="iframe-container">
-            <iframe id="neocitiesFrame" class="carrete-iframe" title="Carrete de Novedades" allowfullscreen></iframe>
-        </div>
         
     </main>
 
