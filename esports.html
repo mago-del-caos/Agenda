@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Esports - Ag lucem</title>
+
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .esports-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding-bottom: 36px;
+        }
+
+        .tourney-card {
+            border-radius: 20px;
+            padding: 20px 18px;
+            background: var(--fondo-app, #FFFFFF);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+        }
+
+        .tourney-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .tourney-badge {
+            font-size: 1.9rem;
+            line-height: 1;
+        }
+
+        .tourney-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--ij-azul-fuerte);
+            margin: 0;
+        }
+
+        [data-theme="dark"] .tourney-title { color: var(--ij-celeste); }
+
+        .tourney-meta {
+            font-size: 0.92rem;
+            font-weight: 600;
+            opacity: 0.85;
+            margin: 0 0 14px 0;
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8B5CF6 0%, #4C1D95 100%);
+            color: #FFFFFF;
+            margin-bottom: 14px;
+        }
+
+        .podium {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .podium-slot {
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            background: rgba(139, 92, 246, 0.10);
+        }
+
+        .podium-place {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .podium-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .podium-name {
+            display: block;
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .results-table tbody tr:nth-child(even) {
+            background: rgba(3, 42, 96, 0.05);
+        }
+
+        .pending {
+            opacity: 0.65;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="https://mago-del-caos.github.io/calendarioIJEM/" class="nav-btn">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Productividad</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn active">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title">🎮 Esports</h2>
+
+        <div class="esports-wrap">
+            <!-- Torneo Juve-Smash Preparatoria -->
+            <section class="tourney-card">
+                <div class="tourney-head">
+                    <span class="tourney-badge" aria-hidden="true">🏆</span>
+                    <h3 class="tourney-title">Torneo Juve-Smash — Preparatoria</h3>
+                </div>
+                <p class="tourney-meta">Super Smash Bros. Ultimate · Viernes 20 de noviembre de 2026 · Ambos recesos</p>
+                <span class="status-pill">RESULTADOS AL FINALIZAR EL TORNEO</span>
+
+                <div class="podium">
+                    <div class="podium-slot">
+                        <span class="podium-place">🥇</span>
+                        <span class="podium-label">Campeón</span>
+                        <span class="podium-name pending">Por definir</span>
+                    </div>
+                    <div class="podium-slot">
+                        <span class="podium-place">🥈</span>
+                        <span class="podium-label">Subcampeón</span>
+                        <span class="podium-name pending">Por definir</span>
+                    </div>
+                    <div class="podium-slot">
+                        <span class="podium-place">🥉</span>
+                        <span class="podium-label">Semifinalistas</span>
+                        <span class="podium-name pending">Por definir</span>
+                    </div>
+                </div>
+
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Ronda</th>
+                            <th>Ganador</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ronda 1</td>
+                            <td class="pending">Por definir</td>
+                        </tr>
+                        <tr>
+                            <td>Ronda 2</td>
+                            <td class="pending">Por definir</td>
+                        </tr>
+                        <tr>
+                            <td>Ronda 3</td>
+                            <td class="pending">Por definir</td>
+                        </tr>
+                        <tr>
+                            <td>Ronda 4</td>
+                            <td class="pending">Por definir</td>
+                        </tr>
+                        <tr>
+                            <td>Gran final</td>
+                            <td class="pending">Por definir</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Próximo torneo: Secundaria -->
+            <section class="tourney-card">
+                <div class="tourney-head">
+                    <span class="tourney-badge" aria-hidden="true">🕹️</span>
+                    <h3 class="tourney-title">Torneo Juve-Smash — Secundaria</h3>
+                </div>
+                <p class="tourney-meta">Super Smash Bros. Ultimate · Miércoles 25 de noviembre de 2026 · 12:30 a 12:50</p>
+                <span class="status-pill">PRÓXIMO TORNEO</span>
+                <p class="pending">Los resultados se publicarán aquí al finalizar el torneo.</p>
+            </section>
+        </div>
+    </main>
+
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
