@@ -38,7 +38,7 @@
             display: block;
         }
 
-        /* ===== Banda de noticias diarias (se actualiza a las 7:00) ===== */
+        /* ===== Banda de noticias (se actualiza cada hora) ===== */
         .news-band {
             background: linear-gradient(135deg, var(--ij-azul-fuerte, #032A60) 0%, #0b3063 100%);
             border-bottom: 4px solid var(--ij-amarillo, #FFD100);
@@ -247,7 +247,7 @@
             <iframe id="neocitiesFrame" class="carrete-iframe" title="Carrete de Novedades" allowfullscreen></iframe>
         </div>
 
-        <!-- Banda de noticias: edición diaria de las 7:00, filtrada por los temas del usuario -->
+        <!-- Banda de noticias: edición que se actualiza cada hora, filtrada por los temas del usuario -->
         <section class="news-band" aria-label="Noticias de hoy">
             <div class="news-weather" aria-label="Clima de hoy">
                 <span id="wxNaucalpan">🌡️ <b>Naucalpan de Juárez</b>: cargando clima…</span>
@@ -255,7 +255,7 @@
             </div>
             <div class="news-band-top">
                 <span class="news-label">📰 Noticias de hoy</span>
-                <span class="news-fecha" id="newsFecha">Cargando la edición de hoy…</span>
+                <span class="news-fecha" id="newsFecha">Cargando las noticias…</span>
                 <button class="news-config" id="newsConfigBtn" type="button">⚙️ Tus temas</button>
             </div>
             <div class="news-ticker">
@@ -265,7 +265,7 @@
 
         <!-- Selector de temas: el usuario elige hasta 8 de 15 -->
         <section class="news-picker" id="newsPicker" hidden aria-label="Elige tus temas de noticias">
-            <p class="news-pregunta">¿Qué temas te interesan? Elige <b>hasta 8 temas</b> de la lista y la banda mostrará cada día, a las 7:00, las noticias más importantes relacionadas con ellos.</p>
+            <p class="news-pregunta">¿Qué temas te interesan? Elige <b>hasta 8 temas</b> de la lista y la banda mostrará las noticias más importantes relacionadas con ellos, actualizadas cada hora.</p>
             <div class="news-chips" id="newsChips"></div>
             <div class="news-picker-foot">
                 <span class="news-count" id="newsCount">0 de 8 elegidos</span>
@@ -276,7 +276,7 @@
     </main>
 
     <script>
-        // ===== BANDA DE NOTICIAS: edición diaria 7:00 + 3 temas del usuario =====
+        // ===== BANDA DE NOTICIAS: edición cada hora + temas del usuario =====
         (function () {
             var TEMAS_DISPONIBLES = [
                 { id: 'educacion',   nombre: 'Educación', emoji: '📚' },
@@ -359,7 +359,7 @@
                 track.innerHTML = html + html;
                 track.style.animationDuration = Math.max(60, items.length * 14) + 's';
                 var f = String(datosNoticias.actualizado || '');
-                fecha.textContent = f ? ('Edición de hoy · actualizada ' + f.slice(0, 10) + ' a las ' + f.slice(11) + ' h') : '';
+                fecha.textContent = f ? ('Última actualización: ' + f.slice(0, 10) + ' · ' + f.slice(11) + ' h') : '';
                 if (!elegidos.length) fecha.textContent += ' · Portada general: personalízala en «Tus temas»';
             }
 

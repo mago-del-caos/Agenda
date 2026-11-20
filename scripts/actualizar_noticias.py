@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Genera noticias.json para la banda de noticias de Ag Lucem (Novedades).
 
-Se ejecuta cada día a las 7:00 (America/Mexico_City) vía GitHub Actions.
+Se ejecuta cada hora vía GitHub Actions.
 Lee los titulares principales de Google News (RSS, español/México) para
 15 temas y para la portada general. Si un tema falla, conserva sus datos
 anteriores. Solo usa la biblioteca estándar de Python.
