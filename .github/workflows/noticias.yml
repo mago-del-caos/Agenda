@@ -1,9 +1,9 @@
-name: Noticias diarias de Ag Lucem
+name: Noticias de Ag Lucem (cada hora)
 
-# 7:00 AM en Ciudad de México (UTC-6, sin horario de verano) = 13:00 UTC
+# Cada hora en punto: el minuto 0 UTC también es en punto en Ciudad de México (UTC-6)
 on:
   schedule:
-    - cron: '0 13 * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
