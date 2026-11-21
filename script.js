@@ -78,32 +78,28 @@ document.addEventListener("DOMContentLoaded", () => {
         if (agUser && agUser.nombre) tituloNovedades.innerText = `Hola ${agUser.nombre}, mira las novedades del día de hoy`;
     }
 
-    // --- PERFIL A LA DERECHA, DEBAJO DEL BANNER (foto y apodo, como Facebook) ---
-    // Sin botón de salir: la sesión solo se cierra desde Ajustes.
+    // --- FOTO DE PERFIL A LA DERECHA: mitad en el banner, mitad fuera ---
+    // Solo la foto, sin nombre y sin botón de salir (salir es desde Ajustes).
     function aglucemPastilla(user) {
         if (!user || document.getElementById("aglucem-sesion")) return;
         const div = document.createElement("div");
         div.id = "aglucem-sesion";
-        div.style.cssText = "display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 12px 0;font-family:sans-serif;font-size:.85rem";
+        div.style.cssText = "display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:0 14px;margin-top:-30px;position:relative;z-index:6;font-family:sans-serif;font-size:.85rem";
         const perfil = document.createElement("a");
         perfil.href = "/Agenda/ajustes.html";
         perfil.title = "Mi cuenta";
-        perfil.style.cssText = "display:flex;gap:8px;align-items:center;background:rgba(3,42,96,.92);color:#fff;border-radius:999px;padding:4px 12px 4px 4px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)";
+        perfil.style.cssText = "display:block;border-radius:50%;text-decoration:none;line-height:0";
         if (user.foto) {
             const img = document.createElement("img");
             img.src = user.foto; img.alt = "";
-            img.style.cssText = "width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #FFD100";
+            img.style.cssText = "width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #FFD100;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff";
             perfil.appendChild(img);
         } else {
             const ini = document.createElement("span");
             ini.textContent = (user.apodo || user.usuario || "?").trim().charAt(0).toUpperCase();
-            ini.style.cssText = "width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#8E6CC8,#5B3E99);border:2px solid #FFD100;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1rem";
+            ini.style.cssText = "width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8E6CC8,#5B3E99);color:#fff;border:3px solid #FFD100;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.5rem;line-height:1";
             perfil.appendChild(ini);
         }
-        const span = document.createElement("span");
-        span.textContent = user.apodo || user.usuario;
-        span.style.cssText = "font-weight:600;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
-        perfil.appendChild(span);
         div.appendChild(perfil);
         if (user.rol === "admin") {
             const a = document.createElement("a");
@@ -117,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (banner && banner.parentNode) {
             banner.parentNode.insertBefore(div, banner.nextSibling);
         } else {
-            div.style.cssText += ";position:fixed;top:10px;right:10px;z-index:9999;padding:0";
+            div.style.cssText += ";position:fixed;top:10px;right:10px;z-index:9999;padding:0;margin-top:0";
             document.body.appendChild(div);
         }
     }
