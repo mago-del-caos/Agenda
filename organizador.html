@@ -103,6 +103,17 @@
         .org-semana .s-item .s-info b { display:block; font-size:.92rem; }
         .org-semana .s-item .s-info small { color:#7286a3; }
         .org-acciones-proy { display:flex; gap:8px; flex-wrap:wrap; margin-top:20px; }
+        .org-fase-resp { background:#fff; border:1px dashed #c9d4e8; border-radius:10px; padding:8px; margin-bottom:8px; }
+        .org-fase-resp .fr-titulo { font-size:.72rem; font-weight:800; letter-spacing:.4px; color:#7286a3; text-transform:uppercase; margin-bottom:5px; }
+        .org-fase-resp .fr-row { margin-bottom:7px; }
+        .org-fase-resp .fr-row b { font-size:.85rem; color: var(--ij-azul-fuerte); display:block; }
+        .org-fase-resp .fr-row .fr-prod { font-size:.8rem; color:#5c4a00; }
+        .org-fase-resp .fr-edit { display:flex; gap:5px; align-items:center; }
+        .org-fase-resp .fr-edit input { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:8px; padding:6px 8px; font-family:inherit; font-size:.8rem; }
+        .org-fase-resp .fr-add { display:flex; gap:5px; margin-top:6px; }
+        .org-fase-resp .fr-add select { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:8px; padding:6px; font-family:inherit; font-size:.8rem; }
+        .org-fase-resp .fr-add button, .org-fase-resp .fr-yo { border:none; border-radius:8px; background: var(--ij-azul-fuerte); color:#fff; font-weight:800; padding:6px 11px; cursor:pointer; font-size:.8rem; }
+        .org-fase-resp .fr-yo { background:#eef1f7; color:#21314d; width:100%; }
         .org-vacio { color:#7286a3; text-align:center; padding:22px 8px; }
     </style>
 </head>
@@ -513,6 +524,7 @@
                     header.appendChild(f2);
                 }
                 col.appendChild(header);
+                col.appendChild(renderRespFase(fase));
 
                 detalle.tarjetas.filter((t) => t.fase_id === fase.id).forEach(function (t) {
                     col.appendChild(renderTarjeta(t));
@@ -536,6 +548,95 @@
                 col.appendChild(add);
                 tab.appendChild(col);
             });
+        }
+
+        function renderRespFase(fase) {
+            const box = document.createElement("div");
+            box.className = "org-fase-resp";
+            const titulo = document.createElement("div");
+            titulo.className = "fr-titulo";
+            titulo.textContent = "Responsables de la fase";
+            box.appendChild(titulo);
+            const resps = fase.responsables || [];
+            if (!resps.length) {
+                const v = document.createElement("div");
+                v.style.cssText = "font-size:.8rem;color:#94a3b8";
+                v.textContent = "Sin responsables todavía.";
+                box.appendChild(v);
+            }
+            resps.forEach(function (r) {
+                const row = document.createElement("div");
+                row.className = "fr-row";
+                const nom = document.createElement("b");
+                nom.textContent = "👤 " + r.nombre;
+                row.appendChild(nom);
+                const editable = puedoAdminProyecto || (yo && r.usuario_id === yo.id);
+                if (editable) {
+                    const ed = document.createElement("div");
+                    ed.className = "fr-edit";
+                    const inp = document.createElement("input");
+                    inp.type = "text"; inp.maxLength = 200; inp.value = r.producto || "";
+                    inp.placeholder = "Producto esperado…";
+                    inp.setAttribute("aria-label", "Producto esperado de " + r.nombre);
+                    inp.addEventListener("change", async function () {
+                        try {
+                            await api("/fases/" + fase.id + "/responsables", { method: "POST", body: JSON.stringify({ usuario_id: r.usuario_id, producto: inp.value }) });
+                        } catch (e) { errorHumano(e); }
+                    });
+                    ed.appendChild(inp);
+                    const del = document.createElement("button");
+                    del.type = "button"; del.className = "org-mini"; del.textContent = "✕"; del.title = "Quitar responsable";
+                    del.addEventListener("click", async function () {
+                        if (!confirm("¿Quitar a " + r.nombre + " de los responsables de esta fase?")) return;
+                        try { await api("/fases/" + fase.id + "/responsables/" + r.usuario_id, { method: "DELETE" }); refrescar(); }
+                        catch (e) { errorHumano(e); }
+                    });
+                    ed.appendChild(del);
+                    row.appendChild(ed);
+                } else {
+                    const p = document.createElement("span");
+                    p.className = "fr-prod";
+                    p.textContent = r.producto ? "📦 " + r.producto : "📦 (producto por definir)";
+                    row.appendChild(p);
+                }
+                box.appendChild(row);
+            });
+            if (puedoAdminProyecto) {
+                const yaEstan = resps.map((r) => r.usuario_id);
+                const libres = detalle.miembros.filter((m) => yaEstan.indexOf(m.id) === -1);
+                if (libres.length) {
+                    const add = document.createElement("div");
+                    add.className = "fr-add";
+                    const sel = document.createElement("select");
+                    sel.setAttribute("aria-label", "Docente responsable");
+                    libres.forEach(function (m) {
+                        const op = document.createElement("option");
+                        op.value = m.id; op.textContent = m.nombre;
+                        sel.appendChild(op);
+                    });
+                    const btn = document.createElement("button");
+                    btn.type = "button"; btn.textContent = "＋ Responsable";
+                    btn.addEventListener("click", async function () {
+                        try {
+                            await api("/fases/" + fase.id + "/responsables", { method: "POST", body: JSON.stringify({ usuario_id: Number(sel.value), producto: "" }) });
+                            refrescar();
+                        } catch (e) { errorHumano(e); }
+                    });
+                    add.appendChild(sel); add.appendChild(btn);
+                    box.appendChild(add);
+                }
+            } else if (yo && detalle.miembros.some((m) => m.id === yo.id) && !resps.some((r) => r.usuario_id === yo.id)) {
+                const yoBtn = document.createElement("button");
+                yoBtn.type = "button"; yoBtn.className = "fr-yo"; yoBtn.textContent = "✋ Yo me encargo de esta fase";
+                yoBtn.addEventListener("click", async function () {
+                    try {
+                        await api("/fases/" + fase.id + "/responsables", { method: "POST", body: JSON.stringify({ usuario_id: yo.id, producto: "" }) });
+                        refrescar();
+                    } catch (e) { errorHumano(e); }
+                });
+                box.appendChild(yoBtn);
+            }
+            return box;
         }
 
         function renderTarjeta(t) {
@@ -948,6 +1049,9 @@
             let md = "# " + p.nombre + "\n\n" + (p.descripcion || "") + "\n\nEquipo: " + detalle.miembros.map((m) => m.nombre).join(", ") + "\n";
             detalle.fases.forEach(function (f) {
                 md += "\n## " + f.nombre + (f.fecha_entrega ? " — entrega: " + fmtFecha(f.fecha_entrega) : "") + "\n";
+                if (f.responsables && f.responsables.length) {
+                    md += "Responsables: " + f.responsables.map((r) => r.nombre + (r.producto ? " — producto esperado: " + r.producto : "")).join("; ") + "\n";
+                }
                 detalle.tarjetas.filter((t) => t.fase_id === f.id).forEach(function (t) {
                     md += "- " + t.titulo + " (" + nombreDe(t.responsable_id) + (t.fecha ? ", límite: " + fmtFecha(t.fecha) : "") + ")\n";
                     if (t.descripcion) md += "  " + t.descripcion.replace(/\n/g, " ") + "\n";
