@@ -78,37 +78,39 @@ document.addEventListener("DOMContentLoaded", () => {
         if (agUser && agUser.nombre) tituloNovedades.innerText = `Hola ${agUser.nombre}, mira las novedades del día de hoy`;
     }
 
-    // --- PASTILLA DE SESIÓN (foto, nombre, panel si es admin, salir) ---
+    // --- PERFIL ARRIBA A LA DERECHA (foto y nombre, como Facebook) ---
+    // Sin botón de salir: la sesión solo se cierra desde Ajustes.
     function aglucemPastilla(user) {
         if (!user || document.getElementById("aglucem-sesion")) return;
         const div = document.createElement("div");
         div.id = "aglucem-sesion";
-        div.style.cssText = "position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:6px;align-items:center;background:rgba(3,42,96,.92);color:#fff;border-radius:999px;padding:5px 6px 5px 12px;font-family:sans-serif;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.25)";
+        div.style.cssText = "position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:8px;align-items:center;font-family:sans-serif;font-size:.85rem";
+        const perfil = document.createElement("a");
+        perfil.href = "/Agenda/ajustes.html";
+        perfil.title = "Mi cuenta";
+        perfil.style.cssText = "display:flex;gap:8px;align-items:center;background:rgba(3,42,96,.92);color:#fff;border-radius:999px;padding:4px 12px 4px 4px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)";
         if (user.foto) {
             const img = document.createElement("img");
             img.src = user.foto; img.alt = "";
-            img.style.cssText = "width:24px;height:24px;border-radius:50%;object-fit:cover;border:2px solid #FFD100";
-            div.appendChild(img);
+            img.style.cssText = "width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #FFD100";
+            perfil.appendChild(img);
+        } else {
+            const ini = document.createElement("span");
+            ini.textContent = (user.nombre || user.usuario || "?").trim().charAt(0).toUpperCase();
+            ini.style.cssText = "width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#8E6CC8,#5B3E99);border:2px solid #FFD100;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1rem";
+            perfil.appendChild(ini);
         }
         const span = document.createElement("span");
-        span.textContent = (user.foto ? "" : "👤 ") + (user.nombre || user.usuario);
-        div.appendChild(span);
+        span.textContent = user.nombre || user.usuario;
+        span.style.cssText = "font-weight:600;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
+        perfil.appendChild(span);
+        div.appendChild(perfil);
         if (user.rol === "admin") {
             const a = document.createElement("a");
             a.href = "/Agenda/admin.html"; a.textContent = "Panel";
-            a.style.cssText = "background:#FFD100;color:#032A60;border-radius:999px;padding:4px 10px;text-decoration:none;font-weight:bold";
+            a.style.cssText = "background:#FFD100;color:#032A60;border-radius:999px;padding:8px 12px;text-decoration:none;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,.25)";
             div.appendChild(a);
         }
-        const b = document.createElement("button");
-        b.textContent = "Salir";
-        b.style.cssText = "background:#00A8FF;color:#fff;border:none;border-radius:999px;padding:4px 10px;cursor:pointer;font-weight:bold";
-        b.addEventListener("click", () => {
-            const t = localStorage.getItem("aglucem_token");
-            const salir = () => aglucemAlLogin();
-            if (t) fetch(AGLUCEM_API + "/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + t } }).finally(salir);
-            else salir();
-        });
-        div.appendChild(b);
         document.body.appendChild(div);
     }
     aglucemPastilla(JSON.parse(localStorage.getItem("aglucem_user") || "null"));
