@@ -68,6 +68,12 @@
             box-shadow: 0 4px 10px rgba(0,0,0,.3); flex-shrink: 0;
         }
 
+        .esports-grid .img-icon { width: 92px; height: 92px; object-fit: contain; }
+        .esports-grid .icon-wrapper { display: flex; align-items: center; justify-content: center; min-height: 96px; margin-bottom: 8px; }
+        .btn-tron { background: linear-gradient(160deg, #0b1026, #1b0f2e); border: 2px solid #00e5ff; box-shadow: 0 0 16px rgba(0,229,255,.45); }
+        .btn-vs { background: linear-gradient(135deg, #7c3aed, #db2777); }
+        .vs-big { font-size: 3rem; font-weight: 900; font-style: italic; letter-spacing: 1px; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.35); line-height: 1; }
+
         .game-links { display: flex; flex-direction: column; gap: 10px; }
         .game-link {
             display: flex; align-items: center; gap: 12px;
@@ -201,33 +207,27 @@
                 <img src="/Agenda/ganadores-juve-smash-prepa-v2.jpg" alt="Ganadores del Torneo Juve Smash de Preparatoria: primer lugar Manuel 4A, segundo lugar Cesar 4A, tercer lugar Rodrigo 5C y Jesús 4C" class="winners-img">
             </section>
 
-            <!-- Juegos -->
-            <section class="tourney-card">
-                <div class="tourney-head">
-                    <span class="tourney-badge">🕹️</span>
-                    <h3 class="tourney-title">Juegos</h3>
-                </div>
-                <p class="tourney-meta">Aquí viven los juegos del Instituto: ajedrez en línea y la tienda Chema-tron, cada juego con su tabla de campeones.</p>
-                <div class="game-links">
-                    <a class="game-link" href="https://mago-del-caos.github.io/Juvenchess/" target="_blank" rel="noopener">
-                        <img class="game-img" src="/Agenda/chematorre.png" alt="JuvenChess">
-                        <span class="game-text"><b>JuvenChess</b><small>Ajedrez: juega contra la máquina o en la Arena en línea</small></span>
-                        <span class="game-arrow">›</span>
-                    </a>
-                    <a class="game-link" href="https://mago-del-caos.github.io/minijuegos/" target="_blank" rel="noopener">
-                        <img class="game-img" src="/Agenda/chematron.jpg" alt="Chema-tron">
-                        <span class="game-text"><b>Chema-tron</b><small>La tienda de juegos de Chema: Flappy, Angry, Avión y Tetris, cada uno con su Top 10</small></span>
-                        <span class="game-arrow">›</span>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Próximos torneos (botón) -->
-            <a class="vs-button" href="/Agenda/proximos-torneos.html">
-                <span class="vs-logo">VS</span>
-                <span class="game-text"><b>Próximos torneos</b><small>Fechas de los torneos que vienen: Juve-Smash Secundaria, Chema Cart y Fut Juventud</small></span>
-                <span class="game-arrow">›</span>
-            </a>
+            <!-- Botones grandes, como en las demás páginas -->
+            <div class="button-grid esports-grid">
+                <a href="https://mago-del-caos.github.io/Juvenchess/" target="_blank" rel="noopener" class="app-btn btn-blue">
+                    <div class="icon-wrapper">
+                        <img src="/Agenda/chematorre.png" alt="JuvenChess" class="img-icon">
+                    </div>
+                    JuvenChess
+                </a>
+                <a href="https://mago-del-caos.github.io/minijuegos/" target="_blank" rel="noopener" class="app-btn btn-tron">
+                    <div class="icon-wrapper">
+                        <img src="/Agenda/chematron.jpg" alt="Chema-tron" class="img-icon">
+                    </div>
+                    Chema-tron
+                </a>
+                <a href="/Agenda/proximos-torneos.html" class="app-btn btn-vs">
+                    <div class="icon-wrapper">
+                        <span class="vs-big">VS</span>
+                    </div>
+                    Próximos torneos
+                </a>
+            </div>
 
         </div>
     </main>
