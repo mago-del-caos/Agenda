@@ -96,12 +96,12 @@ document.addEventListener("DOMContentLoaded", () => {
             perfil.appendChild(img);
         } else {
             const ini = document.createElement("span");
-            ini.textContent = (user.nombre || user.usuario || "?").trim().charAt(0).toUpperCase();
+            ini.textContent = (user.apodo || user.usuario || "?").trim().charAt(0).toUpperCase();
             ini.style.cssText = "width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#8E6CC8,#5B3E99);border:2px solid #FFD100;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1rem";
             perfil.appendChild(ini);
         }
         const span = document.createElement("span");
-        span.textContent = user.nombre || user.usuario;
+        span.textContent = user.apodo || user.usuario;
         span.style.cssText = "font-weight:600;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
         perfil.appendChild(span);
         div.appendChild(perfil);

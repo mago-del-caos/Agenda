@@ -75,6 +75,15 @@
             <button id="btnSubirFoto" class="app-btn btn-blue" style="width:100%; margin-bottom:8px;">Guardar foto</button>
             <p id="msgFoto" style="min-height:1.2em; font-size:.9rem; margin:4px 0 18px;"></p>
 
+            <!-- Apodo en La red -->
+            <div class="input-group">
+                <label for="miApodo">🏷️ Tu apodo en La red:</label>
+                <input type="text" id="miApodo" maxlength="8" placeholder="Máximo 8 caracteres" autocomplete="off">
+                <p style="font-size:.82rem; color:#64748b; margin:6px 0 0;">Es el único nombre que verán los demás en La red; tu nombre completo nunca se muestra ahí. Sin groserías ni dobles sentidos.</p>
+            </div>
+            <button id="btnGuardarApodo" class="app-btn btn-blue" style="width:100%; margin-bottom:8px;">Guardar apodo</button>
+            <p id="msgApodo" style="min-height:1.2em; font-size:.9rem; margin:4px 0 18px;"></p>
+
             <!-- Cambio de contraseña -->
             <div class="input-group">
                 <label for="miPassActual">🔑 Contraseña actual:</label>
@@ -115,10 +124,35 @@
             var user = JSON.parse(localStorage.getItem("aglucem_user") || "null");
             var vista = document.getElementById("miFotoVista");
             if (user && user.foto) vista.src = user.foto;
+            var campoApodo = document.getElementById("miApodo");
+            if (user && user.apodo) campoApodo.value = user.apodo;
             fetch(API + "/auth/me", { headers: { Authorization: "Bearer " + token } })
                 .then(function (r) { return r.json(); })
-                .then(function (u) { if (u.foto) { vista.src = u.foto; localStorage.setItem("aglucem_user", JSON.stringify(u)); } })
+                .then(function (u) {
+                    if (u.foto) vista.src = u.foto;
+                    if (u.apodo && !campoApodo.value) campoApodo.value = u.apodo;
+                    localStorage.setItem("aglucem_user", JSON.stringify(u));
+                })
                 .catch(function () {});
+
+            document.getElementById("btnGuardarApodo").addEventListener("click", function () {
+                var apodo = campoApodo.value.trim();
+                if (!apodo) { nota("msgApodo", "Escribe un apodo.", false); return; }
+                fetch(API + "/auth/apodo", {
+                    method: "POST",
+                    headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+                    body: JSON.stringify({ apodo: apodo })
+                })
+                    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+                    .then(function (res) {
+                        if (!res.ok) { nota("msgApodo", res.d.error || "No se pudo guardar.", false); return; }
+                        var u2 = JSON.parse(localStorage.getItem("aglucem_user") || "{}");
+                        u2.apodo = res.d.apodo;
+                        localStorage.setItem("aglucem_user", JSON.stringify(u2));
+                        nota("msgApodo", "Apodo guardado: así te verán en La red.", true);
+                    })
+                    .catch(function () { nota("msgApodo", "Sin conexión con el servidor.", false); });
+            });
 
             function nota(id, texto, ok) {
                 var el = document.getElementById(id);

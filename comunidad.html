@@ -159,7 +159,7 @@
         }
         function avatarHTML(m, clase) {
             if (m.foto) return '<div class="avatar ' + (clase || "") + '"><img src="' + esc(m.foto) + '" alt=""></div>';
-            var ini = (m.nombre || m.usuario || "?").trim().charAt(0).toUpperCase();
+            var ini = (m.apodo || m.usuario || "?").trim().charAt(0).toUpperCase();
             return '<div class="avatar ' + (clase || "") + '">' + esc(ini) + "</div>";
         }
         function hace(f) {
@@ -192,7 +192,7 @@
                         var borrar = (m.mio || esAdmin)
                             ? '<button class="btn-borrar" data-borrar="' + m.id + '">Borrar</button>' : "";
                         return '<div class="post">' + avatarHTML(m) +
-                            '<div class="post-cuerpo"><div class="post-cabeza"><strong>' + esc(m.nombre) +
+                            '<div class="post-cuerpo"><div class="post-cabeza"><strong>' + esc(m.apodo || m.usuario) +
                             '</strong> <span class="usuario">@' + esc(m.usuario) + '</span> <span class="fecha">· ' + esc(hace(m.creado_en)) + "</span></div>" +
                             '<div class="post-texto">' + esc(m.texto) + "</div>" +
                             '<div class="post-acciones">' + likeBtn + borrar + "</div></div></div>";
@@ -244,12 +244,12 @@
         function pintarMiembros() {
             var q = document.getElementById("buscar").value.trim().toLowerCase();
             var visibles = miembros.filter(function (m) {
-                return !q || (m.nombre || "").toLowerCase().indexOf(q) >= 0 || m.usuario.indexOf(q) >= 0;
+                return !q || (m.apodo || "").toLowerCase().indexOf(q) >= 0 || m.usuario.indexOf(q) >= 0;
             });
             if (!visibles.length) { miembrosEl.innerHTML = '<p class="vacio">Sin resultados.</p>'; return; }
             miembrosEl.innerHTML = visibles.map(function (m) {
                 return '<div class="miembro">' + avatarHTML(m, "chico") +
-                    '<div class="miembro-nombre"><strong>' + esc(m.nombre) + '</strong>' +
+                    '<div class="miembro-nombre"><strong>' + esc(m.apodo || m.usuario) + '</strong>' +
                     '<span class="usuario">@' + esc(m.usuario) + " · " + esc(m.rol) + "</span></div>" +
                     '<input type="checkbox" class="interruptor" data-seguir="' + m.id + '"' +
                     (m.lo_sigo ? " checked" : "") + "></div>";
