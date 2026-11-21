@@ -166,6 +166,7 @@
             <div id="orgJefes" class="org-jefes" style="display:none">
                 <div class="org-barra"><h3>Jefes de proyecto</h3></div>
                 <p style="color:#7286a3;margin:0 0 10px">Los jefes de proyecto pueden crear proyectos y administrar (docentes, fases y fechas) los proyectos de los que forman parte, igual que un administrador dentro de Nous. Solo el administrador general los designa.</p>
+                <input type="text" id="orgJefesBuscar" class="org-filtro" placeholder="🔎 Buscar docente por nombre para activarlo como jefe…">
                 <div id="orgJefesLista" class="org-form"></div>
             </div>
         </div>
@@ -196,6 +197,8 @@
             <section class="org-ia">
                 <h3>✨ Funciones de IA de Nous</h3>
                 <p>Usa tu propia clave de Groq o Gemini (la misma de Ju-bits). La clave se guarda solo en este dispositivo.</p>
+                <button id="iaCambiar" type="button" class="org-btn org-btn-ghost" style="display:none;margin-bottom:10px">🔑 Cambiar clave Groq</button>
+                <div id="iaRegistroBloque">
                 <div class="org-ia-fila">
                     <select id="iaProveedor" aria-label="Proveedor de IA">
                         <option value="groq">Groq</option>
@@ -206,6 +209,7 @@
                 </div>
                 <p id="iaEstado" style="margin:0 0 10px;font-size:.88rem;color:#FFE9A8"></p>
                 <p>Registra tu clave una vez y queda guardada SOLO en este dispositivo (nunca sale a ningún servidor nuestro), igual que en Ju-bits. ¿No tienes clave? Consigue una gratis en <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:#FFD100;font-weight:700">console.groq.com</a> (Groq) o en Google AI Studio (Gemini).</p>
+                </div>
                 <div class="org-ia-fila">
                     <button id="iaFases" type="button" class="org-btn org-btn-dorado">Sugerir fases del proyecto</button>
                     <button id="iaResumen" type="button" class="org-btn org-btn-ghost">Resumir el avance</button>
@@ -334,6 +338,12 @@
                         s.textContent = doc.nombre + " (" + doc.usuario + ")";
                         lab.appendChild(cb); lab.appendChild(s);
                         cont.appendChild(lab);
+                    });
+                    $("orgJefesBuscar").addEventListener("input", function () {
+                        const q = $("orgJefesBuscar").value.trim().toLowerCase();
+                        $("orgJefesLista").querySelectorAll("label").forEach(function (lab) {
+                            lab.style.display = !q || lab.textContent.toLowerCase().includes(q) ? "" : "none";
+                        });
                     });
                     $("orgJefes").style.display = "block";
                 } catch (e) { /* la sección es solo para el administrador */ }
@@ -692,10 +702,15 @@
         iaClave.value = localStorage.getItem("aglucem_ia_clave") || "";
         function iaPintarEstado() {
             const hay = !!localStorage.getItem("aglucem_ia_clave");
-            $("iaEstado").textContent = hay
-                ? "✓ Tu clave está registrada y guardada en este dispositivo (" + (iaProv.value === "groq" ? "Groq" : "Gemini") + ")."
-                : "⚠ Todavía no registras tu clave: las funciones de IA están apagadas hasta que la guardes.";
+            $("iaRegistroBloque").style.display = hay ? "none" : "block";
+            $("iaCambiar").style.display = hay ? "block" : "none";
+            if (!hay) $("iaEstado").textContent = "⚠ Todavía no registras tu clave: las funciones de IA están apagadas hasta que la guardes.";
         }
+        $("iaCambiar").addEventListener("click", function () {
+            $("iaRegistroBloque").style.display = "block";
+            $("iaCambiar").style.display = "none";
+            $("iaEstado").textContent = "Escribe la clave nueva y pulsa «Probar y guardar clave».";
+        });
         iaPintarEstado();
         iaProv.addEventListener("change", function () { localStorage.setItem("aglucem_ia_proveedor", iaProv.value); iaPintarEstado(); });
         iaClave.addEventListener("input", function () {
