@@ -54,6 +54,19 @@
 
         [data-theme="dark"] .tourney-title { color: var(--ij-celeste); }
 
+        .game-links { display: flex; flex-direction: column; gap: 10px; }
+        .game-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 14px; border-radius: 14px; text-decoration: none;
+            background: rgba(139, 92, 246, 0.10); color: inherit;
+        }
+        .game-link:active { background: rgba(139, 92, 246, 0.22); }
+        .game-emoji { font-size: 1.7rem; line-height: 1; }
+        .game-text { flex: 1; display: flex; flex-direction: column; }
+        .game-text b { font-size: 1rem; }
+        .game-text small { opacity: 0.8; font-size: 0.82rem; }
+        .game-arrow { font-size: 1.5rem; font-weight: 800; opacity: 0.55; }
+
         .tourney-meta {
             font-size: 0.92rem;
             font-weight: 600;
@@ -171,6 +184,27 @@
                 <span class="status-pill">RESULTADOS FINALES</span>
 
                 <img src="/Agenda/ganadores-juve-smash-prepa-v2.jpg" alt="Ganadores del Torneo Juve Smash de Preparatoria: primer lugar Manuel 4A, segundo lugar Cesar 4A, tercer lugar Rodrigo 5C y Jesús 4C" class="winners-img">
+            </section>
+
+            <!-- Juegos -->
+            <section class="tourney-card">
+                <div class="tourney-head">
+                    <span class="tourney-badge">🕹️</span>
+                    <h3 class="tourney-title">Juegos</h3>
+                </div>
+                <p class="tourney-meta">Aquí viven los juegos del Instituto: ajedrez en línea y los minijuegos de Chema, cada uno con su tabla de campeones.</p>
+                <div class="game-links">
+                    <a class="game-link" href="https://mago-del-caos.github.io/Juvenchess/" target="_blank" rel="noopener">
+                        <span class="game-emoji">♟️</span>
+                        <span class="game-text"><b>JuvenChess</b><small>Ajedrez: juega contra la máquina o en la Arena en línea</small></span>
+                        <span class="game-arrow">›</span>
+                    </a>
+                    <a class="game-link" href="https://mago-del-caos.github.io/minijuegos/" target="_blank" rel="noopener">
+                        <span class="game-emoji">🎮</span>
+                        <span class="game-text"><b>Minijuegos de Chema</b><small>Chema Bird, Angry Chema, Avión Chema y Tetris Chema, con su Top 10</small></span>
+                        <span class="game-arrow">›</span>
+                    </a>
+                </div>
             </section>
 
             <!-- Próximos torneos -->
