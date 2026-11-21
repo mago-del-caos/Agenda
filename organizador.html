@@ -90,6 +90,19 @@
         .org-ia-salida { background:rgba(255,255,255,.1); border-radius:12px; padding:12px; font-size:.9rem; white-space:pre-wrap; min-height:20px; }
         .org-ia-propuesta { display:flex; justify-content:space-between; gap:8px; background:rgba(255,255,255,.12); border-radius:10px; padding:8px 11px; margin-top:6px; font-size:.88rem; }
         .org-jefes { margin-top:26px; }
+        .nous-campana { margin-left:auto; position:relative; border:none; background:#eef1f7; width:46px; height:46px; border-radius:50%; font-size:1.25rem; cursor:pointer; flex:none; }
+        .nous-campana .punto { position:absolute; top:-4px; right:-4px; background:#b3261e; color:#fff; font-size:.7rem; font-weight:800; min-width:20px; height:20px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 5px; }
+        .org-notif { background:#fff; border:1px solid #e3e8f2; border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:0 6px 15px rgba(0,0,0,.07); }
+        .org-notif .n-item { padding:8px 0; border-bottom:1px solid #eef1f7; font-size:.9rem; cursor:pointer; }
+        .org-notif .n-item:last-child { border-bottom:none; }
+        .org-notif .n-item small { color:#94a3b8; display:block; }
+        .org-notif .n-item.no-leida { font-weight:700; }
+        .org-semana { margin-top:22px; }
+        .org-semana .s-item { display:flex; gap:10px; align-items:center; background:#fff; border:1px solid #e3e8f2; border-radius:12px; padding:10px 12px; margin-bottom:7px; cursor:pointer; text-align:left; width:100%; font-family:inherit; }
+        .org-semana .s-item .s-info { flex:1; min-width:0; }
+        .org-semana .s-item .s-info b { display:block; font-size:.92rem; }
+        .org-semana .s-item .s-info small { color:#7286a3; }
+        .org-acciones-proy { display:flex; gap:8px; flex-wrap:wrap; margin-top:20px; }
         .org-vacio { color:#7286a3; text-align:center; padding:22px 8px; }
     </style>
 </head>
@@ -118,13 +131,18 @@
                 <h2>Nous</h2>
                 <p>Organizador de proyectos del Instituto Juventud: trabajo en equipo estilo Notion × Trello, con fases, fechas de entrega y ayuda de IA.</p>
             </div>
+            <button id="btnCampana" type="button" class="nous-campana" title="Notificaciones">🔔<span id="campanaPunto" class="punto" style="display:none">0</span></button>
         </div>
+        <div id="orgNotif" class="org-notif" style="display:none"></div>
         <div id="orgAviso" class="org-aviso" style="display:none"></div>
 
         <div id="orgListaVista">
             <div class="org-barra">
                 <h3>Proyectos</h3>
-                <button id="btnNuevoProyecto" type="button" class="org-btn org-btn-dorado" style="display:none">＋ Nuevo proyecto</button>
+                <span style="display:flex;gap:8px">
+                    <button id="btnArchivados" type="button" class="org-btn org-btn-ghost" style="display:none">Ver archivados</button>
+                    <button id="btnNuevoProyecto" type="button" class="org-btn org-btn-dorado" style="display:none">＋ Nuevo proyecto</button>
+                </span>
             </div>
             <form id="formProyecto" class="org-form" style="display:none">
                 <label for="npNombre">Nombre del proyecto</label>
@@ -139,6 +157,11 @@
                 </div>
             </form>
             <div id="orgProyectos" class="org-proyectos"></div>
+
+            <div class="org-semana">
+                <div class="org-barra"><h3>Mi semana — mis tarjetas con fecha</h3></div>
+                <div id="orgMiSemana"><p style="color:#7286a3">Cargando tus tarjetas…</p></div>
+            </div>
 
             <div id="orgJefes" class="org-jefes" style="display:none">
                 <div class="org-barra"><h3>Jefes de proyecto</h3></div>
@@ -178,8 +201,11 @@
                         <option value="groq">Groq</option>
                         <option value="gemini">Gemini</option>
                     </select>
-                    <input type="password" id="iaClave" placeholder="Tu clave de IA (gsk_… o AIza…)" autocomplete="off">
+                    <input type="password" id="iaClave" placeholder="Pega tu clave (gsk_… de Groq o AIza… de Gemini)" autocomplete="off">
+                    <button id="iaGuardar" type="button" class="org-btn org-btn-dorado">Probar y guardar clave</button>
                 </div>
+                <p id="iaEstado" style="margin:0 0 10px;font-size:.88rem;color:#FFE9A8"></p>
+                <p>Registra tu clave una vez y queda guardada SOLO en este dispositivo (nunca sale a ningún servidor nuestro), igual que en Ju-bits. ¿No tienes clave? Consigue una gratis en <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:#FFD100;font-weight:700">console.groq.com</a> (Groq) o en Google AI Studio (Gemini).</p>
                 <div class="org-ia-fila">
                     <button id="iaFases" type="button" class="org-btn org-btn-dorado">Sugerir fases del proyecto</button>
                     <button id="iaResumen" type="button" class="org-btn org-btn-ghost">Resumir el avance</button>
@@ -188,7 +214,10 @@
                 <div id="iaPropuestas"></div>
             </section>
 
-            <div style="margin-top:22px">
+            <div class="org-acciones-proy">
+                <button id="btnExportar" type="button" class="org-btn org-btn-ghost">⬇ Exportar acta (.md)</button>
+                <button id="btnDuplicar" type="button" class="org-btn org-btn-ghost" style="display:none">⧉ Duplicar proyecto</button>
+                <button id="btnArchivar" type="button" class="org-btn org-btn-ghost" style="display:none">🗄 Archivar proyecto</button>
                 <button id="btnBorrarProyecto" type="button" class="org-btn org-btn-rojo" style="display:none">Borrar este proyecto</button>
             </div>
         </div>
@@ -387,6 +416,8 @@
             renderTablero();
             $("btnNuevaFase").style.display = puedoAdminProyecto ? "block" : "none";
             $("btnBorrarProyecto").style.display = puedoAdminProyecto ? "block" : "none";
+            $("btnDuplicar").style.display = puedoAdminProyecto ? "block" : "none";
+            $("btnArchivar").style.display = puedoAdminProyecto ? "block" : "none";
         }
 
         async function renderEditarMiembros() {
@@ -659,8 +690,32 @@
         const iaProv = $("iaProveedor"), iaClave = $("iaClave");
         iaProv.value = localStorage.getItem("aglucem_ia_proveedor") || "groq";
         iaClave.value = localStorage.getItem("aglucem_ia_clave") || "";
-        iaProv.addEventListener("change", function () { localStorage.setItem("aglucem_ia_proveedor", iaProv.value); });
-        iaClave.addEventListener("change", function () { localStorage.setItem("aglucem_ia_clave", iaClave.value.trim()); });
+        function iaPintarEstado() {
+            const hay = !!localStorage.getItem("aglucem_ia_clave");
+            $("iaEstado").textContent = hay
+                ? "✓ Tu clave está registrada y guardada en este dispositivo (" + (iaProv.value === "groq" ? "Groq" : "Gemini") + ")."
+                : "⚠ Todavía no registras tu clave: las funciones de IA están apagadas hasta que la guardes.";
+        }
+        iaPintarEstado();
+        iaProv.addEventListener("change", function () { localStorage.setItem("aglucem_ia_proveedor", iaProv.value); iaPintarEstado(); });
+        iaClave.addEventListener("input", function () {
+            const v = iaClave.value.trim();
+            if (v.startsWith("gsk_")) iaProv.value = "groq";
+            else if (v.startsWith("AIza") || v.startsWith("AQ.")) iaProv.value = "gemini";
+        });
+        $("iaGuardar").addEventListener("click", async function () {
+            const v = iaClave.value.trim();
+            if (!v) { $("iaEstado").textContent = "Primero pega tu clave en el campo."; return; }
+            $("iaEstado").textContent = "Probando la clave…";
+            try {
+                await llamarIA("Responde solo: ok");
+                localStorage.setItem("aglucem_ia_clave", v);
+                localStorage.setItem("aglucem_ia_proveedor", iaProv.value);
+                iaPintarEstado();
+            } catch (e) {
+                $("iaEstado").textContent = "La clave no funcionó: " + e.message + " No se guardó.";
+            }
+        });
 
         async function llamarIA(prompt) {
             const clave = iaClave.value.trim();
@@ -756,6 +811,163 @@
             const prompt = "Resume en un párrafo breve y claro el avance del proyecto escolar «" + detalle.proyecto.nombre + "» para su equipo de docentes. Hoy es " + fmtFecha(hoyStr()) + ". Estado del tablero:\n" + (lineas || "Sin fases todavía.") + "\nSeñala riesgos de fechas si los hay y sugiere el siguiente paso. Sin listas, solo el párrafo.";
             try { $("iaSalida").textContent = await llamarIA(prompt); }
             catch (e) { $("iaSalida").textContent = e.message; }
+        });
+
+        /* ---------- Notificaciones ---------- */
+        async function cargarNotificaciones() {
+            try {
+                const data = await api("/notificaciones");
+                const punto = $("campanaPunto");
+                if (data.pendientes > 0) { punto.textContent = data.pendientes; punto.style.display = "flex"; }
+                else punto.style.display = "none";
+                const panel = $("orgNotif");
+                panel.innerHTML = "";
+                const titulo = document.createElement("div");
+                titulo.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:4px";
+                const b = document.createElement("b"); b.textContent = "Notificaciones"; b.style.color = "var(--ij-azul-fuerte)";
+                const leer = document.createElement("button");
+                leer.type = "button"; leer.className = "org-btn org-btn-ghost"; leer.style.padding = "6px 11px"; leer.textContent = "Marcar todas como leídas";
+                leer.addEventListener("click", async function () {
+                    try { await api("/notificaciones", { method: "POST" }); cargarNotificaciones(); } catch (e) { errorHumano(e); }
+                });
+                titulo.appendChild(b); titulo.appendChild(leer);
+                panel.appendChild(titulo);
+                if (!data.notificaciones.length) {
+                    const v = document.createElement("p"); v.style.color = "#7286a3"; v.textContent = "Sin notificaciones.";
+                    panel.appendChild(v);
+                }
+                data.notificaciones.forEach(function (n) {
+                    const item = document.createElement("div");
+                    item.className = "n-item" + (n.leida ? "" : " no-leida");
+                    const s = document.createElement("span"); s.textContent = n.texto;
+                    const f = document.createElement("small"); f.textContent = String(n.creado || "").slice(0, 16).replace("T", " ");
+                    item.appendChild(s); item.appendChild(f);
+                    if (n.proyecto_id) item.addEventListener("click", function () { $("orgNotif").style.display = "none"; abrirProyecto(n.proyecto_id); });
+                    panel.appendChild(item);
+                });
+            } catch (e) { /* las notificaciones llegan con la actualización del servidor */ }
+        }
+        $("btnCampana").addEventListener("click", function () {
+            const panel = $("orgNotif");
+            panel.style.display = panel.style.display === "none" ? "block" : "none";
+        });
+        cargarNotificaciones();
+
+        /* ---------- Mi semana: mis tarjetas con fecha en todos mis proyectos ---------- */
+        async function cargarMiSemana() {
+            const cont = $("orgMiSemana");
+            try {
+                const data = await api("/proyectos/mis-tarjetas");
+                cont.innerHTML = "";
+                if (!data.tarjetas.length) {
+                    cont.innerHTML = '<p style="color:#7286a3">No tienes tarjetas asignadas con fecha. Cuando un proyecto te asigne una, aparecerá aquí.</p>';
+                    return;
+                }
+                const hoy = hoyStr();
+                const en7 = (() => { const d = new Date(); d.setDate(d.getDate() + 7); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); })();
+                data.tarjetas.forEach(function (t) {
+                    const btn = document.createElement("button");
+                    btn.type = "button"; btn.className = "s-item";
+                    const info = document.createElement("span"); info.className = "s-info";
+                    const tit = document.createElement("b"); tit.textContent = t.titulo;
+                    const sub = document.createElement("small"); sub.textContent = t.proyecto_nombre + " · " + t.fase_nombre;
+                    info.appendChild(tit); info.appendChild(sub);
+                    btn.appendChild(info);
+                    if (t.fecha) {
+                        const fb = document.createElement("span");
+                        const venc = t.fecha < hoy;
+                        fb.className = "org-t-fecha" + (venc ? " vencida" : "");
+                        fb.textContent = (venc ? "⚠ " : t.fecha <= en7 ? "⏰ " : "📅 ") + fmtFecha(t.fecha);
+                        btn.appendChild(fb);
+                    } else {
+                        const fb = document.createElement("span"); fb.className = "org-t-fecha"; fb.textContent = "Sin fecha";
+                        btn.appendChild(fb);
+                    }
+                    btn.addEventListener("click", function () { abrirProyecto(t.proyecto_id); });
+                    cont.appendChild(btn);
+                });
+            } catch (e) {
+                cont.innerHTML = '<p style="color:#7286a3">Tu semana se activa con la actualización del servidor.</p>';
+            }
+        }
+        cargarMiSemana();
+
+        /* ---------- Archivados ---------- */
+        let viendoArchivados = false;
+        if (puedeCrear) {
+            $("btnArchivados").style.display = "block";
+            $("btnArchivados").addEventListener("click", async function () {
+                viendoArchivados = !viendoArchivados;
+                $("btnArchivados").textContent = viendoArchivados ? "Ver activos" : "Ver archivados";
+                if (!viendoArchivados) { cargarProyectos(); return; }
+                try {
+                    const data = await api("/proyectos?archivados=1");
+                    const cont = $("orgProyectos");
+                    cont.innerHTML = "";
+                    if (!data.proyectos.length) { cont.innerHTML = '<p class="org-vacio">No hay proyectos archivados.</p>'; return; }
+                    data.proyectos.forEach(function (p) {
+                        const b = document.createElement("button");
+                        b.type = "button"; b.className = "org-proy";
+                        const t = document.createElement("strong"); t.textContent = "🗄 " + p.nombre;
+                        const d = document.createElement("p"); d.textContent = "Archivado. Toca para desarchivarlo.";
+                        b.appendChild(t); b.appendChild(d);
+                        b.addEventListener("click", async function () {
+                            if (!confirm("¿Desarchivar «" + p.nombre + "»? Volverá a la lista de proyectos.")) return;
+                            try {
+                                await api("/proyectos/" + p.id, { method: "PATCH", body: JSON.stringify({ archivado: 0 }) });
+                                viendoArchivados = false; $("btnArchivados").textContent = "Ver archivados";
+                                cargarProyectos();
+                            } catch (e) { errorHumano(e); }
+                        });
+                        cont.appendChild(b);
+                    });
+                } catch (e) { errorHumano(e); }
+            });
+        }
+
+        /* ---------- Exportar acta, duplicar y archivar ---------- */
+        $("btnExportar").addEventListener("click", function () {
+            if (!detalle) return;
+            const p = detalle.proyecto;
+            const nombreDe = (id) => { const m = detalle.miembros.find((x) => x.id === id); return m ? m.nombre : "Sin responsable"; };
+            let md = "# " + p.nombre + "\n\n" + (p.descripcion || "") + "\n\nEquipo: " + detalle.miembros.map((m) => m.nombre).join(", ") + "\n";
+            detalle.fases.forEach(function (f) {
+                md += "\n## " + f.nombre + (f.fecha_entrega ? " — entrega: " + fmtFecha(f.fecha_entrega) : "") + "\n";
+                detalle.tarjetas.filter((t) => t.fase_id === f.id).forEach(function (t) {
+                    md += "- " + t.titulo + " (" + nombreDe(t.responsable_id) + (t.fecha ? ", límite: " + fmtFecha(t.fecha) : "") + ")\n";
+                    if (t.descripcion) md += "  " + t.descripcion.replace(/\n/g, " ") + "\n";
+                });
+            });
+            md += "\n_Acta generada desde Nous el " + fmtFecha(hoyStr()) + "._\n";
+            const blob = new Blob([md], { type: "text/markdown" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "Nous-acta-" + p.nombre.replace(/[^\wáéíóúñ ]/gi, "").trim().replace(/\s+/g, "-") + ".md";
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        });
+        $("btnDuplicar").addEventListener("click", async function () {
+            if (!puedoAdminProyecto || !detalle) return;
+            if (!confirm("¿Duplicar «" + detalle.proyecto.nombre + "»? Se crea una copia con sus fases, tarjetas y docentes.")) return;
+            try {
+                await api("/proyectos/" + detalle.proyecto.id + "/duplicar", { method: "POST" });
+                detalle = null;
+                $("orgDetalleVista").style.display = "none";
+                $("orgListaVista").style.display = "block";
+                aviso("Proyecto duplicado. La copia está en la lista.");
+                cargarProyectos();
+            } catch (e) { errorHumano(e); }
+        });
+        $("btnArchivar").addEventListener("click", async function () {
+            if (!puedoAdminProyecto || !detalle) return;
+            if (!confirm("¿Archivar «" + detalle.proyecto.nombre + "»? Sale de la lista; podrás desarchivarlo desde «Ver archivados».")) return;
+            try {
+                await api("/proyectos/" + detalle.proyecto.id, { method: "PATCH", body: JSON.stringify({ archivado: 1 }) });
+                detalle = null;
+                $("orgDetalleVista").style.display = "none";
+                $("orgListaVista").style.display = "block";
+                cargarProyectos();
+            } catch (e) { errorHumano(e); }
         });
 
         cargarProyectos();
