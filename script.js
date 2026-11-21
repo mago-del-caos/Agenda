@@ -101,13 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             perfil.appendChild(ini);
         }
         div.appendChild(perfil);
-        if (user.rol === "admin") {
-            const a = document.createElement("a");
-            a.href = "/Agenda/admin.html"; a.textContent = "Panel";
-            a.style.cssText = "background:#FFD100;color:#032A60;border-radius:999px;padding:8px 12px;text-decoration:none;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,.25)";
-            div.appendChild(a);
-        }
-        // Se coloca justo debajo del banner, a la derecha; si una página no
+        // Se coloca justo debajo del banner, a la izquierda; si una página no
         // tuviera banner, queda flotando arriba a la derecha como respaldo.
         const banner = document.querySelector("header.app-header") || document.querySelector("header");
         if (banner && banner.parentNode) {
