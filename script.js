@@ -13,18 +13,37 @@ if (fuenteGuardada) document.documentElement.style.setProperty('--fuente-app', f
 // ==========================================
 // 2. VERIFICACIÓN DE SEGURIDAD Y ACCESO (Con persistencia permanente)
 // ==========================================
+const AGLUCEM_API = "https://aglucem-api.adrian-camelot32.workers.dev";
 const currentPath = window.location.pathname;
 const isLoginPage = currentPath.endsWith("index.html") || currentPath.endsWith("/Agenda/") || currentPath.endsWith("/Agenda");
-const isLoggedIn = localStorage.getItem("app_isLoggedIn");
+const aglucemToken = localStorage.getItem("aglucem_token");
 
-// Si ya está logueado y entra al index, lo manda directo a novedades
-if (isLoggedIn === 'true' && isLoginPage) {
-    window.location.replace("/Agenda/novedades.html");
+// Limpieza del acceso anterior (el de utilería)
+localStorage.removeItem("app_isLoggedIn");
+localStorage.removeItem("app_currentUserEmail");
+
+function aglucemAlLogin() {
+    localStorage.removeItem("aglucem_token");
+    localStorage.removeItem("aglucem_user");
+    sessionStorage.removeItem("aglucem_me");
+    if (!isLoginPage) window.location.replace("/Agenda/index.html");
 }
 
-// Si no está logueado y trata de entrar a otra página, lo regresa al index
-if (isLoggedIn !== 'true' && !isLoginPage) {
-    window.location.replace("/Agenda/index.html"); 
+// Sin token no hay acceso; con token se valida contra la API (la sesión
+// no caduca sola: solo termina al cerrar sesión o si el admin bloquea).
+if (!isLoginPage) {
+    if (!aglucemToken) {
+        window.location.replace("/Agenda/index.html");
+    } else {
+        fetch(AGLUCEM_API + "/auth/me", { headers: { Authorization: "Bearer " + aglucemToken } })
+            .then(r => { if (!r.ok) throw new Error("401"); return r.json(); })
+            .then(user => {
+                localStorage.setItem("aglucem_user", JSON.stringify(user));
+                sessionStorage.setItem("aglucem_me", JSON.stringify(user));
+                document.dispatchEvent(new CustomEvent("aglucem-sesion", { detail: user }));
+            })
+            .catch(() => aglucemAlLogin());
+    }
 }
 
 // ==========================================
@@ -52,39 +71,52 @@ if ('serviceWorker' in navigator) {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- LÓGICA DE LOGIN (Correo completo) ---
-    const btnEntrar = document.getElementById('btnEntrar');
-    if (btnEntrar) {
-        btnEntrar.addEventListener('click', () => {
-            const nombreInput = document.getElementById('userName');
-            const emailInput = document.getElementById('userEmail');
-
-            if (nombreInput && emailInput) {
-                const nombre = nombreInput.value.trim();
-                const email = emailInput.value.trim().toLowerCase();
-
-                if (nombre === "" || email === "") {
-                    alert("Por favor, rellena todos los campos.");
-                    return;
-                }
-
-                // Guarda la sesión de forma permanente en el dispositivo
-                localStorage.setItem('app_isLoggedIn', 'true');
-                localStorage.setItem('app_currentUserEmail', email);
-                localStorage.setItem(`name_${email}`, nombre);
-
-                // Da acceso definitivo a la aplicación
-                window.location.replace("/Agenda/novedades.html");
-            }
-        });
-    }
-
     // --- SALUDO EN NOVEDADES ---
     const tituloNovedades = document.getElementById("tituloNovedades");
     if (tituloNovedades) {
-        const currentUserName = localStorage.getItem(`name_${localStorage.getItem("app_currentUserEmail")}`);
-        if (currentUserName) tituloNovedades.innerText = `Hola ${currentUserName}, mira las novedades del día de hoy`;
+        const agUser = JSON.parse(localStorage.getItem("aglucem_user") || "null");
+        if (agUser && agUser.nombre) tituloNovedades.innerText = `Hola ${agUser.nombre}, mira las novedades del día de hoy`;
     }
+
+    // --- PASTILLA DE SESIÓN (foto, nombre, panel si es admin, salir) ---
+    function aglucemPastilla(user) {
+        if (!user || document.getElementById("aglucem-sesion")) return;
+        const div = document.createElement("div");
+        div.id = "aglucem-sesion";
+        div.style.cssText = "position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:6px;align-items:center;background:rgba(3,42,96,.92);color:#fff;border-radius:999px;padding:5px 6px 5px 12px;font-family:sans-serif;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.25)";
+        if (user.foto) {
+            const img = document.createElement("img");
+            img.src = user.foto; img.alt = "";
+            img.style.cssText = "width:24px;height:24px;border-radius:50%;object-fit:cover;border:2px solid #FFD100";
+            div.appendChild(img);
+        }
+        const span = document.createElement("span");
+        span.textContent = (user.foto ? "" : "👤 ") + (user.nombre || user.usuario);
+        div.appendChild(span);
+        if (user.rol === "admin") {
+            const a = document.createElement("a");
+            a.href = "/Agenda/admin.html"; a.textContent = "Panel";
+            a.style.cssText = "background:#FFD100;color:#032A60;border-radius:999px;padding:4px 10px;text-decoration:none;font-weight:bold";
+            div.appendChild(a);
+        }
+        const b = document.createElement("button");
+        b.textContent = "Salir";
+        b.style.cssText = "background:#00A8FF;color:#fff;border:none;border-radius:999px;padding:4px 10px;cursor:pointer;font-weight:bold";
+        b.addEventListener("click", () => {
+            const t = localStorage.getItem("aglucem_token");
+            const salir = () => aglucemAlLogin();
+            if (t) fetch(AGLUCEM_API + "/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + t } }).finally(salir);
+            else salir();
+        });
+        div.appendChild(b);
+        document.body.appendChild(div);
+    }
+    aglucemPastilla(JSON.parse(localStorage.getItem("aglucem_user") || "null"));
+    document.addEventListener("aglucem-sesion", (e) => {
+        const vieja = document.getElementById("aglucem-sesion");
+        if (vieja) vieja.remove();
+        aglucemPastilla(e.detail);
+    });
 
     // --- LÓGICA DEL HORARIO ---
     const cells = document.querySelectorAll("td[contenteditable='true']");
@@ -152,8 +184,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', () => {
-        localStorage.removeItem("app_isLoggedIn");
-        window.location.href = "/Agenda/index.html"; 
+        const t = localStorage.getItem("aglucem_token");
+        const salir = () => { localStorage.removeItem("aglucem_token"); localStorage.removeItem("aglucem_user"); sessionStorage.removeItem("aglucem_me"); window.location.href = "/Agenda/index.html"; };
+        if (t) fetch(AGLUCEM_API + "/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + t } }).finally(salir);
+        else salir();
     });
 
     // 💥 BOTÓN DE ACTUALIZACIÓN CON BARRA DE 10 SEGUNDOS

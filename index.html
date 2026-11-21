@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - Ag lucem</title>
-    
+
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -50,6 +50,16 @@
             background: #f8fafc;
             color: #1e293b;
         }
+        .login-error {
+            display: none;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -57,49 +67,89 @@
     <div class="login-card">
         <img src="/Agenda/Ag.png" alt="Ag lucem Logo" class="login-logo">
         <h2 style="color: #032A60; margin-top: 0; margin-bottom: 5px;">Bienvenido</h2>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa tus credenciales institucionales</p>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Ingresa con tu cuenta de Ag Lucem</p>
+
+        <div id="loginError" class="login-error"></div>
 
         <div class="input-group">
-            <label class="input-label" for="userEmail">Correo o Usuario</label>
-            <input type="text" id="userEmail" class="standard-input" placeholder="usuario@juventud.edu.mx" onkeypress="verificarEnter(event)">
+            <label class="input-label" for="userEmail">Usuario</label>
+            <input type="text" id="userEmail" class="standard-input" placeholder="tu usuario" autocomplete="username" onkeypress="verificarEnter(event)">
         </div>
 
         <div class="input-group">
             <label class="input-label" for="userPassword">Contraseña</label>
-            <input type="password" id="userPassword" class="standard-input" placeholder="••••••••" onkeypress="verificarEnter(event)">
+            <input type="password" id="userPassword" class="standard-input" placeholder="••••••••" autocomplete="current-password" onkeypress="verificarEnter(event)">
         </div>
 
         <button id="btnEntrar" onclick="procesarAcceso()" class="app-btn btn-blue" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #00A8FF, #032A60); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
             Entrar a la Agenda
         </button>
+        <p style="color:#94a3b8; font-size:.8rem; margin:16px 0 0;">¿No tienes cuenta o olvidaste tu contraseña? Pídesela al administrador.</p>
     </div>
 
     <script>
-        // Si ya hay una sesión activa guardada, evita que aparezca el login y manda directo a novedades
-        if (localStorage.getItem('app_isLoggedIn') === 'true') {
-            window.location.replace("/Agenda/novedades.html");
+        var API = "https://aglucem-api.adrian-camelot32.workers.dev";
+
+        // Limpieza del acceso anterior (el de utilería)
+        localStorage.removeItem('app_isLoggedIn');
+        localStorage.removeItem('app_currentUserEmail');
+
+        // Si ya hay una sesión válida, directo a novedades
+        (function () {
+            var token = localStorage.getItem('aglucem_token');
+            if (!token) return;
+            fetch(API + "/auth/me", { headers: { Authorization: "Bearer " + token } })
+                .then(function (r) { if (r.ok) window.location.replace("/Agenda/novedades.html"); })
+                .catch(function () { /* sin red: se queda en el login */ });
+        })();
+
+        function verificarEnter(event) {
+            if (event.key === "Enter") procesarAcceso();
         }
 
-        function verificarEnter(event) { 
-            if (event.key === "Enter") procesarAcceso(); 
+        function mostrarError(texto) {
+            var el = document.getElementById('loginError');
+            el.textContent = texto;
+            el.style.display = 'block';
         }
 
         function procesarAcceso() {
-            const email = document.getElementById('userEmail').value.trim();
-            const pass = document.getElementById('userPassword').value.trim();
+            var usuario = document.getElementById('userEmail').value.trim();
+            var pass = document.getElementById('userPassword').value;
 
-            if (email === "" || pass === "") {
-                alert("Por favor, ingresa tu usuario y contraseña.");
+            if (usuario === "" || pass === "") {
+                mostrarError("Por favor, ingresa tu usuario y contraseña.");
                 return;
             }
 
-            // Aquí posteriormente conectaremos con tu API en Node.js sobre Debian/Cloudflare.
-            // Por ahora, guardamos el estado para que NUNCA vuelva a pedir credenciales en este dispositivo:
-            localStorage.setItem('app_isLoggedIn', 'true');
-            localStorage.setItem('app_currentUserEmail', email);
+            var btn = document.getElementById('btnEntrar');
+            btn.disabled = true;
+            btn.textContent = "Entrando…";
 
-            // Salto definitivo a novedades
-            window.location.replace("/Agenda/novedades.html");
+            fetch(API + "/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ usuario: usuario, password: pass })
+            })
+            .then(function (r) {
+                return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+            })
+            .then(function (x) {
+                if (!x.ok) {
+                    mostrarError(x.d.error || "No se pudo entrar.");
+                    btn.disabled = false;
+                    btn.textContent = "Entrar a la Agenda";
+                    return;
+                }
+                localStorage.setItem('aglucem_token', x.d.token);
+                localStorage.setItem('aglucem_user', JSON.stringify({ usuario: x.d.usuario, nombre: x.d.nombre, rol: x.d.rol }));
+                window.location.replace("/Agenda/novedades.html");
+            })
+            .catch(function () {
+                mostrarError("Sin conexión con el servidor de cuentas. Revisa tu internet e inténtalo de nuevo.");
+                btn.disabled = false;
+                btn.textContent = "Entrar a la Agenda";
+            });
         }
     </script>
 </body>

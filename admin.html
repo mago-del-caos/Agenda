@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel de cuentas - Ag lucem</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <style>
+        body { background: #f1f5fb; margin: 0; font-family: var(--fuente-app, sans-serif); color: #1e293b; }
+        .wrap { max-width: 960px; margin: 0 auto; padding: 20px 14px 60px; }
+        h1 { color: #032A60; font-size: 1.4rem; margin: 6px 0 2px; }
+        h2 { color: #032A60; font-size: 1.1rem; margin: 26px 0 10px; }
+        .sub { color: #64748b; font-size: .9rem; margin: 0 0 14px; }
+        .card { background: #fff; border: 1px solid rgba(3,42,96,.1); border-radius: 14px; padding: 16px; box-shadow: 0 6px 18px rgba(3,42,96,.06); }
+        table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+        th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        th { color: #032A60; }
+        .tag { display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: .75rem; font-weight: bold; }
+        .tag-admin { background: #FFD100; color: #032A60; }
+        .tag-user { background: #e2e8f0; color: #334155; }
+        .tag-on { background: #dcfce7; color: #166534; }
+        .tag-off { background: #fee2e2; color: #991b1b; }
+        .btn { border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-weight: bold; font-size: .8rem; }
+        .btn-azul { background: #00A8FF; color: #fff; }
+        .btn-rojo { background: #ef4444; color: #fff; }
+        .btn-verde { background: #22c55e; color: #fff; }
+        .btn-gris { background: #e2e8f0; color: #334155; }
+        .fila-form { display: flex; flex-wrap: wrap; gap: 8px; }
+        .fila-form input, .fila-form select { flex: 1 1 160px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: .95rem; background: #f8fafc; }
+        .msg { min-height: 1.2em; font-size: .88rem; margin-top: 10px; }
+        .error { color: #b91c1c; } .ok { color: #15803d; }
+        .volver { display: inline-block; margin-bottom: 8px; color: #032A60; text-decoration: none; font-weight: bold; }
+        @media (max-width: 640px) { .ocultar-movil { display: none; } }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <a class="volver" href="/Agenda/novedades.html">⟵ Volver a la Agenda</a>
+    <h1>Panel de cuentas</h1>
+    <p class="sub">Solo el administrador ve esta página. Aquí creas usuarios, los bloqueas, revisas quién entró en la semana y cambias contraseñas.</p>
+
+    <h2>Crear usuario</h2>
+    <div class="card">
+        <div class="fila-form">
+            <input id="nuevoUsuario" type="text" placeholder="Usuario (ej. profe.juan o correo)">
+            <input id="nuevoNombre" type="text" placeholder="Nombre para mostrar">
+            <input id="nuevoPass" type="text" placeholder="Contraseña inicial">
+            <select id="nuevoRol">
+                <option value="estudiante">Estudiante</option>
+                <option value="docente">Docente</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button class="btn btn-azul" onclick="crearUsuario()">Crear</button>
+        </div>
+        <p id="msgCrear" class="msg"></p>
+    </div>
+
+    <h2>Usuarios</h2>
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th><th>Nombre</th><th>Rol</th><th>Estado</th>
+                    <th class="ocultar-movil">Último acceso</th><th class="ocultar-movil">Entradas (7 días)</th><th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaUsuarios"><tr><td colspan="7">Cargando…</td></tr></tbody>
+        </table>
+        <p id="msgUsuarios" class="msg"></p>
+    </div>
+
+    <h2>Quién entró esta semana</h2>
+    <div class="card">
+        <table>
+            <thead><tr><th>Usuario</th><th>Nombre</th><th>Entradas (7 días)</th><th>Última entrada</th></tr></thead>
+            <tbody id="tablaAccesos"><tr><td colspan="4">Cargando…</td></tr></tbody>
+        </table>
+    </div>
+
+    <h2>Mi contraseña</h2>
+    <div class="card">
+        <div class="fila-form">
+            <input id="miActual" type="password" placeholder="Contraseña actual">
+            <input id="miNueva" type="password" placeholder="Nueva contraseña">
+            <button class="btn btn-azul" onclick="cambiarMia()">Cambiar mi contraseña</button>
+        </div>
+        <p id="msgMia" class="msg"></p>
+    </div>
+</div>
+
+<script src="/Agenda/auth-guard.js"></script>
+<script>
+    var API = "https://aglucem-api.adrian-camelot32.workers.dev";
+    var token = localStorage.getItem("aglucem_token");
+
+    function cab() { return { "Content-Type": "application/json", Authorization: "Bearer " + token }; }
+    function fecha(s) {
+        if (!s) return "—";
+        var d = new Date(s.replace(" ", "T") + "Z");
+        return d.toLocaleString("es-MX", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+    }
+    function msg(id, texto, ok) {
+        var el = document.getElementById(id);
+        el.textContent = texto;
+        el.className = "msg " + (ok ? "ok" : "error");
+    }
+
+    function cargarUsuarios() {
+        fetch(API + "/admin/usuarios", { headers: cab() })
+            .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+            .then(function (d) {
+                var tb = document.getElementById("tablaUsuarios");
+                tb.innerHTML = "";
+                d.usuarios.forEach(function (u) {
+                    var tr = document.createElement("tr");
+                    var foto = u.foto ? "<img src='" + u.foto + "' style='width:30px;height:30px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:7px'>" : "";
+                    tr.innerHTML =
+                        "<td>" + foto + "<b>" + u.usuario + "</b></td>" +
+                        "<td>" + (u.nombre || "") + "</td>" +
+                        "<td><span class='tag " + (u.rol === "admin" ? "tag-admin" : "tag-user") + "'>" + u.rol + "</span></td>" +
+                        "<td><span class='tag " + (u.activo ? "tag-on" : "tag-off") + "'>" + (u.activo ? "Activo" : "Bloqueado") + "</span></td>" +
+                        "<td class='ocultar-movil'>" + fecha(u.ultimo_acceso) + "</td>" +
+                        "<td class='ocultar-movil'>" + u.accesos_semana + "</td>";
+                    var td = document.createElement("td");
+                    var b1 = document.createElement("button");
+                    b1.className = "btn " + (u.activo ? "btn-rojo" : "btn-verde");
+                    b1.textContent = u.activo ? "Bloquear" : "Activar";
+                    b1.onclick = function () { cambiarEstado(u.id, u.activo ? 0 : 1, u.usuario); };
+                    var b2 = document.createElement("button");
+                    b2.className = "btn btn-gris";
+                    b2.textContent = "Contraseña";
+                    b2.style.marginLeft = "6px";
+                    b2.onclick = function () { restablecer(u.id, u.usuario); };
+                    td.appendChild(b1); td.appendChild(b2);
+                    tr.appendChild(td);
+                    tb.appendChild(tr);
+                });
+            })
+            .catch(function () { msg("msgUsuarios", "No se pudo cargar la lista. ¿Tu sesión sigue activa y eres admin?", false); });
+    }
+
+    function cargarAccesos() {
+        fetch(API + "/admin/accesos", { headers: cab() })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                var tb = document.getElementById("tablaAccesos");
+                tb.innerHTML = "";
+                if (!d.accesos.length) tb.innerHTML = "<tr><td colspan='4'>Nadie ha entrado en los últimos 7 días.</td></tr>";
+                d.accesos.forEach(function (a) {
+                    var tr = document.createElement("tr");
+                    tr.innerHTML = "<td><b>" + a.usuario + "</b></td><td>" + (a.nombre || "") + "</td><td>" + a.entradas + "</td><td>" + fecha(a.ultimo) + "</td>";
+                    tb.appendChild(tr);
+                });
+            });
+    }
+
+    function crearUsuario() {
+        var datos = {
+            usuario: document.getElementById("nuevoUsuario").value.trim(),
+            nombre: document.getElementById("nuevoNombre").value.trim(),
+            password: document.getElementById("nuevoPass").value,
+            rol: document.getElementById("nuevoRol").value
+        };
+        fetch(API + "/admin/usuarios", { method: "POST", headers: cab(), body: JSON.stringify(datos) })
+            .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+            .then(function (x) {
+                if (!x.ok) { msg("msgCrear", x.d.error || "No se pudo crear.", false); return; }
+                msg("msgCrear", "Usuario «" + datos.usuario + "» creado. Entrégale su contraseña inicial y pide que la cambie en Ajustes.", true);
+                document.getElementById("nuevoUsuario").value = "";
+                document.getElementById("nuevoNombre").value = "";
+                document.getElementById("nuevoPass").value = "";
+                cargarUsuarios();
+            })
+            .catch(function () { msg("msgCrear", "Error de red al crear.", false); });
+    }
+
+    function cambiarEstado(id, activo, usuario) {
+        if (!confirm((activo ? "¿Activar" : "¿Bloquear") + " la cuenta de «" + usuario + "»?" + (activo ? "" : " Se cerrarán sus sesiones al momento."))) return;
+        fetch(API + "/admin/usuarios/" + id, { method: "PATCH", headers: cab(), body: JSON.stringify({ activo: activo }) })
+            .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+            .then(function (x) {
+                if (!x.ok) { msg("msgUsuarios", x.d.error || "No se pudo actualizar.", false); return; }
+                msg("msgUsuarios", "Cuenta de «" + usuario + "» " + (activo ? "activada." : "bloqueada."), true);
+                cargarUsuarios(); cargarAccesos();
+            });
+    }
+
+    function restablecer(id, usuario) {
+        var nueva = prompt("Nueva contraseña para «" + usuario + "» (mínimo 6 caracteres):");
+        if (!nueva) return;
+        fetch(API + "/admin/usuarios/" + id + "/password", { method: "POST", headers: cab(), body: JSON.stringify({ nueva: nueva }) })
+            .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+            .then(function (x) {
+                if (!x.ok) { msg("msgUsuarios", x.d.error || "No se pudo cambiar.", false); return; }
+                msg("msgUsuarios", "Contraseña de «" + usuario + "» actualizada. Sus sesiones anteriores se cerraron.", true);
+            });
+    }
+
+    function cambiarMia() {
+        var datos = {
+            actual: document.getElementById("miActual").value,
+            nueva: document.getElementById("miNueva").value
+        };
+        fetch(API + "/auth/password", { method: "POST", headers: cab(), body: JSON.stringify(datos) })
+            .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+            .then(function (x) {
+                if (!x.ok) { msg("msgMia", x.d.error || "No se pudo cambiar.", false); return; }
+                msg("msgMia", "Tu contraseña quedó actualizada.", true);
+                document.getElementById("miActual").value = "";
+                document.getElementById("miNueva").value = "";
+            });
+    }
+
+    cargarUsuarios();
+    cargarAccesos();
+</script>
+</body>
+</html>

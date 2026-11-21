@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Comunidad - Ag lucem</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .aviso-responsabilidad {
+            background: #FFF7E0;
+            border: 1px solid #E6C34A;
+            color: #6B5410;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .publicar-box textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #CBD5E1;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font: inherit;
+            resize: vertical;
+            min-height: 64px;
+        }
+        .publicar-fila {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .contador { font-size: 0.8rem; color: #64748B; }
+        .btn-publicar {
+            background: linear-gradient(135deg, var(--ij-celeste), var(--ij-azul-fuerte));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 9px 20px;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .mensaje {
+            display: flex;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .mensaje:last-child { border-bottom: none; }
+        .avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex: none;
+            background: linear-gradient(135deg, #8E6CC8, #5B3E99);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.05rem;
+            overflow: hidden;
+        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .mensaje-cuerpo { flex: 1; min-width: 0; }
+        .mensaje-cabeza { font-size: 0.9rem; }
+        .mensaje-cabeza .usuario { color: #64748B; font-weight: 400; }
+        .mensaje-cabeza .fecha { color: #94A3B8; font-size: 0.78rem; display: block; }
+        .mensaje-texto { margin-top: 2px; white-space: pre-wrap; word-wrap: break-word; }
+        .btn-borrar {
+            background: transparent; border: none; color: #C026D3;
+            cursor: pointer; font-size: 0.8rem; padding: 2px 0;
+        }
+        .miembro {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; border-bottom: 1px solid #EEF2F7;
+        }
+        .miembro:last-child { border-bottom: none; }
+        .miembro .avatar { width: 36px; height: 36px; font-size: 0.9rem; }
+        .miembro-nombre { flex: 1; min-width: 0; font-size: 0.92rem; }
+        .miembro-nombre .usuario { color: #64748B; font-size: 0.8rem; display: block; }
+        .interruptor { width: 22px; height: 22px; accent-color: #5B3E99; flex: none; }
+        .buscar {
+            width: 100%; box-sizing: border-box;
+            border: 1px solid #CBD5E1; border-radius: 10px;
+            padding: 9px 12px; font: inherit; margin-bottom: 6px;
+        }
+        .vacio { color: #64748B; text-align: center; padding: 18px 8px; }
+        .msg-error { color: #B91C1C; font-size: 0.88rem; min-height: 1.1em; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="https://mago-del-caos.github.io/calendarioIJEM/" class="nav-btn">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title">Comunidad</h2>
+
+        <div class="aviso-responsabilidad">
+            Todo mensaje publicado en este muro es responsabilidad de quien lo escribe.
+        </div>
+
+        <div class="card-elevation publicar-box" style="padding: 16px; margin-bottom: 20px;">
+            <textarea id="texto" maxlength="280" placeholder="Escribe un mensaje corto para la comunidad…"></textarea>
+            <div class="publicar-fila">
+                <span class="contador"><span id="cuenta">0</span>/280</span>
+                <button class="btn-publicar" id="btnPublicar">Publicar</button>
+            </div>
+            <p class="msg-error" id="msgPublicar"></p>
+        </div>
+
+        <div class="card-elevation" style="padding: 16px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0;">¿De quién quieres ver actualizaciones?</h3>
+            <input type="text" id="buscar" class="buscar" placeholder="Buscar a un miembro…">
+            <div id="listaMiembros"><p class="vacio">Cargando miembros…</p></div>
+        </div>
+
+        <div class="card-elevation" style="padding: 16px;">
+            <h3 style="margin-top: 0;">Muro</h3>
+            <div id="muro"><p class="vacio">Cargando mensajes…</p></div>
+        </div>
+    </main>
+
+    <script src="/Agenda/script.js"></script>
+    <script>
+    (function () {
+        var API = "https://aglucem-api.adrian-camelot32.workers.dev";
+        var token = localStorage.getItem("aglucem_token");
+        var yo = null;
+        try { yo = JSON.parse(localStorage.getItem("aglucem_user") || "null"); } catch (e) { yo = null; }
+        var esAdmin = yo && yo.rol === "admin";
+
+        function cab() { return { "Authorization": "Bearer " + token, "Content-Type": "application/json" }; }
+        function esc(s) {
+            return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+            });
+        }
+        function avatarHTML(m, grande) {
+            if (m.foto) return '<div class="avatar"><img src="' + esc(m.foto) + '" alt=""></div>';
+            var ini = (m.nombre || m.usuario || "?").trim().charAt(0).toUpperCase();
+            return '<div class="avatar">' + esc(ini) + "</div>";
+        }
+        function fechaBonita(f) {
+            if (!f) return "";
+            var d = new Date(f.replace(" ", "T") + "Z");
+            if (isNaN(d)) return f;
+            return d.toLocaleDateString("es-MX", { day: "numeric", month: "short" }) + ", " +
+                   d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+        }
+
+        var muroEl = document.getElementById("muro");
+        function cargarMuro() {
+            fetch(API + "/comunidad/muro", { headers: cab() })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    var lista = d.mensajes || [];
+                    if (!lista.length) {
+                        muroEl.innerHTML = '<p class="vacio">Aún no hay mensajes de las personas que sigues. Elige arriba de quién quieres ver actualizaciones o publica el primer mensaje.</p>';
+                        return;
+                    }
+                    muroEl.innerHTML = lista.map(function (m) {
+                        var borrar = (m.mio || esAdmin)
+                            ? ' <button class="btn-borrar" data-borrar="' + m.id + '">Borrar</button>' : "";
+                        return '<div class="mensaje">' + avatarHTML(m) +
+                            '<div class="mensaje-cuerpo"><div class="mensaje-cabeza"><strong>' + esc(m.nombre) +
+                            '</strong> <span class="usuario">@' + esc(m.usuario) + '</span>' +
+                            '<span class="fecha">' + esc(fechaBonita(m.creado_en)) + "</span></div>" +
+                            '<div class="mensaje-texto">' + esc(m.texto) + "</div>" + borrar + "</div></div>";
+                    }).join("");
+                    Array.prototype.forEach.call(muroEl.querySelectorAll("[data-borrar]"), function (b) {
+                        b.addEventListener("click", function () {
+                            if (!confirm("¿Borrar este mensaje?")) return;
+                            fetch(API + "/comunidad/mensajes/" + b.getAttribute("data-borrar"),
+                                { method: "DELETE", headers: cab() }).then(cargarMuro);
+                        });
+                    });
+                })
+                .catch(function () { muroEl.innerHTML = '<p class="vacio">No se pudo cargar el muro.</p>'; });
+        }
+
+        var miembrosEl = document.getElementById("listaMiembros");
+        var miembros = [];
+        function pintarMiembros() {
+            var q = document.getElementById("buscar").value.trim().toLowerCase();
+            var visibles = miembros.filter(function (m) {
+                return !q || (m.nombre || "").toLowerCase().indexOf(q) >= 0 || m.usuario.indexOf(q) >= 0;
+            });
+            if (!visibles.length) { miembrosEl.innerHTML = '<p class="vacio">Sin resultados.</p>'; return; }
+            miembrosEl.innerHTML = visibles.map(function (m) {
+                return '<div class="miembro">' + avatarHTML(m) +
+                    '<div class="miembro-nombre"><strong>' + esc(m.nombre) + '</strong>' +
+                    '<span class="usuario">@' + esc(m.usuario) + " · " + esc(m.rol) + "</span></div>" +
+                    '<input type="checkbox" class="interruptor" data-seguir="' + m.id + '"' +
+                    (m.lo_sigo ? " checked" : "") + "></div>";
+            }).join("");
+            Array.prototype.forEach.call(miembrosEl.querySelectorAll("[data-seguir]"), function (c) {
+                c.addEventListener("change", function () {
+                    fetch(API + "/comunidad/seguir", {
+                        method: "POST", headers: cab(),
+                        body: JSON.stringify({ usuario_id: parseInt(c.getAttribute("data-seguir"), 10), seguir: c.checked })
+                    }).then(function () {
+                        miembros.forEach(function (m) {
+                            if (String(m.id) === c.getAttribute("data-seguir")) m.lo_sigo = c.checked ? 1 : 0;
+                        });
+                        cargarMuro();
+                    });
+                });
+            });
+        }
+        function cargarMiembros() {
+            fetch(API + "/comunidad/miembros", { headers: cab() })
+                .then(function (r) { return r.json(); })
+                .then(function (d) { miembros = d.miembros || []; pintarMiembros(); })
+                .catch(function () { miembrosEl.innerHTML = '<p class="vacio">No se pudo cargar la lista.</p>'; });
+        }
+        document.getElementById("buscar").addEventListener("input", pintarMiembros);
+
+        var textoEl = document.getElementById("texto");
+        textoEl.addEventListener("input", function () {
+            document.getElementById("cuenta").textContent = textoEl.value.length;
+        });
+        document.getElementById("btnPublicar").addEventListener("click", function () {
+            var msg = document.getElementById("msgPublicar");
+            msg.textContent = "";
+            fetch(API + "/comunidad/mensajes", {
+                method: "POST", headers: cab(),
+                body: JSON.stringify({ texto: textoEl.value })
+            }).then(function (r) {
+                return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+            }).then(function (x) {
+                if (!x.ok) { msg.textContent = x.d.error || "No se pudo publicar."; return; }
+                textoEl.value = "";
+                document.getElementById("cuenta").textContent = "0";
+                cargarMuro();
+            }).catch(function () { msg.textContent = "No se pudo publicar."; });
+        });
+
+        if (!token) { window.location.href = "/Agenda/index.html"; return; }
+        cargarMiembros();
+        cargarMuro();
+    })();
+    </script>
+</body>
+</html>

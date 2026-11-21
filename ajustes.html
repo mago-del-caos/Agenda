@@ -60,6 +60,34 @@
 
         </div>
 
+
+        <h2 class="section-title">Mi cuenta</h2>
+
+        <div class="card-elevation" style="padding: 25px; margin-bottom: 20px;">
+            <!-- Foto de perfil -->
+            <div class="input-group" style="display:flex; align-items:center; gap:16px;">
+                <img id="miFotoVista" alt="Tu foto de perfil" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid var(--ij-amarillo, #FFD100); background:#e2e8f0;">
+                <div>
+                    <label for="miFoto" style="display:block; margin-bottom:8px;">🖼️ Foto de perfil:</label>
+                    <input type="file" id="miFoto" accept="image/*" style="max-width:230px;">
+                </div>
+            </div>
+            <button id="btnSubirFoto" class="app-btn btn-blue" style="width:100%; margin-bottom:8px;">Guardar foto</button>
+            <p id="msgFoto" style="min-height:1.2em; font-size:.9rem; margin:4px 0 18px;"></p>
+
+            <!-- Cambio de contraseña -->
+            <div class="input-group">
+                <label for="miPassActual">🔑 Contraseña actual:</label>
+                <input type="password" id="miPassActual" autocomplete="current-password">
+            </div>
+            <div class="input-group">
+                <label for="miPassNueva">Nueva contraseña:</label>
+                <input type="password" id="miPassNueva" autocomplete="new-password">
+            </div>
+            <button id="btnCambiarPass" class="app-btn btn-blue" style="width:100%;">Cambiar mi contraseña</button>
+            <p id="msgPass" style="min-height:1.2em; font-size:.9rem; margin:4px 0 0;"></p>
+        </div>
+
         <!-- Botón de Actualización Forzada -->
         <button id="btnActualizarApp" class="app-btn btn-blue" style="width: 100%; margin-bottom: 15px; flex-direction: row; gap: 10px;">
             🔄 Forzar Actualización del Sistema
@@ -79,5 +107,75 @@
     </main>
 
     <script src="/Agenda/script.js"></script>
+
+    <script>
+        (function () {
+            var API = "https://aglucem-api.adrian-camelot32.workers.dev";
+            var token = localStorage.getItem("aglucem_token");
+            var user = JSON.parse(localStorage.getItem("aglucem_user") || "null");
+            var vista = document.getElementById("miFotoVista");
+            if (user && user.foto) vista.src = user.foto;
+            fetch(API + "/auth/me", { headers: { Authorization: "Bearer " + token } })
+                .then(function (r) { return r.json(); })
+                .then(function (u) { if (u.foto) { vista.src = u.foto; localStorage.setItem("aglucem_user", JSON.stringify(u)); } })
+                .catch(function () {});
+
+            function nota(id, texto, ok) {
+                var el = document.getElementById(id);
+                el.textContent = texto;
+                el.style.color = ok ? "#15803d" : "#b91c1c";
+            }
+
+            document.getElementById("btnSubirFoto").addEventListener("click", function () {
+                var archivo = document.getElementById("miFoto").files[0];
+                if (!archivo) { nota("msgFoto", "Primero elige una imagen.", false); return; }
+                var lector = new FileReader();
+                lector.onload = function () {
+                    var img = new Image();
+                    img.onload = function () {
+                        var lado = 256;
+                        var lienzo = document.createElement("canvas");
+                        lienzo.width = lado; lienzo.height = lado;
+                        var ctx = lienzo.getContext("2d");
+                        var escala = Math.max(lado / img.width, lado / img.height);
+                        var w = img.width * escala, h = img.height * escala;
+                        ctx.drawImage(img, (lado - w) / 2, (lado - h) / 2, w, h);
+                        var datos = lienzo.toDataURL("image/jpeg", 0.85);
+                        fetch(API + "/auth/foto", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+                            body: JSON.stringify({ foto: datos })
+                        }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+                          .then(function (x) {
+                              if (!x.ok) { nota("msgFoto", x.d.error || "No se pudo guardar.", false); return; }
+                              vista.src = datos;
+                              if (user) { user.foto = datos; localStorage.setItem("aglucem_user", JSON.stringify(user)); }
+                              nota("msgFoto", "Foto guardada. Se verá junto a tu nombre en toda la Agenda.", true);
+                          }).catch(function () { nota("msgFoto", "Error de red al guardar la foto.", false); });
+                    };
+                    img.src = lector.result;
+                };
+                lector.readAsDataURL(archivo);
+            });
+
+            document.getElementById("btnCambiarPass").addEventListener("click", function () {
+                var datos = {
+                    actual: document.getElementById("miPassActual").value,
+                    nueva: document.getElementById("miPassNueva").value
+                };
+                fetch(API + "/auth/password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+                    body: JSON.stringify(datos)
+                }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+                  .then(function (x) {
+                      if (!x.ok) { nota("msgPass", x.d.error || "No se pudo cambiar.", false); return; }
+                      nota("msgPass", "Contraseña actualizada. Es tuya: ni el administrador la conoce.", true);
+                      document.getElementById("miPassActual").value = "";
+                      document.getElementById("miPassNueva").value = "";
+                  }).catch(function () { nota("msgPass", "Error de red al cambiar la contraseña.", false); });
+            });
+        })();
+    </script>
 </body>
 </html>
