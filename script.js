@@ -78,13 +78,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (agUser && agUser.nombre) tituloNovedades.innerText = `Hola ${agUser.nombre}, mira las novedades del día de hoy`;
     }
 
-    // --- FOTO DE PERFIL A LA DERECHA: mitad en el banner, mitad fuera ---
+    // --- FOTO DE PERFIL A LA IZQUIERDA: mitad en el banner, mitad fuera ---
     // Solo la foto, sin nombre y sin botón de salir (salir es desde Ajustes).
     function aglucemPastilla(user) {
         if (!user || document.getElementById("aglucem-sesion")) return;
         const div = document.createElement("div");
         div.id = "aglucem-sesion";
-        div.style.cssText = "display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:0 14px;margin-top:-30px;position:relative;z-index:6;font-family:sans-serif;font-size:.85rem";
+        div.style.cssText = "display:flex;gap:8px;align-items:center;justify-content:flex-start;padding:0 14px;margin-top:-30px;position:relative;z-index:6;font-family:sans-serif;font-size:.85rem";
         const perfil = document.createElement("a");
         perfil.href = "/Agenda/ajustes.html";
         perfil.title = "Mi cuenta";
