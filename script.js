@@ -123,7 +123,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 a.style.cssText = "background:#FFD100;color:#032A60;font-weight:800";
                 const ajustes = nav.querySelector('a[href="/Agenda/ajustes.html"]');
                 if (ajustes) nav.insertBefore(a, ajustes); else nav.appendChild(a);
-                if (enZona && a.scrollIntoView) { /* la vista activa ya se maneja sola */ }
+            }
+            // Botón «Admin» en el banner: SOLO para el administrador (cifra).
+            if (nav && user.rol === "admin" && !document.getElementById("navAdmin")) {
+                const b = document.createElement("a");
+                b.id = "navAdmin";
+                b.href = "/Agenda/admin.html";
+                b.textContent = "Admin";
+                b.className = "nav-btn" + (location.pathname.includes("admin.html") ? " active" : "");
+                b.style.cssText = "background:#032A60;color:#FFD100;font-weight:800;border:1px solid #FFD100";
+                const ajustes2 = nav.querySelector('a[href="/Agenda/ajustes.html"]');
+                if (ajustes2) nav.insertBefore(b, ajustes2); else nav.appendChild(b);
             }
         } catch { /* la navegación queda como está */ }
     }
