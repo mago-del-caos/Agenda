@@ -153,11 +153,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!tokenHorario) { estadoHorario("Sin sesión: quedó solo en este dispositivo."); return Promise.resolve(false); }
             estadoHorario("Guardando en el servidor…");
             const celdas = Array.from(cells).map((c) => c.innerText);
-            return fetch(AGLUCEM_API + "/horario", {
-                method: "PUT",
+            const enviar = (metodo) => fetch(AGLUCEM_API + "/horario", {
+                method: metodo,
                 headers: { Authorization: "Bearer " + tokenHorario, "Content-Type": "application/json" },
                 body: JSON.stringify({ celdas })
-            }).then((r) => {
+            });
+            // Algunas redes (escuelas, oficinas) bloquean el método PUT:
+            // si falla, se reintenta con POST, que el servidor acepta igual.
+            return enviar("PUT").catch(() => enviar("POST")).then((r) => {
                 if (r.ok) {
                     const h = new Date();
                     estadoHorario("✓ Guardado en el servidor " + String(h.getHours()).padStart(2, "0") + ":" + String(h.getMinutes()).padStart(2, "0") + " — ya se ve en todos tus dispositivos.");
