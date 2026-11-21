@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calendario - Ag lucem</title>
+    
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Contenedor estricto para la ventana de Neocities */
+        .iframe-container {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Mantiene el cuadrado perfecto para celulares */
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+            background-color: var(--fondo-app, #f8f9fa);
+            position: relative;
+        }
+
+        /* Ajuste del Iframe para que parezca nativo */
+        .carrete-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* ===== Banda de noticias (se actualiza cada hora) ===== */
+        .news-band {
+            background: linear-gradient(135deg, var(--ij-azul-fuerte, #032A60) 0%, #0b3063 100%);
+            border-bottom: 4px solid var(--ij-amarillo, #FFD100);
+            border-radius: 16px;
+            padding: 12px 14px 10px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 15px rgba(3, 42, 96, 0.25);
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        /* El presentador de Notijem completo, en miniatura en la esquina superior izquierda */
+        .news-presenter {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            width: 56px;
+            height: 75px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid var(--ij-amarillo, #FFD100);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+            background: #071326;
+            z-index: 2;
+        }
+
+        .news-weather {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 18px;
+            padding-bottom: 9px;
+            margin-bottom: 9px;
+            margin-left: 68px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            font-size: 0.86rem;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .news-weather b { color: #FFFFFF; }
+
+        .wx-edit {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            vertical-align: middle;
+        }
+
+        .wx-editor { flex-basis: 100%; margin-top: 4px; animation: news-despliegue 0.25s ease; }
+
+        .wx-editor-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .wx-input {
+            flex: 1;
+            min-width: 180px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            color: #1E293B;
+        }
+
+        .wx-btn {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 7px 13px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .wx-resultados { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+
+        .wx-opcion {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #FFFFFF;
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .wx-nota { font-size: 0.84rem; color: rgba(255, 255, 255, 0.8); }
+
+        .news-band-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+            margin-left: 68px;
+        }
+
+        .news-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--ij-azul-fuerte, #032A60);
+            background: var(--ij-amarillo, #FFD100);
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .news-fecha {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            flex: 1;
+        }
+
+        .news-config {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .news-config:active { transform: scale(0.96); }
+
+        .news-ticker {
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+        }
+
+        .news-track {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            animation: news-scroll 120s linear infinite;
+            will-change: transform;
+        }
+
+        .news-ticker:hover .news-track,
+        .news-ticker:active .news-track { animation-play-state: paused; }
+
+        @keyframes news-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .news-item {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 2px 0;
+        }
+
+        .news-item .news-tema {
+            color: var(--ij-celeste, #00A8FF);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 0.6px;
+        }
+
+        .news-item .news-fuente { color: rgba(255, 255, 255, 0.65); font-weight: 400; font-size: 0.82rem; }
+
+        .news-sep { color: var(--ij-amarillo, #FFD100); margin: 0 18px; font-size: 0.8rem; }
+
+        /* ===== Selector de temas de interés ===== */
+        .news-picker {
+            background: var(--blanco, #FFFFFF);
+            border: 1px solid var(--borde, #E2E8F0);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+            animation: news-despliegue 0.25s ease;
+        }
+
+        @keyframes news-despliegue {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .news-pregunta {
+            margin: 0 0 12px;
+            font-size: 0.95rem;
+            line-height: 1.45;
+            color: var(--texto-oscuro, #1E293B);
+        }
+
+        .news-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .news-chip {
+            border: 2px solid var(--borde, #E2E8F0);
+            background: var(--fondo-app, #F5F7FA);
+            color: var(--texto-oscuro, #1E293B);
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 8px 13px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+
+        .news-chip.sel {
+            background: var(--ij-azul-fuerte, #032A60);
+            border-color: var(--ij-azul-fuerte, #032A60);
+            color: #FFFFFF;
+        }
+
+        .news-picker-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .news-count { font-size: 0.85rem; font-weight: 700; color: var(--texto-claro, #64748B); }
+
+        .news-save {
+            background: var(--ij-verde, #009944);
+            color: #FFFFFF;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 800;
+            padding: 9px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .news-save:disabled { background: #94A3B8; cursor: not-allowed; }
+        .news-save:not(:disabled):active { transform: scale(0.96); }
+    
+        .cal-marco { width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.15); background: #fff; }
+        .cal-frame { width: 100%; height: calc(100dvh - 235px); min-height: 430px; border: none; display: block; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <!-- Novedades activo -->
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/calendario.html" class="nav-btn active">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title" style="margin-bottom: 18px; color: var(--ij-azul-fuerte);">Calendario</h2>
+        <div class="cal-marco">
+            <iframe class="cal-frame" src="https://mago-del-caos.github.io/calendarioIJEM/" title="Calendario IJEM" loading="lazy"></iframe>
+        </div>
+    </main>
+
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
