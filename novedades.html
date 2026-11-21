@@ -606,12 +606,12 @@
 
     <script>
         // TRUCO TÁCTICO ANTI-CACHÉ PARA EL IFRAME:
-        // Añade una estampa de tiempo (timestamp) en vivo para obligar a Neocities a entregar la última versión
+        // Añade una estampa de tiempo (timestamp) en vivo para obligar al navegador a entregar la última versión del carrete (ya vive en GitHub, no en Neocities)
         document.addEventListener("DOMContentLoaded", () => {
             const iframe = document.getElementById('neocitiesFrame');
             if (iframe) {
                 const timestamp = new Date().getTime();
-                iframe.src = `https://proyecto-aracknia.neocities.org/carrete?v=${timestamp}`;
+                iframe.src = `/Agenda/carrete.html?v=${timestamp}`;
             }
         });
     </script>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrete de Fotos - Ag Lucem</title>
+    <!--
+        CARRETE DE NOVEDADES (versión GitHub)
+        Para cambiar las imágenes NO toques este archivo:
+        edita carrete.json (mismo repo) y sube las fotos a la carpeta carrete-imgs/.
+        Cada entrada del JSON: src (nombre del archivo en carrete-imgs/ o una URL completa),
+        alt, esDoble (true = se ve grande), enlace y textoBadge (opcionales).
+        Las imágenes que no existan se saltan solas.
+    -->
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .carrete-contenedor {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: transparent;
+            touch-action: pan-y;
+            transition: max-width 0.3s ease-in-out;
+        }
+
+        /* Duplica el tamaño del contenedor cuando la imagen activa tiene esDoble: true */
+        .carrete-contenedor.modo-grande {
+            max-width: 1600px;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            position: relative;
+        }
+
+        .slide.activa {
+            display: block;
+            animation: fade 0.45s ease-in-out;
+        }
+
+        .slide-link {
+            display: block;
+            width: 100%;
+            text-decoration: none;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .slide img {
+            width: 100%;
+            max-height: 85vh;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            margin: 0 auto;
+            image-rendering: -webkit-optimize-contrast;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        /* Efecto sutil al pasar el cursor sobre imágenes con enlace */
+        .slide-link:hover img {
+            transform: scale(1.015);
+            filter: brightness(1.04);
+        }
+
+        /* Estilo específico para duplicar el tamaño visual */
+        .slide img.img-doble {
+            aspect-ratio: auto;
+            max-height: 180vh;
+            min-height: 75vh;
+            width: 100%;
+            object-fit: contain;
+        }
+
+        /* Etiqueta flotante para indicar que la imagen tiene enlace */
+        .badge-enlace {
+            position: absolute;
+            bottom: 38px;
+            right: 20px;
+            background-color: rgba(220, 38, 38, 0.9);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            pointer-events: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .slide-link:hover .badge-enlace {
+            background-color: rgba(185, 28, 28, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Botones de navegación lateral */
+        .btn-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 6px;
+            transition: background-color 0.25s, transform 0.2s;
+            z-index: 10;
+            user-select: none;
+        }
+
+        .btn-nav:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .prev { left: 10px; }
+        .next { right: 10px; }
+
+        /* Puntos indicadores inferiores */
+        .indicadores {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 0;
+            z-index: 10;
+        }
+
+        .punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(120, 120, 120, 0.45);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .punto.activo {
+            background-color: #e11d48;
+            transform: scale(1.25);
+        }
+
+        /* Aviso cuando no hay imágenes disponibles */
+        .aviso-vacio {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        @keyframes fade {
+            from { opacity: 0.75; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="carrete-contenedor" id="cajaCarrete">
+        <button class="btn-nav prev" id="btnPrev" aria-label="Anterior" onclick="cambiarSlide(-1)">&#10094;</button>
+        <button class="btn-nav next" id="btnNext" aria-label="Siguiente" onclick="cambiarSlide(1)">&#10095;</button>
+
+        <div class="indicadores" id="contenedorIndicadores"></div>
+
+        <div class="aviso-vacio" id="avisoVacio">
+            No se pudieron cargar las im&aacute;genes.
+        </div>
+    </div>
+
+    <script>
+        // Las imágenes viven en la carpeta carrete-imgs/ del mismo repo.
+        // La lista se lee de carrete.json: para cambiar el carrete se edita SOLO ese archivo.
+        const CARPETA_IMAGENES = 'carrete-imgs/';
+        const ARCHIVO_CONFIG = 'carrete.json';
+
+        // Respaldo por si carrete.json no carga (sin conexión o error de sintaxis):
+        const CONFIG_RESPALDO = [
+            { src: 'navidad.jpeg', alt: 'Navidad', esDoble: true, enlace: 'https://mago-del-caos.github.io/minijuegos/', textoBadge: '¡A jugar! ↗' },
+            { src: 'fotoa.jpg', alt: 'Imagen A', esDoble: false }
+        ];
+
+        const TIEMPO_ROTACION_MS = 30000; // 30 segundos por imagen
+        let indiceActual = 0;
+        let slidesValidos = [];
+        let intervalo = null;
+
+        const contenedor = document.getElementById('cajaCarrete');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        const contenedorIndicadores = document.getElementById('contenedorIndicadores');
+        const avisoVacio = document.getElementById('avisoVacio');
+
+        // Un nombre simple se busca en carrete-imgs/; una URL completa se usa tal cual
+        function resolverSrc(src) {
+            return /^https?:\/\//i.test(src) ? src : CARPETA_IMAGENES + src;
+        }
+
+        // Verifica si una imagen existe y carga correctamente
+        function imagenCargaBien(src) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = resolverSrc(src);
+            });
+        }
+
+        async function cargarConfig() {
+            try {
+                const r = await fetch(ARCHIVO_CONFIG, { cache: 'no-store' });
+                if (!r.ok) throw new Error('sin config');
+                const datos = await r.json();
+                if (Array.isArray(datos) && datos.length) return datos;
+                throw new Error('config vacía');
+            } catch (e) {
+                return CONFIG_RESPALDO;
+            }
+        }
+
+        // Construye el carrete únicamente con las imágenes disponibles en el servidor
+        async function construirCarrete() {
+            const CONFIG_SLIDES = await cargarConfig();
+            contenedor.querySelectorAll('.slide').forEach(s => s.remove());
+            contenedorIndicadores.innerHTML = '';
+
+            // Filtra cualquier imagen que no cargue o que tenga "altares" en el nombre por seguridad
+            const resultados = await Promise.all(
+                CONFIG_SLIDES
+                    .filter(item => item && item.src && !item.src.toLowerCase().includes('altares'))
+                    .map(async (item) => {
+                        const ok = await imagenCargaBien(item.src);
+                        return ok ? item : null;
+                    })
+            );
+
+            slidesValidos = resultados.filter(item => item !== null);
+
+            if (slidesValidos.length === 0) {
+                mostrarEstadoVacio();
+                return;
+            }
+
+            actualizarControlesNavegacion();
+
+            slidesValidos.forEach((item, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+
+                const img = document.createElement('img');
+                img.src = resolverSrc(item.src);
+                img.alt = item.alt || ('Imagen ' + item.src);
+                img.loading = index === 0 ? 'eager' : 'lazy';
+
+                if (item.esDoble) {
+                    img.classList.add('img-doble');
+                }
+
+                // Manejo de error en tiempo de ejecución
+                img.addEventListener('error', () => manejarCaidaDeImagen(item.src, slide));
+
+                // Si tiene enlace configurado, envuelve la imagen en un <a>
+                if (item.enlace) {
+                    const link = document.createElement('a');
+                    link.href = item.enlace;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.className = 'slide-link';
+                    link.title = item.alt;
+
+                    link.appendChild(img);
+
+                    if (item.textoBadge) {
+                        const badge = document.createElement('span');
+                        badge.className = 'badge-enlace';
+                        badge.textContent = item.textoBadge;
+                        link.appendChild(badge);
+                    }
+
+                    slide.appendChild(link);
+                } else {
+                    slide.appendChild(img);
+                }
+
+                contenedor.insertBefore(slide, btnPrev);
+
+                // Crear punto indicador si hay más de 1 imagen
+                if (slidesValidos.length > 1) {
+                    const punto = document.createElement('button');
+                    punto.className = 'punto';
+                    punto.setAttribute('aria-label', 'Ir a la imagen ' + (index + 1));
+                    punto.addEventListener('click', () => {
+                        mostrarSlide(index);
+                        reiniciarTemporizador();
+                    });
+                    contenedorIndicadores.appendChild(punto);
+                }
+            });
+
+            mostrarSlide(0);
+            iniciarTemporizador();
+        }
+
+        function manejarCaidaDeImagen(srcCaido, nodoSlide) {
+            nodoSlide.remove();
+            slidesValidos = slidesValidos.filter(item => item.src !== srcCaido);
+
+            if (slidesValidos.length === 0) {
+                mostrarEstadoVacio();
+                clearInterval(intervalo);
+                return;
+            }
+
+            actualizarControlesNavegacion();
+            if (indiceActual >= slidesValidos.length) {
+                indiceActual = 0;
+            }
+            mostrarSlide(indiceActual);
+        }
+
+        function mostrarEstadoVacio() {
+            avisoVacio.style.display = 'block';
+            btnPrev.style.display = 'none';
+            btnNext.style.display = 'none';
+            contenedorIndicadores.style.display = 'none';
+        }
+
+        function actualizarControlesNavegacion() {
+            const mostrar = slidesValidos.length > 1 ? 'block' : 'none';
+            btnPrev.style.display = mostrar;
+            btnNext.style.display = mostrar;
+            contenedorIndicadores.style.display = slidesValidos.length > 1 ? 'flex' : 'none';
+        }
+
+        function mostrarSlide(indice) {
+            const slides = contenedor.querySelectorAll('.slide');
+            const puntos = contenedorIndicadores.querySelectorAll('.punto');
+            if (slides.length === 0) return;
+
+            if (indice >= slides.length) {
+                indiceActual = 0;
+            } else if (indice < 0) {
+                indiceActual = slides.length - 1;
+            } else {
+                indiceActual = indice;
+            }
+
+            slides.forEach(s => s.classList.remove('activa'));
+            slides[indiceActual].classList.add('activa');
+
+            puntos.forEach((p, i) => {
+                p.classList.toggle('activo', i === indiceActual);
+            });
+
+            // Ajusta el contenedor si la imagen actual tiene esDoble: true
+            if (slidesValidos[indiceActual] && slidesValidos[indiceActual].esDoble) {
+                contenedor.classList.add('modo-grande');
+            } else {
+                contenedor.classList.remove('modo-grande');
+            }
+        }
+
+        function cambiarSlide(direccion) {
+            if (slidesValidos.length <= 1) return;
+            mostrarSlide(indiceActual + direccion);
+            reiniciarTemporizador();
+        }
+
+        function iniciarTemporizador() {
+            clearInterval(intervalo);
+            if (slidesValidos.length > 1) {
+                intervalo = setInterval(() => {
+                    mostrarSlide(indiceActual + 1);
+                }, TIEMPO_ROTACION_MS);
+            }
+        }
+
+        function reiniciarTemporizador() {
+            clearInterval(intervalo);
+            iniciarTemporizador();
+        }
+
+        // Pausa la rotación automática cuando el usuario pone el cursor encima
+        contenedor.addEventListener('mouseenter', () => clearInterval(intervalo));
+        contenedor.addEventListener('mouseleave', () => iniciarTemporizador());
+
+        // Pausa cuando la pestaña no está visible (ahorra batería y datos)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) clearInterval(intervalo);
+            else iniciarTemporizador();
+        });
+
+        // Navegación con flechas del teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') cambiarSlide(-1);
+            if (e.key === 'ArrowRight') cambiarSlide(1);
+        });
+
+        // Navegación táctil (swipe)
+        let touchInicioX = 0;
+        let touchFinX = 0;
+
+        contenedor.addEventListener('touchstart', e => {
+            touchInicioX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        contenedor.addEventListener('touchend', e => {
+            touchFinX = e.changedTouches[0].screenX;
+            const distanciaSwipe = 50;
+            if (touchFinX < touchInicioX - distanciaSwipe) cambiarSlide(1);
+            if (touchFinX > touchInicioX + distanciaSwipe) cambiarSlide(-1);
+        }, { passive: true });
+
+        // Inicializar carrete
+        construirCarrete();
+    </script>
+
+</body>
+</html>
