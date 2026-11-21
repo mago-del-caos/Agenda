@@ -78,13 +78,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (agUser && agUser.nombre) tituloNovedades.innerText = `Hola ${agUser.nombre}, mira las novedades del día de hoy`;
     }
 
-    // --- PERFIL ARRIBA A LA DERECHA (foto y nombre, como Facebook) ---
+    // --- PERFIL A LA DERECHA, DEBAJO DEL BANNER (foto y apodo, como Facebook) ---
     // Sin botón de salir: la sesión solo se cierra desde Ajustes.
     function aglucemPastilla(user) {
         if (!user || document.getElementById("aglucem-sesion")) return;
         const div = document.createElement("div");
         div.id = "aglucem-sesion";
-        div.style.cssText = "position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:8px;align-items:center;font-family:sans-serif;font-size:.85rem";
+        div.style.cssText = "display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 12px 0;font-family:sans-serif;font-size:.85rem";
         const perfil = document.createElement("a");
         perfil.href = "/Agenda/ajustes.html";
         perfil.title = "Mi cuenta";
@@ -111,7 +111,15 @@ document.addEventListener("DOMContentLoaded", () => {
             a.style.cssText = "background:#FFD100;color:#032A60;border-radius:999px;padding:8px 12px;text-decoration:none;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,.25)";
             div.appendChild(a);
         }
-        document.body.appendChild(div);
+        // Se coloca justo debajo del banner, a la derecha; si una página no
+        // tuviera banner, queda flotando arriba a la derecha como respaldo.
+        const banner = document.querySelector("header.app-header") || document.querySelector("header");
+        if (banner && banner.parentNode) {
+            banner.parentNode.insertBefore(div, banner.nextSibling);
+        } else {
+            div.style.cssText += ";position:fixed;top:10px;right:10px;z-index:9999;padding:0";
+            document.body.appendChild(div);
+        }
     }
     aglucemPastilla(JSON.parse(localStorage.getItem("aglucem_user") || "null"));
     document.addEventListener("aglucem-sesion", (e) => {
