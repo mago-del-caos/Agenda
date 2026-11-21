@@ -60,6 +60,9 @@
 
     <h2>Usuarios</h2>
     <div class="card">
+        <div class="fila-form" style="margin-bottom: 10px;">
+            <input id="buscarUsuario" type="text" placeholder="Buscar por usuario o nombre…">
+        </div>
         <table>
             <thead>
                 <tr>
@@ -69,15 +72,29 @@
             </thead>
             <tbody id="tablaUsuarios"><tr><td colspan="7">Cargando…</td></tr></tbody>
         </table>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 12px; flex-wrap: wrap; gap: 8px;">
+            <button class="btn btn-gris" id="btnPagAnt" onclick="moverPagina(-1)">‹ Anterior</button>
+            <span id="infoPagina" style="font-size:.85rem; color:#64748b;"></span>
+            <button class="btn btn-gris" id="btnPagSig" onclick="moverPagina(1)">Siguiente ›</button>
+        </div>
         <p id="msgUsuarios" class="msg"></p>
     </div>
 
-    <h2>Quién entró esta semana</h2>
+    <h2>Estadísticas</h2>
     <div class="card">
-        <table>
-            <thead><tr><th>Usuario</th><th>Nombre</th><th>Entradas (7 días)</th><th>Última entrada</th></tr></thead>
-            <tbody id="tablaAccesos"><tr><td colspan="4">Cargando…</td></tr></tbody>
-        </table>
+        <button class="btn btn-azul" id="btnEstadisticas" onclick="toggleEstadisticas()">Estadísticas de uso esta semana</button>
+        <div id="panelEstadisticas" style="display:none; margin-top: 14px;">
+            <h3 style="margin: 4px 0 8px; color:#032A60; font-size:1rem;">Quién entró esta semana</h3>
+            <table>
+                <thead><tr><th>Usuario</th><th>Nombre</th><th>Entradas</th><th>Última entrada</th></tr></thead>
+                <tbody id="tablaAccesos"><tr><td colspan="4">Cargando…</td></tr></tbody>
+            </table>
+            <h3 style="margin: 18px 0 8px; color:#032A60; font-size:1rem;">Resumen por semana</h3>
+            <table>
+                <thead><tr><th>Semana</th><th>Entradas totales</th><th>Usuarios que entraron</th></tr></thead>
+                <tbody id="tablaSemanas"><tr><td colspan="3">Cargando…</td></tr></tbody>
+            </table>
+        </div>
     </div>
 
     <h2>Mi contraseña</h2>
@@ -108,13 +125,35 @@
         el.className = "msg " + (ok ? "ok" : "error");
     }
 
-    function cargarUsuarios() {
-        fetch(API + "/admin/usuarios", { headers: cab() })
-            .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-            .then(function (d) {
-                var tb = document.getElementById("tablaUsuarios");
-                tb.innerHTML = "";
-                d.usuarios.forEach(function (u) {
+    var todosLosUsuarios = [];
+    var paginaActual = 1;
+    var POR_PAGINA = 25;
+
+    function usuariosFiltrados() {
+        var q = document.getElementById("buscarUsuario").value.trim().toLowerCase();
+        if (!q) return todosLosUsuarios;
+        return todosLosUsuarios.filter(function (u) {
+            return u.usuario.toLowerCase().indexOf(q) >= 0 || (u.nombre || "").toLowerCase().indexOf(q) >= 0;
+        });
+    }
+
+    function moverPagina(delta) {
+        var total = usuariosFiltrados().length;
+        var paginas = Math.max(1, Math.ceil(total / POR_PAGINA));
+        paginaActual = Math.min(paginas, Math.max(1, paginaActual + delta));
+        pintarUsuarios();
+    }
+
+    function pintarUsuarios() {
+        var lista = usuariosFiltrados();
+        var paginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+        if (paginaActual > paginas) paginaActual = paginas;
+        var desde = (paginaActual - 1) * POR_PAGINA;
+        var visibles = lista.slice(desde, desde + POR_PAGINA);
+        var tb = document.getElementById("tablaUsuarios");
+        tb.innerHTML = "";
+        if (!visibles.length) tb.innerHTML = "<tr><td colspan='7'>Sin resultados.</td></tr>";
+        visibles.forEach(function (u) {
                     var tr = document.createElement("tr");
                     var foto = u.foto ? "<img src='" + u.foto + "' style='width:30px;height:30px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:7px'>" : "";
                     tr.innerHTML =
@@ -137,23 +176,62 @@
                     td.appendChild(b1); td.appendChild(b2);
                     tr.appendChild(td);
                     tb.appendChild(tr);
-                });
+        });
+        var hasta = Math.min(lista.length, desde + POR_PAGINA);
+        document.getElementById("infoPagina").textContent =
+            (lista.length ? "Mostrando " + (desde + 1) + "–" + hasta + " de " + lista.length + " · Página " + paginaActual + " de " + paginas : "0 usuarios");
+        document.getElementById("btnPagAnt").disabled = paginaActual <= 1;
+        document.getElementById("btnPagSig").disabled = paginaActual >= paginas;
+    }
+
+    function cargarUsuarios() {
+        fetch(API + "/admin/usuarios", { headers: cab() })
+            .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+            .then(function (d) {
+                todosLosUsuarios = d.usuarios || [];
+                pintarUsuarios();
             })
             .catch(function () { msg("msgUsuarios", "No se pudo cargar la lista. ¿Tu sesión sigue activa y eres admin?", false); });
     }
 
-    function cargarAccesos() {
-        fetch(API + "/admin/accesos", { headers: cab() })
+    document.getElementById("buscarUsuario").addEventListener("input", function () {
+        paginaActual = 1;
+        pintarUsuarios();
+    });
+
+    var estadisticasCargadas = false;
+    function toggleEstadisticas() {
+        var panel = document.getElementById("panelEstadisticas");
+        var abierto = panel.style.display !== "none";
+        panel.style.display = abierto ? "none" : "block";
+        if (!abierto && !estadisticasCargadas) { estadisticasCargadas = true; cargarEstadisticas(); }
+    }
+
+    function cargarEstadisticas() {
+        fetch(API + "/admin/estadisticas", { headers: cab() })
             .then(function (r) { return r.json(); })
             .then(function (d) {
                 var tb = document.getElementById("tablaAccesos");
                 tb.innerHTML = "";
-                if (!d.accesos.length) tb.innerHTML = "<tr><td colspan='4'>Nadie ha entrado en los últimos 7 días.</td></tr>";
-                d.accesos.forEach(function (a) {
+                var lista = d.esta_semana || [];
+                if (!lista.length) tb.innerHTML = "<tr><td colspan='4'>Nadie ha entrado esta semana.</td></tr>";
+                lista.forEach(function (a) {
                     var tr = document.createElement("tr");
                     tr.innerHTML = "<td><b>" + a.usuario + "</b></td><td>" + (a.nombre || "") + "</td><td>" + a.entradas + "</td><td>" + fecha(a.ultimo) + "</td>";
                     tb.appendChild(tr);
                 });
+                var ts = document.getElementById("tablaSemanas");
+                ts.innerHTML = "";
+                var semanas = d.por_semana || [];
+                if (!semanas.length) ts.innerHTML = "<tr><td colspan='3'>Sin datos todavía.</td></tr>";
+                semanas.forEach(function (s) {
+                    var tr = document.createElement("tr");
+                    tr.innerHTML = "<td>Semana " + s.semana + " de " + s.anio + "</td><td>" + s.entradas + "</td><td>" + s.usuarios + "</td>";
+                    ts.appendChild(tr);
+                });
+            })
+            .catch(function () {
+                document.getElementById("tablaAccesos").innerHTML = "<tr><td colspan='4'>No se pudieron cargar las estadísticas.</td></tr>";
             });
     }
 
@@ -184,12 +262,12 @@
             .then(function (x) {
                 if (!x.ok) { msg("msgUsuarios", x.d.error || "No se pudo actualizar.", false); return; }
                 msg("msgUsuarios", "Cuenta de «" + usuario + "» " + (activo ? "activada." : "bloqueada."), true);
-                cargarUsuarios(); cargarAccesos();
+                cargarUsuarios(); if (estadisticasCargadas) cargarEstadisticas();
             });
     }
 
     function restablecer(id, usuario) {
-        var nueva = prompt("Nueva contraseña para «" + usuario + "» (mínimo 6 caracteres):");
+        var nueva = prompt("Nueva contraseña para «" + usuario + "» (mínimo 4 caracteres):");
         if (!nueva) return;
         fetch(API + "/admin/usuarios/" + id + "/password", { method: "POST", headers: cab(), body: JSON.stringify({ nueva: nueva }) })
             .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
@@ -215,7 +293,6 @@
     }
 
     cargarUsuarios();
-    cargarAccesos();
 </script>
 </body>
 </html>

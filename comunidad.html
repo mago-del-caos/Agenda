@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Comunidad - Ag lucem</title>
+    <title>La red - Ag lucem</title>
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -17,87 +17,81 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
+        .red-wrap { max-width: 640px; margin: 0 auto; }
         .aviso-responsabilidad {
-            background: #FFF7E0;
-            border: 1px solid #E6C34A;
-            color: #6B5410;
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 0.9rem;
-            margin-bottom: 18px;
-            text-align: center;
+            background: #FFF7E0; border: 1px solid #E6C34A; color: #6B5410;
+            border-radius: 10px; padding: 7px 12px; font-size: 0.82rem;
+            margin-bottom: 12px; text-align: center;
         }
-        .publicar-box textarea {
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #CBD5E1;
-            border-radius: 12px;
-            padding: 10px 12px;
-            font: inherit;
-            resize: vertical;
-            min-height: 64px;
+        .composer {
+            display: flex; gap: 10px; padding: 14px;
+            background: #fff; border: 1px solid #E2E8F0; border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(3,42,96,.05); margin-bottom: 12px;
         }
-        .publicar-fila {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
+        .composer textarea {
+            flex: 1; border: none; outline: none; resize: none;
+            font: inherit; font-size: 1.02rem; min-height: 52px; background: transparent;
         }
+        .composer-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
         .contador { font-size: 0.8rem; color: #64748B; }
         .btn-publicar {
-            background: linear-gradient(135deg, var(--ij-celeste), var(--ij-azul-fuerte));
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 9px 20px;
-            font: inherit;
-            font-weight: 600;
-            cursor: pointer;
+            background: #1D9BF0; color: #fff; border: none; border-radius: 999px;
+            padding: 8px 20px; font: inherit; font-weight: 700; cursor: pointer;
         }
-        .mensaje {
-            display: flex;
-            gap: 10px;
-            padding: 12px 0;
-            border-bottom: 1px solid #E2E8F0;
-        }
-        .mensaje:last-child { border-bottom: none; }
+        .btn-publicar:disabled { opacity: .45; cursor: default; }
         .avatar {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex: none;
-            background: linear-gradient(135deg, #8E6CC8, #5B3E99);
-            color: #fff;
+            width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none;
+            background: linear-gradient(135deg, #8E6CC8, #5B3E99); color: #fff;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 1.05rem;
-            overflow: hidden;
+            font-weight: 700; font-size: 1.05rem; overflow: hidden;
         }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .mensaje-cuerpo { flex: 1; min-width: 0; }
-        .mensaje-cabeza { font-size: 0.9rem; }
-        .mensaje-cabeza .usuario { color: #64748B; font-weight: 400; }
-        .mensaje-cabeza .fecha { color: #94A3B8; font-size: 0.78rem; display: block; }
-        .mensaje-texto { margin-top: 2px; white-space: pre-wrap; word-wrap: break-word; }
-        .btn-borrar {
-            background: transparent; border: none; color: #C026D3;
-            cursor: pointer; font-size: 0.8rem; padding: 2px 0;
+        .avatar.chico { width: 36px; height: 36px; font-size: 0.9rem; }
+        .btn-seguir-toggle {
+            width: 100%; background: #fff; border: 1px solid #E2E8F0; border-radius: 999px;
+            padding: 10px 16px; font: inherit; font-weight: 600; color: #032A60;
+            cursor: pointer; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(3,42,96,.05);
         }
-        .miembro {
-            display: flex; align-items: center; gap: 10px;
-            padding: 8px 0; border-bottom: 1px solid #EEF2F7;
+        .panel-seguir {
+            background: #fff; border: 1px solid #E2E8F0; border-radius: 16px;
+            padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(3,42,96,.05);
         }
+        .panel-seguir[hidden] { display: none; }
+        .buscar {
+            width: 100%; box-sizing: border-box; border: 1px solid #CBD5E1;
+            border-radius: 999px; padding: 9px 14px; font: inherit; margin-bottom: 6px;
+        }
+        .miembro { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #EEF2F7; }
         .miembro:last-child { border-bottom: none; }
-        .miembro .avatar { width: 36px; height: 36px; font-size: 0.9rem; }
         .miembro-nombre { flex: 1; min-width: 0; font-size: 0.92rem; }
         .miembro-nombre .usuario { color: #64748B; font-size: 0.8rem; display: block; }
         .interruptor { width: 22px; height: 22px; accent-color: #5B3E99; flex: none; }
-        .buscar {
-            width: 100%; box-sizing: border-box;
-            border: 1px solid #CBD5E1; border-radius: 10px;
-            padding: 9px 12px; font: inherit; margin-bottom: 6px;
+        .muro {
+            background: #fff; border: 1px solid #E2E8F0; border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(3,42,96,.05); padding: 4px 16px;
         }
-        .vacio { color: #64748B; text-align: center; padding: 18px 8px; }
-        .msg-error { color: #B91C1C; font-size: 0.88rem; min-height: 1.1em; }
+        .post { display: flex; gap: 10px; padding: 13px 0; border-bottom: 1px solid #EEF2F7; }
+        .post:last-child { border-bottom: none; }
+        .post-cuerpo { flex: 1; min-width: 0; }
+        .post-cabeza { font-size: 0.93rem; line-height: 1.25; }
+        .post-cabeza .usuario { color: #64748B; font-weight: 400; }
+        .post-cabeza .fecha { color: #94A3B8; font-size: 0.8rem; }
+        .post-texto { margin-top: 1px; white-space: pre-wrap; word-wrap: break-word; font-size: 0.98rem; }
+        .post-acciones { display: flex; gap: 22px; margin-top: 7px; align-items: center; }
+        .btn-like {
+            background: none; border: none; cursor: pointer; padding: 2px 4px;
+            display: inline-flex; align-items: center; gap: 5px;
+            color: #64748B; font: inherit; font-size: 0.85rem; border-radius: 999px;
+        }
+        .btn-like svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+        .btn-like.activo { color: #E0245E; }
+        .btn-like.activo svg { fill: #E0245E; stroke: #E0245E; }
+        .btn-borrar {
+            background: none; border: none; color: #94A3B8; cursor: pointer;
+            font: inherit; font-size: 0.8rem; padding: 2px 4px;
+        }
+        .vacio { color: #64748B; text-align: center; padding: 20px 8px; }
+        .msg-error { color: #B91C1C; font-size: 0.88rem; min-height: 1.1em; margin: 6px 2px 0; }
     </style>
 </head>
 <body>
@@ -118,31 +112,34 @@
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title">Comunidad</h2>
+      <div class="red-wrap">
+        <h2 class="section-title">La red</h2>
 
         <div class="aviso-responsabilidad">
             Todo mensaje publicado en este muro es responsabilidad de quien lo escribe.
         </div>
 
-        <div class="card-elevation publicar-box" style="padding: 16px; margin-bottom: 20px;">
-            <textarea id="texto" maxlength="280" placeholder="Escribe un mensaje corto para la comunidad…"></textarea>
-            <div class="publicar-fila">
-                <span class="contador"><span id="cuenta">0</span>/280</span>
-                <button class="btn-publicar" id="btnPublicar">Publicar</button>
+        <div class="composer">
+            <div id="miAvatar"></div>
+            <div style="flex:1; min-width:0;">
+                <textarea id="texto" maxlength="280" placeholder="¿Qué está pasando?"></textarea>
+                <div class="composer-pie">
+                    <span class="contador"><span id="cuenta">0</span>/280</span>
+                    <button class="btn-publicar" id="btnPublicar">Publicar</button>
+                </div>
             </div>
-            <p class="msg-error" id="msgPublicar"></p>
         </div>
+        <p class="msg-error" id="msgPublicar"></p>
 
-        <div class="card-elevation" style="padding: 16px; margin-bottom: 20px;">
-            <h3 style="margin-top: 0;">¿De quién quieres ver actualizaciones?</h3>
+        <div class="muro" id="muro"><p class="vacio">Cargando mensajes…</p></div>
+
+        <div style="height: 12px;"></div>
+        <button class="btn-seguir-toggle" id="btnSeguir">👥 De quién quieres ver actualizaciones ▾</button>
+        <div class="panel-seguir" id="panelSeguir" hidden>
             <input type="text" id="buscar" class="buscar" placeholder="Buscar a un miembro…">
             <div id="listaMiembros"><p class="vacio">Cargando miembros…</p></div>
         </div>
-
-        <div class="card-elevation" style="padding: 16px;">
-            <h3 style="margin-top: 0;">Muro</h3>
-            <div id="muro"><p class="vacio">Cargando mensajes…</p></div>
-        </div>
+      </div>
     </main>
 
     <script src="/Agenda/script.js"></script>
@@ -160,18 +157,24 @@
                 return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
             });
         }
-        function avatarHTML(m, grande) {
-            if (m.foto) return '<div class="avatar"><img src="' + esc(m.foto) + '" alt=""></div>';
+        function avatarHTML(m, clase) {
+            if (m.foto) return '<div class="avatar ' + (clase || "") + '"><img src="' + esc(m.foto) + '" alt=""></div>';
             var ini = (m.nombre || m.usuario || "?").trim().charAt(0).toUpperCase();
-            return '<div class="avatar">' + esc(ini) + "</div>";
+            return '<div class="avatar ' + (clase || "") + '">' + esc(ini) + "</div>";
         }
-        function fechaBonita(f) {
+        function hace(f) {
             if (!f) return "";
             var d = new Date(f.replace(" ", "T") + "Z");
             if (isNaN(d)) return f;
-            return d.toLocaleDateString("es-MX", { day: "numeric", month: "short" }) + ", " +
-                   d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+            var s = Math.floor((Date.now() - d.getTime()) / 1000);
+            if (s < 60) return "ahora";
+            if (s < 3600) return Math.floor(s / 60) + " min";
+            if (s < 86400) return Math.floor(s / 3600) + " h";
+            return d.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
         }
+        var CORAZON = '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C15 6.1 16.4 5 18.4 5c3.4 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(0.92) translate(1,0.4)"/></svg>';
+
+        if (yo) document.getElementById("miAvatar").innerHTML = avatarHTML(yo);
 
         var muroEl = document.getElementById("muro");
         function cargarMuro() {
@@ -180,18 +183,39 @@
                 .then(function (d) {
                     var lista = d.mensajes || [];
                     if (!lista.length) {
-                        muroEl.innerHTML = '<p class="vacio">Aún no hay mensajes de las personas que sigues. Elige arriba de quién quieres ver actualizaciones o publica el primer mensaje.</p>';
+                        muroEl.innerHTML = '<p class="vacio">Aún no hay mensajes de las personas que sigues. Abre «De quién quieres ver actualizaciones» o publica el primer mensaje.</p>';
                         return;
                     }
                     muroEl.innerHTML = lista.map(function (m) {
+                        var likes = m.likes || 0;
+                        var likeBtn = '<button class="btn-like' + (m.mi_like ? " activo" : "") + '" data-like="' + m.id + '" data-on="' + (m.mi_like ? "1" : "0") + '">' + CORAZON + "<span>" + (likes ? likes : "") + "</span></button>";
                         var borrar = (m.mio || esAdmin)
-                            ? ' <button class="btn-borrar" data-borrar="' + m.id + '">Borrar</button>' : "";
-                        return '<div class="mensaje">' + avatarHTML(m) +
-                            '<div class="mensaje-cuerpo"><div class="mensaje-cabeza"><strong>' + esc(m.nombre) +
-                            '</strong> <span class="usuario">@' + esc(m.usuario) + '</span>' +
-                            '<span class="fecha">' + esc(fechaBonita(m.creado_en)) + "</span></div>" +
-                            '<div class="mensaje-texto">' + esc(m.texto) + "</div>" + borrar + "</div></div>";
+                            ? '<button class="btn-borrar" data-borrar="' + m.id + '">Borrar</button>' : "";
+                        return '<div class="post">' + avatarHTML(m) +
+                            '<div class="post-cuerpo"><div class="post-cabeza"><strong>' + esc(m.nombre) +
+                            '</strong> <span class="usuario">@' + esc(m.usuario) + '</span> <span class="fecha">· ' + esc(hace(m.creado_en)) + "</span></div>" +
+                            '<div class="post-texto">' + esc(m.texto) + "</div>" +
+                            '<div class="post-acciones">' + likeBtn + borrar + "</div></div></div>";
                     }).join("");
+                    Array.prototype.forEach.call(muroEl.querySelectorAll("[data-like]"), function (b) {
+                        b.addEventListener("click", function () {
+                            var on = b.getAttribute("data-on") === "1";
+                            var span = b.querySelector("span");
+                            var n = parseInt(span.textContent || "0", 10) || 0;
+                            b.classList.toggle("activo", !on);
+                            b.setAttribute("data-on", on ? "0" : "1");
+                            span.textContent = on ? (n - 1 ? String(n - 1) : "") : String(n + 1);
+                            fetch(API + "/comunidad/me-gusta", {
+                                method: "POST", headers: cab(),
+                                body: JSON.stringify({ mensaje_id: parseInt(b.getAttribute("data-like"), 10), gustar: !on })
+                            }).then(function (r) {
+                                if (!r.ok) throw new Error();
+                                return r.json();
+                            }).then(function (d2) {
+                                span.textContent = d2.likes ? String(d2.likes) : "";
+                            }).catch(function () { cargarMuro(); });
+                        });
+                    });
                     Array.prototype.forEach.call(muroEl.querySelectorAll("[data-borrar]"), function (b) {
                         b.addEventListener("click", function () {
                             if (!confirm("¿Borrar este mensaje?")) return;
@@ -203,6 +227,18 @@
                 .catch(function () { muroEl.innerHTML = '<p class="vacio">No se pudo cargar el muro.</p>'; });
         }
 
+        var panel = document.getElementById("panelSeguir");
+        var btnSeguir = document.getElementById("btnSeguir");
+        var miembrosCargados = false;
+        btnSeguir.addEventListener("click", function () {
+            var abierto = !panel.hidden;
+            panel.hidden = abierto;
+            btnSeguir.textContent = abierto
+                ? "👥 De quién quieres ver actualizaciones ▾"
+                : "👥 De quién quieres ver actualizaciones ▴";
+            if (!abierto && !miembrosCargados) { miembrosCargados = true; cargarMiembros(); }
+        });
+
         var miembrosEl = document.getElementById("listaMiembros");
         var miembros = [];
         function pintarMiembros() {
@@ -212,7 +248,7 @@
             });
             if (!visibles.length) { miembrosEl.innerHTML = '<p class="vacio">Sin resultados.</p>'; return; }
             miembrosEl.innerHTML = visibles.map(function (m) {
-                return '<div class="miembro">' + avatarHTML(m) +
+                return '<div class="miembro">' + avatarHTML(m, "chico") +
                     '<div class="miembro-nombre"><strong>' + esc(m.nombre) + '</strong>' +
                     '<span class="usuario">@' + esc(m.usuario) + " · " + esc(m.rol) + "</span></div>" +
                     '<input type="checkbox" class="interruptor" data-seguir="' + m.id + '"' +
@@ -261,7 +297,6 @@
         });
 
         if (!token) { window.location.href = "/Agenda/index.html"; return; }
-        cargarMiembros();
         cargarMuro();
     })();
     </script>
