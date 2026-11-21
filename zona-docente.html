@@ -21,6 +21,8 @@
         .zd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .zd-card { display: flex; flex-direction: column; gap: 4px; background: #fff; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,0,0,.08); padding: 18px 14px; text-decoration: none; color: #21314d; border: 1px solid #e3e8f2; }
         .zd-card .zd-ico { font-size: 1.9rem; line-height: 1; }
+        .zd-card .zd-img { width: 54px; height: 54px; object-fit: contain; border-radius: 12px; }
+        .zd-destacada .zd-img { width: 64px; height: 64px; border-radius: 14px; }
         .zd-card strong { font-size: 1.02rem; color: var(--ij-azul-fuerte); }
         .zd-card small { color: #7286a3; font-size: .82rem; line-height: 1.35; }
         .zd-destacada { grid-column: 1 / -1; background: linear-gradient(135deg, #032A60, #5B3E99); border: none; }
@@ -54,42 +56,47 @@
         <div id="zdContenido">
             <div class="zd-grid">
             <a href="/Agenda/organizador.html" class="zd-card zd-destacada">
-                <span class="zd-ico">🗂️</span>
-                <strong>Organizador de proyectos</strong>
-                <small>Trabajo en equipo para proyectos multidisciplinarios: fases con fechas de entrega, tarjetas por responsable y ayuda de IA.</small>
+                <img class="zd-img" src="/Agenda/nous.png" alt="Logo de Nous">
+                <strong>Nous</strong>
+                <small>Organizador de proyectos multidisciplinarios: fases con fechas de entrega, tarjetas por responsable, comentarios y ayuda de IA.</small>
+            </a>
+            <a href="https://creditos-extracurriculares.pages.dev/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <img class="zd-img" src="/Agenda/creditos.png" alt="Créditos Juventud">
+                <strong>Créditos Juventud</strong>
+                <small>Créditos extracurriculares del instituto.</small>
             </a>
             <a href="https://chemini.aracknia.com/" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">🤖</span>
+                <img class="zd-img" src="/Agenda/Chemini.png" alt="Chemini">
                 <strong>Chemini</strong>
                 <small>La IA local del instituto, para docentes.</small>
             </a>
             <a href="https://mago-del-caos.github.io/Chemlist/" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">✅</span>
+                <img class="zd-img" src="/Agenda/chemlist.jpg" alt="Chemlist">
                 <strong>Chemlist</strong>
                 <small>Listas de asistencia y control de grupos.</small>
             </a>
             <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">🎓</span>
+                <img class="zd-img" src="/Agenda/Edu.png" alt="EduChema">
                 <strong>EduChema</strong>
                 <small>Dashboard educativo del DIE.</small>
             </a>
             <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">🧠</span>
+                <img class="zd-img" src="/Agenda/repo.png" alt="Repositorio de IAs">
                 <strong>Repositorio de IAs</strong>
                 <small>Repositorio de IA y herramientas para el aula.</small>
             </a>
             <a href="https://ln.globalschool.mx/gs/gslearn/frm_login" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">🌐</span>
+                <img class="zd-img" src="/Agenda/global.png" alt="Global">
                 <strong>Global</strong>
                 <small>Plataforma Global School.</small>
             </a>
             <a href="https://classroom.google.com/" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">🏫</span>
+                <img class="zd-img" src="/Agenda/classroom.png" alt="Classroom">
                 <strong>Classroom</strong>
                 <small>Google Classroom.</small>
             </a>
             <a href="https://padlet.com/" target="_blank" rel="noopener noreferrer" class="zd-card">
-                <span class="zd-ico">📌</span>
+                <img class="zd-img" src="/Agenda/padlet.png" alt="Padlet">
                 <strong>Padlet</strong>
                 <small>Murales colaborativos.</small>
             </a>

@@ -87,6 +87,10 @@
 
     <main class="app-main">
         <h2 class="section-title">Horario de Clases</h2>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px">
+            <button type="button" onclick="window.aglucemGuardarHorario && window.aglucemGuardarHorario()" style="background:#FFD100;color:#032A60;border:none;border-radius:12px;padding:12px 20px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(0,0,0,.15)">💾 Guardar horario</button>
+            <span id="horarioEstado" style="color:#7286a3;font-size:.9rem">Tu horario se guarda en tu cuenta y se ve en todos tus dispositivos.</span>
+        </div>
         
         <div class="schedule-container">
             <table class="schedule-table">

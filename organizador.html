@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Organizador de proyectos - Ag lucem</title>
+    <title>Nous - Ag lucem</title>
     
     <!-- Destructores de caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -18,8 +18,12 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
+        .nous-cabecera { display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+        .nous-cabecera img { width:58px; height:58px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.18); }
+        .nous-cabecera h2 { margin:0; color: var(--ij-azul-fuerte); font-size:1.7rem; }
+        .nous-cabecera p { margin:2px 0 0; color:#7286a3; font-size:.9rem; }
         .org-aviso { background:#fff7e0; border:1px solid #FFD100; color:#5c4a00; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:.92rem; }
-        .org-barra { display:flex; align-items:center; justify-content:space-between; gap:10px; margin: 6px 0 12px; }
+        .org-barra { display:flex; align-items:center; justify-content:space-between; gap:10px; margin: 14px 0 12px; }
         .org-barra h3 { margin:0; color: var(--ij-azul-fuerte); }
         .org-btn { border:none; border-radius:12px; padding:11px 16px; font-weight:800; cursor:pointer; font-family:inherit; font-size:.92rem; }
         .org-btn-dorado { background: var(--ij-dorado); color:#032A60; }
@@ -33,6 +37,9 @@
         .org-proy p { color:#7286a3; font-size:.88rem; margin:0 0 8px; }
         .org-proy small { color:#7286a3; }
         .org-proy .org-fecha { color:#8a6d00; font-weight:700; }
+        .org-progreso { background:#eef1f7; border-radius:999px; height:10px; overflow:hidden; margin-top:10px; }
+        .org-progreso > div { background:linear-gradient(90deg,#2FA84F,#7ed491); height:100%; border-radius:999px; }
+        .org-progreso-txt { font-size:.78rem; color:#7286a3; margin-top:4px; display:block; }
         .org-form { background:#fff; border:1px solid #e3e8f2; border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 6px 15px rgba(0,0,0,.07); }
         .org-form label { display:block; font-weight:700; color: var(--ij-azul-fuerte); font-size:.88rem; margin:10px 0 4px; }
         .org-form input[type=text], .org-form textarea, .org-form input[type=date], .org-form select { width:100%; box-sizing:border-box; border:1px solid #d5dcea; border-radius:10px; padding:10px 12px; font-family:inherit; font-size:.95rem; }
@@ -41,9 +48,12 @@
         .org-miembros { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
         .org-chip-miembro { background:#eef1f7; border-radius:999px; padding:5px 11px; font-size:.8rem; font-weight:700; color:#21314d; }
         .org-chip-miembro.admin { background:#FFD100; color:#032A60; }
+        .org-chip-miembro.jefe { background:#dcefe0; color:#1d5c2e; }
+        .org-filtro { width:100%; box-sizing:border-box; border:1px solid #d5dcea; border-radius:12px; padding:11px 14px; font-family:inherit; font-size:.95rem; margin: 6px 0 4px; }
         .org-tablero-wrap { overflow-x:auto; padding-bottom:10px; margin: 8px -4px 0; }
         .org-tablero { display:flex; gap:12px; align-items:flex-start; min-width:min-content; padding: 0 4px; }
-        .org-col { background:#f4f6fb; border:1px solid #e3e8f2; border-radius:14px; width:272px; flex:none; padding:10px; }
+        .org-col { background:#f4f6fb; border:1px solid #e3e8f2; border-radius:14px; width:276px; flex:none; padding:10px; }
+        .org-col.encima { outline:3px dashed #2FA84F; outline-offset:-3px; }
         .org-col header { display:flex; flex-direction:column; gap:3px; margin-bottom:8px; }
         .org-col header strong { color: var(--ij-azul-fuerte); font-size:.98rem; }
         .org-col .org-col-fecha { font-size:.78rem; font-weight:700; color:#8a6d00; }
@@ -51,11 +61,23 @@
         .org-col .org-col-acciones { display:flex; gap:6px; align-items:center; }
         .org-col .org-col-acciones input[type=date] { flex:1; border:1px solid #d5dcea; border-radius:8px; padding:5px 7px; font-family:inherit; font-size:.8rem; min-width:0; }
         .org-mini { border:none; background:#fdecec; color:#b3261e; border-radius:8px; width:28px; height:28px; cursor:pointer; font-weight:800; flex:none; }
-        .org-tarjeta { background:#fff; border:1px solid #e3e8f2; border-radius:12px; padding:10px; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,.05); }
+        .org-icon-btn { border:none; background:#eef1f7; color:#21314d; border-radius:8px; height:28px; padding:0 9px; cursor:pointer; font-size:.8rem; font-weight:700; flex:none; }
+        .org-tarjeta { background:#fff; border:1px solid #e3e8f2; border-radius:12px; padding:10px; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,.05); cursor:grab; }
         .org-tarjeta strong { display:block; font-size:.92rem; margin-bottom:2px; }
         .org-tarjeta p { margin:0 0 6px; font-size:.82rem; color:#7286a3; white-space:pre-wrap; }
-        .org-tarjeta .org-t-fila { display:flex; gap:6px; margin-top:6px; }
+        .org-tarjeta .org-t-fila { display:flex; gap:6px; margin-top:6px; align-items:center; }
         .org-tarjeta select { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:8px; padding:5px; font-size:.78rem; font-family:inherit; }
+        .org-t-fecha { display:inline-block; font-size:.75rem; font-weight:800; background:#fff7e0; color:#8a6d00; border-radius:999px; padding:3px 9px; }
+        .org-t-fecha.vencida { background:#fdecec; color:#b3261e; }
+        .org-t-edit { background:#f8fafc; border:1px dashed #c9d4e8; border-radius:10px; padding:8px; margin-top:8px; }
+        .org-t-edit input[type=text], .org-t-edit textarea, .org-t-edit input[type=date] { width:100%; box-sizing:border-box; border:1px solid #d5dcea; border-radius:8px; padding:7px 9px; font-family:inherit; font-size:.85rem; margin-bottom:6px; }
+        .org-comentarios { background:#f8fafc; border-radius:10px; padding:8px; margin-top:8px; }
+        .org-comentario { font-size:.82rem; margin-bottom:6px; }
+        .org-comentario b { color: var(--ij-azul-fuerte); }
+        .org-comentario small { color:#94a3b8; display:block; }
+        .org-com-form { display:flex; gap:6px; margin-top:6px; }
+        .org-com-form input { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:8px; padding:7px 9px; font-family:inherit; font-size:.85rem; }
+        .org-com-form button { border:none; border-radius:8px; background: var(--ij-azul-fuerte); color:#fff; font-weight:800; padding:0 12px; cursor:pointer; }
         .org-add-tarjeta { display:flex; gap:6px; }
         .org-add-tarjeta input { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:10px; padding:9px 10px; font-family:inherit; font-size:.88rem; }
         .org-add-tarjeta button { border:none; border-radius:10px; background: var(--ij-azul-fuerte); color:#fff; font-weight:800; padding:0 13px; cursor:pointer; }
@@ -67,6 +89,7 @@
         .org-ia input { flex:1; min-width:180px; }
         .org-ia-salida { background:rgba(255,255,255,.1); border-radius:12px; padding:12px; font-size:.9rem; white-space:pre-wrap; min-height:20px; }
         .org-ia-propuesta { display:flex; justify-content:space-between; gap:8px; background:rgba(255,255,255,.12); border-radius:10px; padding:8px 11px; margin-top:6px; font-size:.88rem; }
+        .org-jefes { margin-top:26px; }
         .org-vacio { color:#7286a3; text-align:center; padding:22px 8px; }
     </style>
 </head>
@@ -89,7 +112,13 @@
     </nav>
 
     <main class="app-main">
-        <h2 class="section-title" style="margin-bottom: 14px; color: var(--ij-azul-fuerte);">Organizador de proyectos</h2>
+        <div class="nous-cabecera">
+            <img src="/Agenda/nous.png" alt="Logo de Nous">
+            <div>
+                <h2>Nous</h2>
+                <p>Organizador de proyectos del Instituto Juventud: trabajo en equipo estilo Notion × Trello, con fases, fechas de entrega y ayuda de IA.</p>
+            </div>
+        </div>
         <div id="orgAviso" class="org-aviso" style="display:none"></div>
 
         <div id="orgListaVista">
@@ -110,15 +139,23 @@
                 </div>
             </form>
             <div id="orgProyectos" class="org-proyectos"></div>
+
+            <div id="orgJefes" class="org-jefes" style="display:none">
+                <div class="org-barra"><h3>Jefes de proyecto</h3></div>
+                <p style="color:#7286a3;margin:0 0 10px">Los jefes de proyecto pueden crear proyectos y administrar (docentes, fases y fechas) los proyectos de los que forman parte, igual que un administrador dentro de Nous. Solo el administrador general los designa.</p>
+                <div id="orgJefesLista" class="org-form"></div>
+            </div>
         </div>
 
         <div id="orgDetalleVista" style="display:none">
             <button id="btnVolver" type="button" class="org-btn org-btn-ghost" style="margin-bottom:10px">← Volver a proyectos</button>
             <h3 id="orgTitulo" style="margin:0;color:var(--ij-azul-fuerte)"></h3>
             <p id="orgDesc" style="color:#7286a3;white-space:pre-wrap"></p>
+            <div id="orgProgresoDetalle"></div>
             <div id="orgMiembros" class="org-miembros"></div>
             <div id="orgEditarMiembros"></div>
 
+            <input type="text" id="orgFiltro" class="org-filtro" placeholder="🔎 Filtrar tarjetas por texto…">
             <div class="org-tablero-wrap"><div id="orgTablero" class="org-tablero"></div></div>
 
             <form id="formFase" class="org-form" style="display:none">
@@ -134,7 +171,7 @@
             <button id="btnNuevaFase" type="button" class="org-btn org-btn-dorado" style="display:none">＋ Añadir fase con fecha de entrega</button>
 
             <section class="org-ia">
-                <h3>✨ Funciones de IA</h3>
+                <h3>✨ Funciones de IA de Nous</h3>
                 <p>Usa tu propia clave de Groq o Gemini (la misma de Ju-bits). La clave se guarda solo en este dispositivo.</p>
                 <div class="org-ia-fila">
                     <select id="iaProveedor" aria-label="Proveedor de IA">
@@ -158,13 +195,16 @@
     </main>
 
     <script>
-    /* ===== Organizador de proyectos multidisciplinarios (Notion × Trello) ===== */
+    /* ===== Nous — organizador de proyectos multidisciplinarios (Notion × Trello) ===== */
     (function () {
         const API = "https://aglucem-api.adrian-camelot32.workers.dev";
         const token = localStorage.getItem("aglucem_token") || "";
         const yo = JSON.parse(localStorage.getItem("aglucem_user") || "null");
         const esAdmin = !!yo && yo.rol === "admin";
+        const soyJefe = !!yo && yo.es_jefe === 1;
+        const puedeCrear = esAdmin || soyJefe;
         let detalle = null;
+        let puedoAdminProyecto = false;
         let docentesCache = null;
 
         const $ = (id) => document.getElementById(id);
@@ -179,7 +219,7 @@
             return data;
         }
         function errorHumano(e) {
-            if (e.message === "SERVIDOR_NO_ACTIVO") aviso("El organizador se activa con la actualización del servidor que está por desplegarse. Tus demás herramientas ya funcionan.");
+            if (e.message === "SERVIDOR_NO_ACTIVO") aviso("Esta función se activa con la actualización del servidor que está por desplegarse. Tus demás herramientas ya funcionan.");
             else aviso(e.message || "Algo falló. Intenta de nuevo.");
         }
 
@@ -190,7 +230,7 @@
                 const cont = $("orgProyectos");
                 cont.innerHTML = "";
                 if (!data.proyectos.length) {
-                    cont.innerHTML = '<p class="org-vacio">Aún no hay proyectos. ' + (esAdmin ? "Crea el primero con el botón dorado." : "Un administrador te asignará a un proyecto.") + "</p>";
+                    cont.innerHTML = '<p class="org-vacio">Aún no hay proyectos. ' + (puedeCrear ? "Crea el primero con el botón dorado." : "Un administrador o un jefe de proyecto te asignará a uno.") + "</p>";
                     return;
                 }
                 data.proyectos.forEach(function (p) {
@@ -199,7 +239,7 @@
                     const t = document.createElement("strong"); t.textContent = p.nombre;
                     const d = document.createElement("p"); d.textContent = p.descripcion || "Sin descripción.";
                     const meta = document.createElement("small");
-                    meta.textContent = p.num_miembros + " docentes · " + p.num_fases + " fases";
+                    meta.textContent = p.num_miembros + " docentes · " + p.num_fases + " fases · " + (p.num_tarjetas || 0) + " tarjetas";
                     b.appendChild(t); b.appendChild(d); b.appendChild(meta);
                     if (p.proxima_fecha) {
                         const f = document.createElement("div");
@@ -207,13 +247,22 @@
                         f.textContent = "⏰ Próxima entrega: " + fmtFecha(p.proxima_fecha);
                         b.appendChild(f);
                     }
+                    if (p.num_tarjetas) {
+                        const pct = Math.round(100 * (p.en_fase_final || 0) / p.num_tarjetas);
+                        const barra = document.createElement("div"); barra.className = "org-progreso";
+                        const relleno = document.createElement("div"); relleno.style.width = pct + "%";
+                        barra.appendChild(relleno);
+                        const txt = document.createElement("span"); txt.className = "org-progreso-txt";
+                        txt.textContent = "Avance: " + (p.en_fase_final || 0) + " de " + p.num_tarjetas + " tarjetas en la fase final (" + pct + "%)";
+                        b.appendChild(barra); b.appendChild(txt);
+                    }
                     b.addEventListener("click", function () { abrirProyecto(p.id); });
                     cont.appendChild(b);
                 });
             } catch (e) { errorHumano(e); }
         }
 
-        /* ---------- Nuevo proyecto (solo admin) ---------- */
+        /* ---------- Docentes y jefes de proyecto ---------- */
         async function cargarDocentes() {
             if (docentesCache) return docentesCache;
             const data = await api("/proyectos/docentes");
@@ -228,12 +277,42 @@
                 cb.type = "checkbox"; cb.value = doc.id;
                 if (marcados && marcados.indexOf(doc.id) !== -1) cb.checked = true;
                 const s = document.createElement("span");
-                s.textContent = doc.nombre + " (" + doc.usuario + ")";
+                s.textContent = doc.nombre + " (" + doc.usuario + ")" + (doc.es_jefe ? " · jefe" : "");
                 lab.appendChild(cb); lab.appendChild(s);
                 cont.appendChild(lab);
             });
         }
         if (esAdmin) {
+            // Sección «Jefes de proyecto»: solo el administrador general designa.
+            (async function () {
+                try {
+                    await cargarDocentes();
+                    const cont = $("orgJefesLista");
+                    cont.innerHTML = "";
+                    (docentesCache || []).filter((d) => d.rol === "docente").forEach(function (doc) {
+                        const lab = document.createElement("label");
+                        lab.style.cssText = "display:flex;gap:8px;align-items:center;padding:5px 0;font-size:.92rem";
+                        const cb = document.createElement("input");
+                        cb.type = "checkbox"; cb.checked = doc.es_jefe === 1;
+                        cb.addEventListener("change", async function () {
+                            try {
+                                await api("/admin/usuarios/" + doc.id, { method: "PATCH", body: JSON.stringify({ es_jefe: cb.checked ? 1 : 0 }) });
+                                doc.es_jefe = cb.checked ? 1 : 0;
+                                aviso(cb.checked ? doc.nombre + " ahora es jefe de proyecto en Nous." : doc.nombre + " ya no es jefe de proyecto.");
+                            } catch (e) { cb.checked = !cb.checked; errorHumano(e); }
+                        });
+                        const s = document.createElement("span");
+                        s.textContent = doc.nombre + " (" + doc.usuario + ")";
+                        lab.appendChild(cb); lab.appendChild(s);
+                        cont.appendChild(lab);
+                    });
+                    $("orgJefes").style.display = "block";
+                } catch (e) { /* la sección es solo para el administrador */ }
+            })();
+        }
+
+        /* ---------- Nuevo proyecto (admin o jefe) ---------- */
+        if (puedeCrear) {
             $("btnNuevoProyecto").style.display = "block";
             $("btnNuevoProyecto").addEventListener("click", async function () {
                 try { await cargarDocentes(); pintarCheckDocentes($("npMiembros"), []); $("formProyecto").style.display = "block"; }
@@ -256,6 +335,7 @@
         async function abrirProyecto(id) {
             try {
                 detalle = await api("/proyectos/" + id);
+                puedoAdminProyecto = !!detalle.puedo_administrar;
                 renderDetalle();
                 $("orgListaVista").style.display = "none";
                 $("orgDetalleVista").style.display = "block";
@@ -269,29 +349,50 @@
             $("orgListaVista").style.display = "block";
             cargarProyectos();
         });
+        $("orgFiltro").addEventListener("input", function () {
+            const q = $("orgFiltro").value.trim().toLowerCase();
+            document.querySelectorAll(".org-tarjeta").forEach(function (card) {
+                card.style.display = !q || card.textContent.toLowerCase().includes(q) ? "" : "none";
+            });
+        });
 
         function renderDetalle() {
             const p = detalle.proyecto;
             $("orgTitulo").textContent = p.nombre;
             $("orgDesc").textContent = p.descripcion || "";
+            const total = detalle.tarjetas.length;
+            const ultimaFase = detalle.fases.length ? detalle.fases[detalle.fases.length - 1] : null;
+            const enFinal = ultimaFase ? detalle.tarjetas.filter((t) => t.fase_id === ultimaFase.id).length : 0;
+            const pct = total ? Math.round(100 * enFinal / total) : 0;
+            $("orgProgresoDetalle").innerHTML = "";
+            if (total) {
+                const wrap = document.createElement("div");
+                const barra = document.createElement("div"); barra.className = "org-progreso";
+                const relleno = document.createElement("div"); relleno.style.width = pct + "%";
+                barra.appendChild(relleno);
+                const txt = document.createElement("span"); txt.className = "org-progreso-txt";
+                txt.textContent = "Avance: " + enFinal + " de " + total + " tarjetas en la fase final («" + (ultimaFase ? ultimaFase.nombre : "") + "») · " + pct + "%";
+                wrap.appendChild(barra); wrap.appendChild(txt);
+                $("orgProgresoDetalle").appendChild(wrap);
+            }
             const mc = $("orgMiembros");
             mc.innerHTML = "";
             detalle.miembros.forEach(function (m) {
                 const chip = document.createElement("span");
                 chip.className = "org-chip-miembro" + (m.rol === "admin" ? " admin" : "");
-                chip.textContent = m.nombre;
+                chip.textContent = m.nombre + (m.rol === "admin" ? " · admin" : "");
                 mc.appendChild(chip);
             });
             renderEditarMiembros();
             renderTablero();
-            $("btnNuevaFase").style.display = esAdmin ? "block" : "none";
-            $("btnBorrarProyecto").style.display = esAdmin ? "block" : "none";
+            $("btnNuevaFase").style.display = puedoAdminProyecto ? "block" : "none";
+            $("btnBorrarProyecto").style.display = puedoAdminProyecto ? "block" : "none";
         }
 
         async function renderEditarMiembros() {
             const cont = $("orgEditarMiembros");
             cont.innerHTML = "";
-            if (!esAdmin) return;
+            if (!puedoAdminProyecto) return;
             try {
                 await cargarDocentes();
                 const det = document.createElement("details");
@@ -302,7 +403,6 @@
                 const checks = document.createElement("div");
                 checks.className = "org-miembros-check";
                 pintarCheckDocentes(checks, detalle.miembros.map((m) => m.id));
-                // pintarCheckDocentes pinta sobre docentesCache: reutilizamos su DOM moviéndolo
                 const btn = document.createElement("button");
                 btn.type = "button"; btn.className = "org-btn org-btn-azul"; btn.textContent = "Guardar docentes";
                 btn.addEventListener("click", async function () {
@@ -312,25 +412,35 @@
                 });
                 det.appendChild(sum); det.appendChild(checks); det.appendChild(btn);
                 cont.appendChild(det);
-            } catch (e) { /* la lista de docentes es solo para admin */ }
+            } catch (e) { /* sin acceso a la lista de docentes */ }
         }
 
         function renderTablero() {
             const tab = $("orgTablero");
             tab.innerHTML = "";
             if (!detalle.fases.length) {
-                tab.innerHTML = '<p class="org-vacio">' + (esAdmin ? "Este proyecto aún no tiene fases. Añade la primera con su fecha de entrega." : "Este proyecto aún no tiene fases.") + "</p>";
+                tab.innerHTML = '<p class="org-vacio">' + (puedoAdminProyecto ? "Este proyecto aún no tiene fases. Añade la primera con su fecha de entrega." : "Este proyecto aún no tiene fases.") + "</p>";
                 return;
             }
             detalle.fases.forEach(function (fase) {
                 const col = document.createElement("div");
                 col.className = "org-col";
+                col.addEventListener("dragover", function (e) { e.preventDefault(); col.classList.add("encima"); });
+                col.addEventListener("dragleave", function () { col.classList.remove("encima"); });
+                col.addEventListener("drop", async function (e) {
+                    e.preventDefault(); col.classList.remove("encima");
+                    const tid = Number(e.dataTransfer.getData("text/plain"));
+                    const tar = detalle.tarjetas.find((t) => t.id === tid);
+                    if (!tar || tar.fase_id === fase.id) return;
+                    try { await api("/tarjetas/" + tid, { method: "PATCH", body: JSON.stringify({ fase_id: fase.id }) }); refrescar(); }
+                    catch (err) { errorHumano(err); }
+                });
                 const header = document.createElement("header");
                 const nombre = document.createElement("strong");
                 nombre.textContent = fase.nombre;
                 header.appendChild(nombre);
                 const vencida = fase.fecha_entrega && fase.fecha_entrega < hoyStr();
-                if (esAdmin) {
+                if (puedoAdminProyecto) {
                     const fila = document.createElement("div");
                     fila.className = "org-col-acciones";
                     const inp = document.createElement("input");
@@ -355,7 +465,7 @@
                     f.textContent = "📅 " + fmtFecha(fase.fecha_entrega) + (vencida ? " · VENCIDA" : "");
                     header.appendChild(f);
                 }
-                if (esAdmin && fase.fecha_entrega) {
+                if (puedoAdminProyecto && fase.fecha_entrega) {
                     const f2 = document.createElement("span");
                     f2.className = "org-col-fecha" + (vencida ? " vencida" : "");
                     f2.textContent = (vencida ? "⚠️ Venció el " : "Entrega: ") + fmtFecha(fase.fecha_entrega);
@@ -390,9 +500,18 @@
         function renderTarjeta(t) {
             const card = document.createElement("div");
             card.className = "org-tarjeta";
+            card.draggable = true;
+            card.addEventListener("dragstart", function (e) { e.dataTransfer.setData("text/plain", String(t.id)); });
             const tit = document.createElement("strong"); tit.textContent = t.titulo;
             card.appendChild(tit);
             if (t.descripcion) { const d = document.createElement("p"); d.textContent = t.descripcion; card.appendChild(d); }
+            if (t.fecha) {
+                const venc = t.fecha < hoyStr();
+                const fb = document.createElement("span");
+                fb.className = "org-t-fecha" + (venc ? " vencida" : "");
+                fb.textContent = "📅 " + fmtFecha(t.fecha) + (venc ? " · vencida" : "");
+                card.appendChild(fb);
+            }
             const fila1 = document.createElement("div"); fila1.className = "org-t-fila";
             const selResp = document.createElement("select");
             selResp.setAttribute("aria-label", "Responsable");
@@ -409,6 +528,13 @@
                 catch (e) { errorHumano(e); }
             });
             fila1.appendChild(selResp);
+            const btnEdit = document.createElement("button");
+            btnEdit.type = "button"; btnEdit.className = "org-icon-btn"; btnEdit.textContent = "✎"; btnEdit.title = "Editar tarjeta";
+            fila1.appendChild(btnEdit);
+            const btnCom = document.createElement("button");
+            btnCom.type = "button"; btnCom.className = "org-icon-btn";
+            btnCom.textContent = "💬 " + (t.num_comentarios || 0); btnCom.title = "Comentarios";
+            fila1.appendChild(btnCom);
             const del = document.createElement("button");
             del.type = "button"; del.className = "org-mini"; del.textContent = "✕"; del.title = "Borrar tarjeta";
             del.addEventListener("click", async function () {
@@ -418,6 +544,71 @@
             });
             fila1.appendChild(del);
             card.appendChild(fila1);
+
+            // Editor de la tarjeta (título, descripción y fecha límite)
+            const edit = document.createElement("div");
+            edit.className = "org-t-edit"; edit.style.display = "none";
+            const eTit = document.createElement("input"); eTit.type = "text"; eTit.maxLength = 140; eTit.value = t.titulo; eTit.setAttribute("aria-label", "Título");
+            const eDesc = document.createElement("textarea"); eDesc.rows = 3; eDesc.maxLength = 1000; eDesc.value = t.descripcion || ""; eDesc.placeholder = "Descripción, acuerdos, ligas…"; eDesc.setAttribute("aria-label", "Descripción");
+            const eFecha = document.createElement("input"); eFecha.type = "date"; eFecha.value = t.fecha || ""; eFecha.setAttribute("aria-label", "Fecha límite");
+            const eBtns = document.createElement("div"); eBtns.style.display = "flex"; eBtns.style.gap = "6px";
+            const eOk = document.createElement("button"); eOk.type = "button"; eOk.className = "org-btn org-btn-azul"; eOk.style.padding = "8px 13px"; eOk.textContent = "Guardar";
+            eOk.addEventListener("click", async function () {
+                try {
+                    await api("/tarjetas/" + t.id, { method: "PATCH", body: JSON.stringify({ titulo: eTit.value, descripcion: eDesc.value, fecha: eFecha.value || null }) });
+                    refrescar();
+                } catch (e) { errorHumano(e); }
+            });
+            const eNo = document.createElement("button"); eNo.type = "button"; eNo.className = "org-btn org-btn-ghost"; eNo.style.padding = "8px 13px"; eNo.textContent = "Cancelar";
+            eNo.addEventListener("click", function () { edit.style.display = "none"; });
+            eBtns.appendChild(eOk); eBtns.appendChild(eNo);
+            edit.appendChild(eTit); edit.appendChild(eDesc); edit.appendChild(eFecha); edit.appendChild(eBtns);
+            card.appendChild(edit);
+            btnEdit.addEventListener("click", function () { edit.style.display = edit.style.display === "none" ? "block" : "none"; });
+
+            // Comentarios de la tarjeta
+            const comBox = document.createElement("div");
+            comBox.className = "org-comentarios"; comBox.style.display = "none";
+            card.appendChild(comBox);
+            let comCargados = false;
+            async function cargarComentarios() {
+                try {
+                    const data = await api("/tarjetas/" + t.id + "/comentarios");
+                    comBox.innerHTML = "";
+                    if (!data.comentarios.length) {
+                        const v = document.createElement("p"); v.style.cssText = "font-size:.82rem;color:#94a3b8;margin:0";
+                        v.textContent = "Sin comentarios todavía.";
+                        comBox.appendChild(v);
+                    }
+                    data.comentarios.forEach(function (c) {
+                        const d = document.createElement("div"); d.className = "org-comentario";
+                        const b = document.createElement("b"); b.textContent = c.nombre + ": ";
+                        const s = document.createElement("span"); s.textContent = c.texto;
+                        const f = document.createElement("small"); f.textContent = String(c.creado || "").slice(0, 16).replace("T", " ");
+                        d.appendChild(b); d.appendChild(s); d.appendChild(f);
+                        comBox.appendChild(d);
+                    });
+                    const form = document.createElement("form"); form.className = "org-com-form";
+                    const inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 500; inp.placeholder = "Escribe un comentario…";
+                    const btn = document.createElement("button"); btn.type = "submit"; btn.textContent = "Enviar";
+                    form.appendChild(inp); form.appendChild(btn);
+                    form.addEventListener("submit", async function (e) {
+                        e.preventDefault();
+                        const texto = inp.value.trim();
+                        if (!texto) return;
+                        try { await api("/tarjetas/" + t.id + "/comentarios", { method: "POST", body: JSON.stringify({ texto }) }); cargarComentarios(); }
+                        catch (err) { errorHumano(err); }
+                    });
+                    comBox.appendChild(form);
+                    comCargados = true;
+                } catch (e) { errorHumano(e); }
+            }
+            btnCom.addEventListener("click", function () {
+                const abrir = comBox.style.display === "none";
+                comBox.style.display = abrir ? "block" : "none";
+                if (abrir && !comCargados) cargarComentarios();
+            });
+
             if (detalle.fases.length > 1) {
                 const fila2 = document.createElement("div"); fila2.className = "org-t-fila";
                 const selFase = document.createElement("select");
@@ -439,30 +630,30 @@
             return card;
         }
 
-        /* ---------- Fases y borrado (admin) ---------- */
-        if (esAdmin) {
-            $("btnNuevaFase").addEventListener("click", function () { $("formFase").style.display = "block"; });
-            $("nfCancelar").addEventListener("click", function () { $("formFase").style.display = "none"; });
-            $("formFase").addEventListener("submit", async function (e) {
-                e.preventDefault();
-                try {
-                    await api("/proyectos/" + detalle.proyecto.id + "/fases", { method: "POST", body: JSON.stringify({ nombre: $("nfNombre").value, fecha_entrega: $("nfFecha").value || null }) });
-                    $("nfNombre").value = ""; $("nfFecha").value = "";
-                    $("formFase").style.display = "none";
-                    refrescar();
-                } catch (err) { errorHumano(err); }
-            });
-            $("btnBorrarProyecto").addEventListener("click", async function () {
-                if (!confirm("¿Borrar el proyecto «" + detalle.proyecto.nombre + "» con todo su tablero? Esto no se puede deshacer.")) return;
-                try {
-                    await api("/proyectos/" + detalle.proyecto.id, { method: "DELETE" });
-                    detalle = null;
-                    $("orgDetalleVista").style.display = "none";
-                    $("orgListaVista").style.display = "block";
-                    cargarProyectos();
-                } catch (e) { errorHumano(e); }
-            });
-        }
+        /* ---------- Fases y borrado (admin general o jefe del proyecto) ---------- */
+        $("btnNuevaFase").addEventListener("click", function () { $("formFase").style.display = "block"; });
+        $("nfCancelar").addEventListener("click", function () { $("formFase").style.display = "none"; });
+        $("formFase").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            if (!puedoAdminProyecto) return;
+            try {
+                await api("/proyectos/" + detalle.proyecto.id + "/fases", { method: "POST", body: JSON.stringify({ nombre: $("nfNombre").value, fecha_entrega: $("nfFecha").value || null }) });
+                $("nfNombre").value = ""; $("nfFecha").value = "";
+                $("formFase").style.display = "none";
+                refrescar();
+            } catch (err) { errorHumano(err); }
+        });
+        $("btnBorrarProyecto").addEventListener("click", async function () {
+            if (!puedoAdminProyecto || !detalle) return;
+            if (!confirm("¿Borrar el proyecto «" + detalle.proyecto.nombre + "» con todo su tablero? Esto no se puede deshacer.")) return;
+            try {
+                await api("/proyectos/" + detalle.proyecto.id, { method: "DELETE" });
+                detalle = null;
+                $("orgDetalleVista").style.display = "none";
+                $("orgListaVista").style.display = "block";
+                cargarProyectos();
+            } catch (e) { errorHumano(e); }
+        });
 
         /* ---------- Funciones de IA (clave propia, como en Ju-bits) ---------- */
         const iaProv = $("iaProveedor"), iaClave = $("iaClave");
@@ -536,7 +727,7 @@
                     fila.appendChild(s1); fila.appendChild(s2);
                     cont.appendChild(fila);
                 });
-                if (esAdmin && propuestasIA.length) {
+                if (puedoAdminProyecto && propuestasIA.length) {
                     const btn = document.createElement("button");
                     btn.type = "button"; btn.className = "org-btn org-btn-dorado"; btn.style.marginTop = "10px";
                     btn.textContent = "Crear estas fases";

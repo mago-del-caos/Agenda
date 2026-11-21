@@ -145,15 +145,33 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const tokenHorario = localStorage.getItem("aglucem_token");
         let guardarTimer = null;
-        const guardarHorarioServidor = () => {
-            if (!tokenHorario) return;
+        const estadoHorario = (txt) => {
+            const el = document.getElementById("horarioEstado");
+            if (el) el.textContent = txt;
+        };
+        const guardarHorarioServidor = (manual) => {
+            if (!tokenHorario) { estadoHorario("Sin sesión: quedó solo en este dispositivo."); return Promise.resolve(false); }
+            estadoHorario("Guardando en el servidor…");
             const celdas = Array.from(cells).map((c) => c.innerText);
-            fetch(AGLUCEM_API + "/horario", {
+            return fetch(AGLUCEM_API + "/horario", {
                 method: "PUT",
                 headers: { Authorization: "Bearer " + tokenHorario, "Content-Type": "application/json" },
                 body: JSON.stringify({ celdas })
-            }).catch(() => {});
+            }).then((r) => {
+                if (r.ok) {
+                    const h = new Date();
+                    estadoHorario("✓ Guardado en el servidor " + String(h.getHours()).padStart(2, "0") + ":" + String(h.getMinutes()).padStart(2, "0") + " — ya se ve en todos tus dispositivos.");
+                    return true;
+                }
+                estadoHorario("No se pudo guardar en el servidor; quedó en este dispositivo.");
+                return false;
+            }).catch(() => {
+                estadoHorario("Sin conexión: quedó guardado en este dispositivo.");
+                return false;
+            });
         };
+        // Botón explícito «Guardar horario» de la página
+        window.aglucemGuardarHorario = () => guardarHorarioServidor(true);
         if (tokenHorario) {
             fetch(AGLUCEM_API + "/horario", { headers: { Authorization: "Bearer " + tokenHorario } })
                 .then((r) => (r.ok ? r.json() : null))
@@ -164,9 +182,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             if (cells[i]) cells[i].innerText = v || "";
                             localStorage.setItem(`app_horario_${i}`, v || "");
                         });
+                        estadoHorario("✓ Horario sincronizado con el servidor.");
                     } else if (Array.from(cells).some((c) => c.innerText.trim())) {
                         // Primera vez: lo que ya había en este dispositivo sube a la cuenta
                         guardarHorarioServidor();
+                    } else {
+                        estadoHorario("Escribe tu horario y pulsa «Guardar horario».");
                     }
                 })
                 .catch(() => {});
@@ -174,8 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
         cells.forEach((cell, i) => {
             cell.addEventListener("input", () => {
                 localStorage.setItem(`app_horario_${i}`, cell.innerText);
+                estadoHorario("Cambios sin guardar — pulsa «Guardar horario».");
                 clearTimeout(guardarTimer);
-                guardarTimer = setTimeout(guardarHorarioServidor, 1200);
+                guardarTimer = setTimeout(() => guardarHorarioServidor(), 4000);
             });
         });
     }
