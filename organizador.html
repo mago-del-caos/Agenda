@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Organizador de proyectos - Ag lucem</title>
+    
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .org-aviso { background:#fff7e0; border:1px solid #FFD100; color:#5c4a00; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:.92rem; }
+        .org-barra { display:flex; align-items:center; justify-content:space-between; gap:10px; margin: 6px 0 12px; }
+        .org-barra h3 { margin:0; color: var(--ij-azul-fuerte); }
+        .org-btn { border:none; border-radius:12px; padding:11px 16px; font-weight:800; cursor:pointer; font-family:inherit; font-size:.92rem; }
+        .org-btn-dorado { background: var(--ij-dorado); color:#032A60; }
+        .org-btn-azul { background: var(--ij-azul-fuerte); color:#fff; }
+        .org-btn-ghost { background:#eef1f7; color:#21314d; }
+        .org-btn-rojo { background:#fdecec; color:#b3261e; }
+        .org-proyectos { display:grid; grid-template-columns:1fr; gap:12px; }
+        @media (min-width:720px){ .org-proyectos{ grid-template-columns:1fr 1fr; } }
+        .org-proy { background:#fff; border:1px solid #e3e8f2; border-radius:16px; box-shadow:0 6px 15px rgba(0,0,0,.07); padding:16px; cursor:pointer; text-align:left; font-family:inherit; width:100%; }
+        .org-proy strong { color: var(--ij-azul-fuerte); font-size:1.05rem; display:block; margin-bottom:4px; }
+        .org-proy p { color:#7286a3; font-size:.88rem; margin:0 0 8px; }
+        .org-proy small { color:#7286a3; }
+        .org-proy .org-fecha { color:#8a6d00; font-weight:700; }
+        .org-form { background:#fff; border:1px solid #e3e8f2; border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 6px 15px rgba(0,0,0,.07); }
+        .org-form label { display:block; font-weight:700; color: var(--ij-azul-fuerte); font-size:.88rem; margin:10px 0 4px; }
+        .org-form input[type=text], .org-form textarea, .org-form input[type=date], .org-form select { width:100%; box-sizing:border-box; border:1px solid #d5dcea; border-radius:10px; padding:10px 12px; font-family:inherit; font-size:.95rem; }
+        .org-miembros-check { display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; max-height:190px; overflow:auto; padding:6px 0; }
+        .org-miembros-check label { display:flex; gap:8px; align-items:center; font-weight:400; color:#21314d; margin:0; font-size:.9rem; }
+        .org-miembros { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+        .org-chip-miembro { background:#eef1f7; border-radius:999px; padding:5px 11px; font-size:.8rem; font-weight:700; color:#21314d; }
+        .org-chip-miembro.admin { background:#FFD100; color:#032A60; }
+        .org-tablero-wrap { overflow-x:auto; padding-bottom:10px; margin: 8px -4px 0; }
+        .org-tablero { display:flex; gap:12px; align-items:flex-start; min-width:min-content; padding: 0 4px; }
+        .org-col { background:#f4f6fb; border:1px solid #e3e8f2; border-radius:14px; width:272px; flex:none; padding:10px; }
+        .org-col header { display:flex; flex-direction:column; gap:3px; margin-bottom:8px; }
+        .org-col header strong { color: var(--ij-azul-fuerte); font-size:.98rem; }
+        .org-col .org-col-fecha { font-size:.78rem; font-weight:700; color:#8a6d00; }
+        .org-col .org-col-fecha.vencida { color:#b3261e; }
+        .org-col .org-col-acciones { display:flex; gap:6px; align-items:center; }
+        .org-col .org-col-acciones input[type=date] { flex:1; border:1px solid #d5dcea; border-radius:8px; padding:5px 7px; font-family:inherit; font-size:.8rem; min-width:0; }
+        .org-mini { border:none; background:#fdecec; color:#b3261e; border-radius:8px; width:28px; height:28px; cursor:pointer; font-weight:800; flex:none; }
+        .org-tarjeta { background:#fff; border:1px solid #e3e8f2; border-radius:12px; padding:10px; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,.05); }
+        .org-tarjeta strong { display:block; font-size:.92rem; margin-bottom:2px; }
+        .org-tarjeta p { margin:0 0 6px; font-size:.82rem; color:#7286a3; white-space:pre-wrap; }
+        .org-tarjeta .org-t-fila { display:flex; gap:6px; margin-top:6px; }
+        .org-tarjeta select { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:8px; padding:5px; font-size:.78rem; font-family:inherit; }
+        .org-add-tarjeta { display:flex; gap:6px; }
+        .org-add-tarjeta input { flex:1; min-width:0; border:1px solid #d5dcea; border-radius:10px; padding:9px 10px; font-family:inherit; font-size:.88rem; }
+        .org-add-tarjeta button { border:none; border-radius:10px; background: var(--ij-azul-fuerte); color:#fff; font-weight:800; padding:0 13px; cursor:pointer; }
+        .org-ia { margin-top:22px; background:linear-gradient(135deg,#032A60,#5B3E99); border-radius:16px; padding:16px; color:#fff; }
+        .org-ia h3 { margin:0 0 4px; color:#FFD100; }
+        .org-ia p { margin:0 0 10px; font-size:.86rem; color:#dfe7ff; }
+        .org-ia .org-ia-fila { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+        .org-ia select, .org-ia input { border:none; border-radius:10px; padding:10px 12px; font-family:inherit; font-size:.9rem; }
+        .org-ia input { flex:1; min-width:180px; }
+        .org-ia-salida { background:rgba(255,255,255,.1); border-radius:12px; padding:12px; font-size:.9rem; white-space:pre-wrap; min-height:20px; }
+        .org-ia-propuesta { display:flex; justify-content:space-between; gap:8px; background:rgba(255,255,255,.12); border-radius:10px; padding:8px 11px; margin-top:6px; font-size:.88rem; }
+        .org-vacio { color:#7286a3; text-align:center; padding:22px 8px; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <!-- Novedades activo -->
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/calendario.html" class="nav-btn">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title" style="margin-bottom: 14px; color: var(--ij-azul-fuerte);">Organizador de proyectos</h2>
+        <div id="orgAviso" class="org-aviso" style="display:none"></div>
+
+        <div id="orgListaVista">
+            <div class="org-barra">
+                <h3>Proyectos</h3>
+                <button id="btnNuevoProyecto" type="button" class="org-btn org-btn-dorado" style="display:none">＋ Nuevo proyecto</button>
+            </div>
+            <form id="formProyecto" class="org-form" style="display:none">
+                <label for="npNombre">Nombre del proyecto</label>
+                <input type="text" id="npNombre" maxlength="120" placeholder="Ej. Feria de ciencias multidisciplinaria">
+                <label for="npDesc">Descripción (estilo Notion: el qué, el para qué y los acuerdos)</label>
+                <textarea id="npDesc" rows="4" maxlength="2000" placeholder="Describe el proyecto, sus productos y acuerdos del equipo…"></textarea>
+                <label>Docentes del proyecto</label>
+                <div id="npMiembros" class="org-miembros-check"></div>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                    <button type="submit" class="org-btn org-btn-azul">Crear proyecto</button>
+                    <button type="button" id="npCancelar" class="org-btn org-btn-ghost">Cancelar</button>
+                </div>
+            </form>
+            <div id="orgProyectos" class="org-proyectos"></div>
+        </div>
+
+        <div id="orgDetalleVista" style="display:none">
+            <button id="btnVolver" type="button" class="org-btn org-btn-ghost" style="margin-bottom:10px">← Volver a proyectos</button>
+            <h3 id="orgTitulo" style="margin:0;color:var(--ij-azul-fuerte)"></h3>
+            <p id="orgDesc" style="color:#7286a3;white-space:pre-wrap"></p>
+            <div id="orgMiembros" class="org-miembros"></div>
+            <div id="orgEditarMiembros"></div>
+
+            <div class="org-tablero-wrap"><div id="orgTablero" class="org-tablero"></div></div>
+
+            <form id="formFase" class="org-form" style="display:none">
+                <label for="nfNombre">Nombre de la fase</label>
+                <input type="text" id="nfNombre" maxlength="80" placeholder="Ej. Entrega del primer avance">
+                <label for="nfFecha">Fecha de entrega</label>
+                <input type="date" id="nfFecha">
+                <div style="display:flex;gap:8px;margin-top:12px">
+                    <button type="submit" class="org-btn org-btn-azul">Añadir fase</button>
+                    <button type="button" id="nfCancelar" class="org-btn org-btn-ghost">Cancelar</button>
+                </div>
+            </form>
+            <button id="btnNuevaFase" type="button" class="org-btn org-btn-dorado" style="display:none">＋ Añadir fase con fecha de entrega</button>
+
+            <section class="org-ia">
+                <h3>✨ Funciones de IA</h3>
+                <p>Usa tu propia clave de Groq o Gemini (la misma de Ju-bits). La clave se guarda solo en este dispositivo.</p>
+                <div class="org-ia-fila">
+                    <select id="iaProveedor" aria-label="Proveedor de IA">
+                        <option value="groq">Groq</option>
+                        <option value="gemini">Gemini</option>
+                    </select>
+                    <input type="password" id="iaClave" placeholder="Tu clave de IA (gsk_… o AIza…)" autocomplete="off">
+                </div>
+                <div class="org-ia-fila">
+                    <button id="iaFases" type="button" class="org-btn org-btn-dorado">Sugerir fases del proyecto</button>
+                    <button id="iaResumen" type="button" class="org-btn org-btn-ghost">Resumir el avance</button>
+                </div>
+                <div id="iaSalida" class="org-ia-salida">Aquí aparecerán las propuestas y resúmenes de la IA.</div>
+                <div id="iaPropuestas"></div>
+            </section>
+
+            <div style="margin-top:22px">
+                <button id="btnBorrarProyecto" type="button" class="org-btn org-btn-rojo" style="display:none">Borrar este proyecto</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    /* ===== Organizador de proyectos multidisciplinarios (Notion × Trello) ===== */
+    (function () {
+        const API = "https://aglucem-api.adrian-camelot32.workers.dev";
+        const token = localStorage.getItem("aglucem_token") || "";
+        const yo = JSON.parse(localStorage.getItem("aglucem_user") || "null");
+        const esAdmin = !!yo && yo.rol === "admin";
+        let detalle = null;
+        let docentesCache = null;
+
+        const $ = (id) => document.getElementById(id);
+        function aviso(msg) { const a = $("orgAviso"); a.textContent = msg; a.style.display = "block"; }
+        function fmtFecha(f) { if (!f) return "Sin fecha"; const p = f.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+        function hoyStr() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+        async function api(ruta, opts) {
+            const r = await fetch(API + ruta, Object.assign({ headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" } }, opts || {}));
+            if (r.status === 404) throw new Error("SERVIDOR_NO_ACTIVO");
+            const data = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+            return data;
+        }
+        function errorHumano(e) {
+            if (e.message === "SERVIDOR_NO_ACTIVO") aviso("El organizador se activa con la actualización del servidor que está por desplegarse. Tus demás herramientas ya funcionan.");
+            else aviso(e.message || "Algo falló. Intenta de nuevo.");
+        }
+
+        /* ---------- Lista de proyectos ---------- */
+        async function cargarProyectos() {
+            try {
+                const data = await api("/proyectos");
+                const cont = $("orgProyectos");
+                cont.innerHTML = "";
+                if (!data.proyectos.length) {
+                    cont.innerHTML = '<p class="org-vacio">Aún no hay proyectos. ' + (esAdmin ? "Crea el primero con el botón dorado." : "Un administrador te asignará a un proyecto.") + "</p>";
+                    return;
+                }
+                data.proyectos.forEach(function (p) {
+                    const b = document.createElement("button");
+                    b.type = "button"; b.className = "org-proy";
+                    const t = document.createElement("strong"); t.textContent = p.nombre;
+                    const d = document.createElement("p"); d.textContent = p.descripcion || "Sin descripción.";
+                    const meta = document.createElement("small");
+                    meta.textContent = p.num_miembros + " docentes · " + p.num_fases + " fases";
+                    b.appendChild(t); b.appendChild(d); b.appendChild(meta);
+                    if (p.proxima_fecha) {
+                        const f = document.createElement("div");
+                        f.className = "org-fecha"; f.style.marginTop = "6px"; f.style.fontSize = ".85rem";
+                        f.textContent = "⏰ Próxima entrega: " + fmtFecha(p.proxima_fecha);
+                        b.appendChild(f);
+                    }
+                    b.addEventListener("click", function () { abrirProyecto(p.id); });
+                    cont.appendChild(b);
+                });
+            } catch (e) { errorHumano(e); }
+        }
+
+        /* ---------- Nuevo proyecto (solo admin) ---------- */
+        async function cargarDocentes() {
+            if (docentesCache) return docentesCache;
+            const data = await api("/proyectos/docentes");
+            docentesCache = data.docentes;
+            return docentesCache;
+        }
+        function pintarCheckDocentes(cont, marcados) {
+            cont.innerHTML = "";
+            (docentesCache || []).forEach(function (doc) {
+                const lab = document.createElement("label");
+                const cb = document.createElement("input");
+                cb.type = "checkbox"; cb.value = doc.id;
+                if (marcados && marcados.indexOf(doc.id) !== -1) cb.checked = true;
+                const s = document.createElement("span");
+                s.textContent = doc.nombre + " (" + doc.usuario + ")";
+                lab.appendChild(cb); lab.appendChild(s);
+                cont.appendChild(lab);
+            });
+        }
+        if (esAdmin) {
+            $("btnNuevoProyecto").style.display = "block";
+            $("btnNuevoProyecto").addEventListener("click", async function () {
+                try { await cargarDocentes(); pintarCheckDocentes($("npMiembros"), []); $("formProyecto").style.display = "block"; }
+                catch (e) { errorHumano(e); }
+            });
+            $("npCancelar").addEventListener("click", function () { $("formProyecto").style.display = "none"; });
+            $("formProyecto").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const miembros = Array.from($("npMiembros").querySelectorAll("input:checked")).map((c) => Number(c.value));
+                try {
+                    await api("/proyectos", { method: "POST", body: JSON.stringify({ nombre: $("npNombre").value, descripcion: $("npDesc").value, miembros }) });
+                    $("formProyecto").style.display = "none";
+                    $("npNombre").value = ""; $("npDesc").value = "";
+                    cargarProyectos();
+                } catch (err) { errorHumano(err); }
+            });
+        }
+
+        /* ---------- Detalle y tablero ---------- */
+        async function abrirProyecto(id) {
+            try {
+                detalle = await api("/proyectos/" + id);
+                renderDetalle();
+                $("orgListaVista").style.display = "none";
+                $("orgDetalleVista").style.display = "block";
+                window.scrollTo({ top: 0 });
+            } catch (e) { errorHumano(e); }
+        }
+        async function refrescar() { if (detalle) await abrirProyecto(detalle.proyecto.id); }
+        $("btnVolver").addEventListener("click", function () {
+            detalle = null;
+            $("orgDetalleVista").style.display = "none";
+            $("orgListaVista").style.display = "block";
+            cargarProyectos();
+        });
+
+        function renderDetalle() {
+            const p = detalle.proyecto;
+            $("orgTitulo").textContent = p.nombre;
+            $("orgDesc").textContent = p.descripcion || "";
+            const mc = $("orgMiembros");
+            mc.innerHTML = "";
+            detalle.miembros.forEach(function (m) {
+                const chip = document.createElement("span");
+                chip.className = "org-chip-miembro" + (m.rol === "admin" ? " admin" : "");
+                chip.textContent = m.nombre;
+                mc.appendChild(chip);
+            });
+            renderEditarMiembros();
+            renderTablero();
+            $("btnNuevaFase").style.display = esAdmin ? "block" : "none";
+            $("btnBorrarProyecto").style.display = esAdmin ? "block" : "none";
+        }
+
+        async function renderEditarMiembros() {
+            const cont = $("orgEditarMiembros");
+            cont.innerHTML = "";
+            if (!esAdmin) return;
+            try {
+                await cargarDocentes();
+                const det = document.createElement("details");
+                det.className = "org-form";
+                const sum = document.createElement("summary");
+                sum.textContent = "Editar docentes del proyecto";
+                sum.style.cssText = "font-weight:800;color:var(--ij-azul-fuerte);cursor:pointer";
+                const checks = document.createElement("div");
+                checks.className = "org-miembros-check";
+                pintarCheckDocentes(checks, detalle.miembros.map((m) => m.id));
+                // pintarCheckDocentes pinta sobre docentesCache: reutilizamos su DOM moviéndolo
+                const btn = document.createElement("button");
+                btn.type = "button"; btn.className = "org-btn org-btn-azul"; btn.textContent = "Guardar docentes";
+                btn.addEventListener("click", async function () {
+                    const miembros = Array.from(checks.querySelectorAll("input:checked")).map((c) => Number(c.value));
+                    try { await api("/proyectos/" + detalle.proyecto.id + "/miembros", { method: "POST", body: JSON.stringify({ miembros }) }); refrescar(); }
+                    catch (e) { errorHumano(e); }
+                });
+                det.appendChild(sum); det.appendChild(checks); det.appendChild(btn);
+                cont.appendChild(det);
+            } catch (e) { /* la lista de docentes es solo para admin */ }
+        }
+
+        function renderTablero() {
+            const tab = $("orgTablero");
+            tab.innerHTML = "";
+            if (!detalle.fases.length) {
+                tab.innerHTML = '<p class="org-vacio">' + (esAdmin ? "Este proyecto aún no tiene fases. Añade la primera con su fecha de entrega." : "Este proyecto aún no tiene fases.") + "</p>";
+                return;
+            }
+            detalle.fases.forEach(function (fase) {
+                const col = document.createElement("div");
+                col.className = "org-col";
+                const header = document.createElement("header");
+                const nombre = document.createElement("strong");
+                nombre.textContent = fase.nombre;
+                header.appendChild(nombre);
+                const vencida = fase.fecha_entrega && fase.fecha_entrega < hoyStr();
+                if (esAdmin) {
+                    const fila = document.createElement("div");
+                    fila.className = "org-col-acciones";
+                    const inp = document.createElement("input");
+                    inp.type = "date"; inp.value = fase.fecha_entrega || "";
+                    inp.title = "Fecha de entrega de la fase";
+                    inp.addEventListener("change", async function () {
+                        try { await api("/fases/" + fase.id, { method: "PATCH", body: JSON.stringify({ fecha_entrega: inp.value || null }) }); refrescar(); }
+                        catch (e) { errorHumano(e); }
+                    });
+                    const del = document.createElement("button");
+                    del.type = "button"; del.className = "org-mini"; del.textContent = "✕"; del.title = "Borrar fase";
+                    del.addEventListener("click", async function () {
+                        if (!confirm("¿Borrar la fase «" + fase.nombre + "» con todas sus tarjetas?")) return;
+                        try { await api("/fases/" + fase.id, { method: "DELETE" }); refrescar(); }
+                        catch (e) { errorHumano(e); }
+                    });
+                    fila.appendChild(inp); fila.appendChild(del);
+                    header.appendChild(fila);
+                } else {
+                    const f = document.createElement("span");
+                    f.className = "org-col-fecha" + (vencida ? " vencida" : "");
+                    f.textContent = "📅 " + fmtFecha(fase.fecha_entrega) + (vencida ? " · VENCIDA" : "");
+                    header.appendChild(f);
+                }
+                if (esAdmin && fase.fecha_entrega) {
+                    const f2 = document.createElement("span");
+                    f2.className = "org-col-fecha" + (vencida ? " vencida" : "");
+                    f2.textContent = (vencida ? "⚠️ Venció el " : "Entrega: ") + fmtFecha(fase.fecha_entrega);
+                    header.appendChild(f2);
+                }
+                col.appendChild(header);
+
+                detalle.tarjetas.filter((t) => t.fase_id === fase.id).forEach(function (t) {
+                    col.appendChild(renderTarjeta(t));
+                });
+
+                const add = document.createElement("form");
+                add.className = "org-add-tarjeta";
+                const inp = document.createElement("input");
+                inp.type = "text"; inp.maxLength = 140; inp.placeholder = "Nueva tarjeta…";
+                inp.setAttribute("aria-label", "Título de la tarjeta");
+                const btn = document.createElement("button");
+                btn.type = "submit"; btn.textContent = "＋";
+                add.appendChild(inp); add.appendChild(btn);
+                add.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+                    const titulo = inp.value.trim();
+                    if (!titulo) return;
+                    try { await api("/fases/" + fase.id + "/tarjetas", { method: "POST", body: JSON.stringify({ titulo }) }); refrescar(); }
+                    catch (err) { errorHumano(err); }
+                });
+                col.appendChild(add);
+                tab.appendChild(col);
+            });
+        }
+
+        function renderTarjeta(t) {
+            const card = document.createElement("div");
+            card.className = "org-tarjeta";
+            const tit = document.createElement("strong"); tit.textContent = t.titulo;
+            card.appendChild(tit);
+            if (t.descripcion) { const d = document.createElement("p"); d.textContent = t.descripcion; card.appendChild(d); }
+            const fila1 = document.createElement("div"); fila1.className = "org-t-fila";
+            const selResp = document.createElement("select");
+            selResp.setAttribute("aria-label", "Responsable");
+            const sin = document.createElement("option"); sin.value = ""; sin.textContent = "Sin responsable";
+            selResp.appendChild(sin);
+            detalle.miembros.forEach(function (m) {
+                const op = document.createElement("option");
+                op.value = m.id; op.textContent = m.nombre;
+                if (t.responsable_id === m.id) op.selected = true;
+                selResp.appendChild(op);
+            });
+            selResp.addEventListener("change", async function () {
+                try { await api("/tarjetas/" + t.id, { method: "PATCH", body: JSON.stringify({ responsable_id: selResp.value ? Number(selResp.value) : null }) }); }
+                catch (e) { errorHumano(e); }
+            });
+            fila1.appendChild(selResp);
+            const del = document.createElement("button");
+            del.type = "button"; del.className = "org-mini"; del.textContent = "✕"; del.title = "Borrar tarjeta";
+            del.addEventListener("click", async function () {
+                if (!confirm("¿Borrar la tarjeta «" + t.titulo + "»?")) return;
+                try { await api("/tarjetas/" + t.id, { method: "DELETE" }); refrescar(); }
+                catch (e) { errorHumano(e); }
+            });
+            fila1.appendChild(del);
+            card.appendChild(fila1);
+            if (detalle.fases.length > 1) {
+                const fila2 = document.createElement("div"); fila2.className = "org-t-fila";
+                const selFase = document.createElement("select");
+                selFase.setAttribute("aria-label", "Mover a otra fase");
+                detalle.fases.forEach(function (f) {
+                    const op = document.createElement("option");
+                    op.value = f.id; op.textContent = "→ " + f.nombre;
+                    if (f.id === t.fase_id) op.selected = true;
+                    selFase.appendChild(op);
+                });
+                selFase.addEventListener("change", async function () {
+                    if (Number(selFase.value) === t.fase_id) return;
+                    try { await api("/tarjetas/" + t.id, { method: "PATCH", body: JSON.stringify({ fase_id: Number(selFase.value) }) }); refrescar(); }
+                    catch (e) { errorHumano(e); }
+                });
+                fila2.appendChild(selFase);
+                card.appendChild(fila2);
+            }
+            return card;
+        }
+
+        /* ---------- Fases y borrado (admin) ---------- */
+        if (esAdmin) {
+            $("btnNuevaFase").addEventListener("click", function () { $("formFase").style.display = "block"; });
+            $("nfCancelar").addEventListener("click", function () { $("formFase").style.display = "none"; });
+            $("formFase").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                try {
+                    await api("/proyectos/" + detalle.proyecto.id + "/fases", { method: "POST", body: JSON.stringify({ nombre: $("nfNombre").value, fecha_entrega: $("nfFecha").value || null }) });
+                    $("nfNombre").value = ""; $("nfFecha").value = "";
+                    $("formFase").style.display = "none";
+                    refrescar();
+                } catch (err) { errorHumano(err); }
+            });
+            $("btnBorrarProyecto").addEventListener("click", async function () {
+                if (!confirm("¿Borrar el proyecto «" + detalle.proyecto.nombre + "» con todo su tablero? Esto no se puede deshacer.")) return;
+                try {
+                    await api("/proyectos/" + detalle.proyecto.id, { method: "DELETE" });
+                    detalle = null;
+                    $("orgDetalleVista").style.display = "none";
+                    $("orgListaVista").style.display = "block";
+                    cargarProyectos();
+                } catch (e) { errorHumano(e); }
+            });
+        }
+
+        /* ---------- Funciones de IA (clave propia, como en Ju-bits) ---------- */
+        const iaProv = $("iaProveedor"), iaClave = $("iaClave");
+        iaProv.value = localStorage.getItem("aglucem_ia_proveedor") || "groq";
+        iaClave.value = localStorage.getItem("aglucem_ia_clave") || "";
+        iaProv.addEventListener("change", function () { localStorage.setItem("aglucem_ia_proveedor", iaProv.value); });
+        iaClave.addEventListener("change", function () { localStorage.setItem("aglucem_ia_clave", iaClave.value.trim()); });
+
+        async function llamarIA(prompt) {
+            const clave = iaClave.value.trim();
+            if (!clave) throw new Error("Primero escribe tu clave de IA (Groq o Gemini) en el panel de IA.");
+            localStorage.setItem("aglucem_ia_clave", clave);
+            if (iaProv.value === "groq") {
+                let modelo = "llama-3.3-70b-versatile";
+                try {
+                    const lm = await fetch("https://api.groq.com/openai/v1/models", { headers: { Authorization: "Bearer " + clave } });
+                    if (lm.ok) {
+                        const dj = await lm.json();
+                        const cand = (dj.data || []).map((m) => m.id).filter((id) => !/whisper|guard|tts|embed/i.test(id));
+                        if (cand.length) modelo = cand[0];
+                    }
+                } catch (e) { /* se usa el modelo por defecto */ }
+                const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: { Authorization: "Bearer " + clave, "Content-Type": "application/json" },
+                    body: JSON.stringify({ model: modelo, messages: [{ role: "user", content: prompt }], temperature: 0.4 })
+                });
+                const dj = await r.json().catch(() => ({}));
+                if (!r.ok) throw new Error((dj.error && dj.error.message) || "La IA no respondió.");
+                return dj.choices[0].message.content;
+            }
+            let modelo = "gemini-2.0-flash";
+            try {
+                const lm = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(clave));
+                if (lm.ok) {
+                    const dj = await lm.json();
+                    const cand = (dj.models || []).filter((m) => (m.supportedGenerationMethods || []).includes("generateContent") && /flash/i.test(m.name));
+                    if (cand.length) modelo = cand[0].name.replace("models/", "");
+                }
+            } catch (e) { /* modelo por defecto */ }
+            const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + modelo + ":generateContent?key=" + encodeURIComponent(clave), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const dj = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error((dj.error && dj.error.message) || "La IA no respondió.");
+            return dj.candidates[0].content.parts.map((p) => p.text || "").join("");
+        }
+
+        let propuestasIA = [];
+        $("iaFases").addEventListener("click", async function () {
+            if (!detalle) return;
+            $("iaSalida").textContent = "Pensando las fases…";
+            $("iaPropuestas").innerHTML = "";
+            const prompt = "Eres un coordinador de proyectos escolares multidisciplinarios. Para el proyecto «" + detalle.proyecto.nombre + "» con esta descripción: «" + (detalle.proyecto.descripcion || "sin descripción") + "», propón entre 4 y 6 fases de trabajo en equipo, en orden, cada una con su nombre corto y en cuántos días desde hoy debería entregarse. Responde SOLO con un arreglo JSON válido, sin texto extra, con esta forma: [{\"nombre\":\"Diagnóstico\",\"dias\":7}]";
+            try {
+                const texto = await llamarIA(prompt);
+                const m = texto.match(/\[[\s\S]*\]/);
+                if (!m) throw new Error("La IA no devolvió una lista válida. Intenta de nuevo.");
+                propuestasIA = JSON.parse(m[0]);
+                $("iaSalida").textContent = "La IA propone estas fases. Revísalas y créalas si te sirven:";
+                const cont = $("iaPropuestas");
+                propuestasIA.forEach(function (f) {
+                    const fecha = new Date(); fecha.setDate(fecha.getDate() + (Number(f.dias) || 7));
+                    f._fecha = fecha.getFullYear() + "-" + String(fecha.getMonth() + 1).padStart(2, "0") + "-" + String(fecha.getDate()).padStart(2, "0");
+                    const fila = document.createElement("div");
+                    fila.className = "org-ia-propuesta";
+                    const s1 = document.createElement("span"); s1.textContent = f.nombre;
+                    const s2 = document.createElement("span"); s2.textContent = "📅 " + fmtFecha(f._fecha);
+                    fila.appendChild(s1); fila.appendChild(s2);
+                    cont.appendChild(fila);
+                });
+                if (esAdmin && propuestasIA.length) {
+                    const btn = document.createElement("button");
+                    btn.type = "button"; btn.className = "org-btn org-btn-dorado"; btn.style.marginTop = "10px";
+                    btn.textContent = "Crear estas fases";
+                    btn.addEventListener("click", async function () {
+                        try {
+                            for (const f of propuestasIA) {
+                                await api("/proyectos/" + detalle.proyecto.id + "/fases", { method: "POST", body: JSON.stringify({ nombre: f.nombre, fecha_entrega: f._fecha }) });
+                            }
+                            $("iaPropuestas").innerHTML = "";
+                            $("iaSalida").textContent = "Fases creadas. Ya están en el tablero con sus fechas.";
+                            refrescar();
+                        } catch (e) { errorHumano(e); }
+                    });
+                    cont.appendChild(btn);
+                }
+            } catch (e) { $("iaSalida").textContent = e.message; }
+        });
+
+        $("iaResumen").addEventListener("click", async function () {
+            if (!detalle) return;
+            $("iaSalida").textContent = "Leyendo el tablero…";
+            const lineas = detalle.fases.map(function (f) {
+                const ts = detalle.tarjetas.filter((t) => t.fase_id === f.id);
+                return "- Fase «" + f.nombre + "» (entrega: " + fmtFecha(f.fecha_entrega) + (f.fecha_entrega && f.fecha_entrega < hoyStr() ? ", VENCIDA" : "") + "): " + ts.length + " tarjetas" + (ts.length ? " (" + ts.map((t) => t.titulo).join("; ") + ")" : "");
+            }).join("\n");
+            const prompt = "Resume en un párrafo breve y claro el avance del proyecto escolar «" + detalle.proyecto.nombre + "» para su equipo de docentes. Hoy es " + fmtFecha(hoyStr()) + ". Estado del tablero:\n" + (lineas || "Sin fases todavía.") + "\nSeñala riesgos de fechas si los hay y sugiere el siguiente paso. Sin listas, solo el párrafo.";
+            try { $("iaSalida").textContent = await llamarIA(prompt); }
+            catch (e) { $("iaSalida").textContent = e.message; }
+        });
+
+        cargarProyectos();
+    })();
+    </script>
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>

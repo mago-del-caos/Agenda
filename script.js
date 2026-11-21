@@ -110,6 +110,22 @@ document.addEventListener("DOMContentLoaded", () => {
             div.style.cssText += ";position:fixed;top:10px;right:10px;z-index:9999;padding:0;margin-top:0";
             document.body.appendChild(div);
         }
+        // Botón «Zona docente» en la navegación: SOLO docentes y administradores.
+        try {
+            const nav = document.querySelector(".app-nav");
+            if (nav && (user.rol === "docente" || user.rol === "admin") && !document.getElementById("navZonaDocente")) {
+                const a = document.createElement("a");
+                a.id = "navZonaDocente";
+                a.href = "/Agenda/zona-docente.html";
+                a.textContent = "Zona docente";
+                const enZona = location.pathname.includes("zona-docente") || location.pathname.includes("organizador");
+                a.className = "nav-btn" + (enZona ? " active" : "");
+                a.style.cssText = "background:#FFD100;color:#032A60;font-weight:800";
+                const ajustes = nav.querySelector('a[href="/Agenda/ajustes.html"]');
+                if (ajustes) nav.insertBefore(a, ajustes); else nav.appendChild(a);
+                if (enZona && a.scrollIntoView) { /* la vista activa ya se maneja sola */ }
+            }
+        } catch { /* la navegación queda como está */ }
     }
     aglucemPastilla(JSON.parse(localStorage.getItem("aglucem_user") || "null"));
     document.addEventListener("aglucem-sesion", (e) => {
@@ -119,11 +135,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- LÓGICA DEL HORARIO ---
+    // Se guarda en el servidor, atado a la cuenta: el mismo horario se ve en
+    // todos los dispositivos. El guardado local queda como caché instantánea.
     const cells = document.querySelectorAll("td[contenteditable='true']");
-    cells.forEach((cell, i) => {
-        if(localStorage.getItem(`app_horario_${i}`)) cell.innerText = localStorage.getItem(`app_horario_${i}`);
-        cell.addEventListener("input", () => localStorage.setItem(`app_horario_${i}`, cell.innerText));
-    });
+    if (cells.length) {
+        cells.forEach((cell, i) => {
+            const v = localStorage.getItem(`app_horario_${i}`);
+            if (v) cell.innerText = v;
+        });
+        const tokenHorario = localStorage.getItem("aglucem_token");
+        let guardarTimer = null;
+        const guardarHorarioServidor = () => {
+            if (!tokenHorario) return;
+            const celdas = Array.from(cells).map((c) => c.innerText);
+            fetch(AGLUCEM_API + "/horario", {
+                method: "PUT",
+                headers: { Authorization: "Bearer " + tokenHorario, "Content-Type": "application/json" },
+                body: JSON.stringify({ celdas })
+            }).catch(() => {});
+        };
+        if (tokenHorario) {
+            fetch(AGLUCEM_API + "/horario", { headers: { Authorization: "Bearer " + tokenHorario } })
+                .then((r) => (r.ok ? r.json() : null))
+                .then((data) => {
+                    if (!data) return;
+                    if (Array.isArray(data.celdas) && data.celdas.some((v) => v)) {
+                        data.celdas.forEach((v, i) => {
+                            if (cells[i]) cells[i].innerText = v || "";
+                            localStorage.setItem(`app_horario_${i}`, v || "");
+                        });
+                    } else if (Array.from(cells).some((c) => c.innerText.trim())) {
+                        // Primera vez: lo que ya había en este dispositivo sube a la cuenta
+                        guardarHorarioServidor();
+                    }
+                })
+                .catch(() => {});
+        }
+        cells.forEach((cell, i) => {
+            cell.addEventListener("input", () => {
+                localStorage.setItem(`app_horario_${i}`, cell.innerText);
+                clearTimeout(guardarTimer);
+                guardarTimer = setTimeout(guardarHorarioServidor, 1200);
+            });
+        });
+    }
 
     // --- LÓGICA DE LA AGENDA (PENDIENTES) ---
     const taskList = document.getElementById('taskList');

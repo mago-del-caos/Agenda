@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zona docente - Ag lucem</title>
+    
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .zd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .zd-card { display: flex; flex-direction: column; gap: 4px; background: #fff; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,0,0,.08); padding: 18px 14px; text-decoration: none; color: #21314d; border: 1px solid #e3e8f2; }
+        .zd-card .zd-ico { font-size: 1.9rem; line-height: 1; }
+        .zd-card strong { font-size: 1.02rem; color: var(--ij-azul-fuerte); }
+        .zd-card small { color: #7286a3; font-size: .82rem; line-height: 1.35; }
+        .zd-destacada { grid-column: 1 / -1; background: linear-gradient(135deg, #032A60, #5B3E99); border: none; }
+        .zd-destacada strong { color: #FFD100; font-size: 1.15rem; }
+        .zd-destacada small { color: #dfe7ff; }
+        .zd-aviso { background: #fff; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,0,0,.08); padding: 22px 18px; text-align: center; color: #7286a3; }
+        @media (min-width: 720px) { .zd-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <!-- Novedades activo -->
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/calendario.html" class="nav-btn">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Agenda</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title" style="margin-bottom: 6px; color: var(--ij-azul-fuerte);">Zona docente</h2>
+        <p style="color:#7286a3;margin:0 0 18px">Herramientas de trabajo para docentes y administradores. Esta sección no aparece en las cuentas de estudiantes.</p>
+        <div id="zdContenido">
+            <div class="zd-grid">
+            <a href="/Agenda/organizador.html" class="zd-card zd-destacada">
+                <span class="zd-ico">🗂️</span>
+                <strong>Organizador de proyectos</strong>
+                <small>Trabajo en equipo para proyectos multidisciplinarios: fases con fechas de entrega, tarjetas por responsable y ayuda de IA.</small>
+            </a>
+            <a href="https://chemini.aracknia.com/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">🤖</span>
+                <strong>Chemini</strong>
+                <small>La IA local del instituto, para docentes.</small>
+            </a>
+            <a href="https://mago-del-caos.github.io/Chemlist/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">✅</span>
+                <strong>Chemlist</strong>
+                <small>Listas de asistencia y control de grupos.</small>
+            </a>
+            <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">🎓</span>
+                <strong>EduChema</strong>
+                <small>Dashboard educativo del DIE.</small>
+            </a>
+            <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">🧠</span>
+                <strong>Repositorio de IAs</strong>
+                <small>Repositorio de IA y herramientas para el aula.</small>
+            </a>
+            <a href="https://ln.globalschool.mx/gs/gslearn/frm_login" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">🌐</span>
+                <strong>Global</strong>
+                <small>Plataforma Global School.</small>
+            </a>
+            <a href="https://classroom.google.com/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">🏫</span>
+                <strong>Classroom</strong>
+                <small>Google Classroom.</small>
+            </a>
+            <a href="https://padlet.com/" target="_blank" rel="noopener noreferrer" class="zd-card">
+                <span class="zd-ico">📌</span>
+                <strong>Padlet</strong>
+                <small>Murales colaborativos.</small>
+            </a>
+            </div>
+        </div>
+        <div id="zdBloqueo" class="zd-aviso" style="display:none">
+            <p><strong>Sección solo para docentes y administradores.</strong></p>
+            <p>Tu cuenta no tiene acceso a estas herramientas.</p>
+        </div>
+    </main>
+
+    <script>
+        // Candado visual: si la cuenta no es docente/admin, no se muestran las herramientas
+        // (el Organizador además verifica el rol en el servidor).
+        (function () {
+            try {
+                const u = JSON.parse(localStorage.getItem("aglucem_user") || "null");
+                if (!u || (u.rol !== "docente" && u.rol !== "admin")) {
+                    document.getElementById("zdContenido").style.display = "none";
+                    document.getElementById("zdBloqueo").style.display = "block";
+                }
+            } catch (e) { /* sin datos locales: script.js valida la sesión contra el servidor */ }
+        })();
+    </script>
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
