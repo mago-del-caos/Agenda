@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Próximos torneos — Ag Lucem</title>
+
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .esports-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding-bottom: 36px;
+        }
+
+        .tourney-card {
+            border-radius: 20px;
+            padding: 20px 18px;
+            background: var(--fondo-app, #FFFFFF);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+        }
+
+        .tourney-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .tourney-badge {
+            font-size: 1.9rem;
+            line-height: 1;
+        }
+
+        .tourney-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--ij-azul-fuerte);
+            margin: 0;
+        }
+
+        [data-theme="dark"] .tourney-title { color: var(--ij-celeste); }
+
+        .vs-button {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px; border-radius: 20px; text-decoration: none; color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            box-shadow: 0 10px 22px rgba(124, 58, 237, 0.35);
+        }
+        .vs-button:active { filter: brightness(1.15); }
+        .vs-button .game-text small { color: rgba(255,255,255,.85); opacity: 1; }
+        .vs-logo {
+            font-size: 1.6rem; font-weight: 900; font-style: italic; letter-spacing: 1px;
+            background: #fff; color: #7c3aed; border-radius: 12px; padding: 8px 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,.3); flex-shrink: 0;
+        }
+
+        .game-links { display: flex; flex-direction: column; gap: 10px; }
+        .game-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 14px; border-radius: 14px; text-decoration: none;
+            background: rgba(139, 92, 246, 0.10); color: inherit;
+        }
+        .game-link:active { background: rgba(139, 92, 246, 0.22); }
+        .game-emoji { font-size: 1.7rem; line-height: 1; }
+        .game-img { width: 52px; height: 52px; object-fit: cover; border-radius: 12px; flex-shrink: 0; }
+        .game-text { flex: 1; display: flex; flex-direction: column; }
+        .game-text b { font-size: 1rem; }
+        .game-text small { opacity: 0.8; font-size: 0.82rem; }
+        .game-arrow { font-size: 1.5rem; font-weight: 800; opacity: 0.55; }
+
+        .tourney-meta {
+            font-size: 0.92rem;
+            font-weight: 600;
+            opacity: 0.85;
+            margin: 0 0 14px 0;
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8B5CF6 0%, #4C1D95 100%);
+            color: #FFFFFF;
+            margin-bottom: 14px;
+        }
+
+        .podium {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .podium-slot {
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            background: rgba(139, 92, 246, 0.10);
+        }
+
+        .podium-place {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .podium-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .podium-name {
+            display: block;
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .results-table tbody tr:nth-child(even) {
+            background: rgba(3, 42, 96, 0.05);
+        }
+
+        .pending {
+            opacity: 0.65;
+            font-style: italic;
+        }
+
+        .winners-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/calendario.html" class="nav-btn">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/agenda.html" class="nav-btn">Productividad</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn active">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title">⚔️ Próximos torneos</h2>
+        <p style="margin:0 4px 14px;"><a href="/Agenda/esports.html" style="color:var(--ij-azul-fuerte); font-weight:700; text-decoration:none;">← Volver a Esports</a></p>
+
+        <div class="esports-wrap">
+            <!-- Próximos torneos -->
+            <section class="tourney-card">
+                <div class="tourney-head">
+                    <span class="tourney-badge" aria-hidden="true">🕹️</span>
+                    <h3 class="tourney-title">Torneo Juve-Smash — Secundaria</h3>
+                </div>
+                <p class="tourney-meta">Super Smash Bros. Ultimate · Diciembre de 2026</p>
+                <span class="status-pill">PRÓXIMO TORNEO</span>
+                <p class="pending">Los resultados se publicarán aquí al finalizar el torneo.</p>
+            </section>
+
+            <section class="tourney-card">
+                <div class="tourney-head">
+                    <span class="tourney-badge" aria-hidden="true">🏎️</span>
+                    <h3 class="tourney-title">Chema Cart</h3>
+                </div>
+                <p class="tourney-meta">Torneo de carreras · Febrero de 2027</p>
+                <span class="status-pill">PRÓXIMO TORNEO</span>
+                <p class="pending">Los resultados se publicarán aquí al finalizar el torneo.</p>
+            </section>
+
+            <section class="tourney-card">
+                <div class="tourney-head">
+                    <span class="tourney-badge" aria-hidden="true">⚽</span>
+                    <h3 class="tourney-title">Fut Juventud</h3>
+                </div>
+                <p class="tourney-meta">Torneo de fútbol · Abril de 2027</p>
+                <span class="status-pill">PRÓXIMO TORNEO</span>
+                <p class="pending">Los resultados se publicarán aquí al finalizar el torneo.</p>
+            </section>
+        </div>
+    </main>
+
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
