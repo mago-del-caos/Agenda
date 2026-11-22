@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prueba targets.mind</title>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+<pre id="log">iniciando…</pre>
+<script>
+var log = document.getElementById('log');
+function esc(s) { log.textContent += '\n' + s; }
+window.addEventListener('load', async function () {
+    try {
+        esc('MINDAR: ' + (window.MINDAR && window.MINDAR.IMAGE ? 'ok' : 'NO'));
+        var r = await fetch('ar/targets.mind');
+        esc('fetch: ' + r.status);
+        var buf = await r.arrayBuffer();
+        esc('bytes: ' + buf.byteLength);
+        var comp = new window.MINDAR.IMAGE.Compiler();
+        var data = comp.importData(buf);
+        esc('importData OK: ' + data.length + ' marcadores');
+        for (var i = 0; i < data.length; i++) {
+            esc('[' + i + '] imagen ' + data[i].targetImage.width + 'x' + data[i].targetImage.height);
+        }
+        document.title = 'RESULTADO: OK ' + data.length;
+    } catch (e) {
+        esc('ERROR: ' + (e && e.message ? e.message : String(e)));
+        document.title = 'RESULTADO: ERROR';
+    }
+});
+</script>
+</body>
+</html>
