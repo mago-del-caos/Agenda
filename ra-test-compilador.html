@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Prueba del compilador RA</title>
+</head>
+<body>
+<h1>Prueba del compilador de marcadores</h1>
+<pre id="salida">Iniciando…</pre>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<script>
+(function () {
+    var salida = document.getElementById('salida');
+    function log(t) { salida.textContent += '\n' + t; }
+    salida.textContent = 'Librerías cargadas. MINDAR presente: ' + (!!window.MINDAR) +
+        ' · Compiler presente: ' + !!(window.MINDAR && window.MINDAR.IMAGE && window.MINDAR.IMAGE.Compiler);
+    var img = new Image();
+    img.onload = function () {
+        log('Imagen cargada: ' + img.naturalWidth + 'x' + img.naturalHeight);
+        var compilador = new window.MINDAR.IMAGE.Compiler();
+        var t0 = Date.now();
+        compilador.compileImageTargets([img], function (pct) {
+            log('Progreso: ' + Math.round(pct) + '%');
+        }).then(function () {
+            var datos = compilador.exportData();
+            var bytes = datos instanceof Uint8Array ? datos.byteLength : (datos.byteLength || datos.length);
+            log('RESULTADO: COMPILÓ BIEN en ' + Math.round((Date.now() - t0) / 1000) + ' s · targets: ' + bytes + ' bytes');
+            document.title = 'PRUEBA-OK';
+        }).catch(function (e) {
+            log('RESULTADO: FALLÓ — ' + (e && e.message ? e.message : 'error sin mensaje'));
+            document.title = 'PRUEBA-FALLO';
+        });
+    };
+    img.onerror = function () { log('RESULTADO: la imagen de prueba no cargó'); document.title = 'PRUEBA-FALLO'; };
+    img.src = 'ar/marcador-adv.jpg';
+})();
+</script>
+</body>
+</html>
