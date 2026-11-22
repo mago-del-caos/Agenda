@@ -137,6 +137,7 @@
 
     <div id="contenedorAR" style="display:none">
         <div id="escenaAR"></div>
+        <div id="diagRA" style="position:absolute; top:64px; left:10px; z-index:30; background:rgba(0,0,0,.65); color:#9fe870; font:11px/1.5 monospace; padding:4px 8px; border-radius:8px; pointer-events:none;"></div>
         <div class="ra-hud">
             <button id="btnCerrar" class="ra-cerrar">✕ Cerrar</button>
             <div id="pistaEscaneo" class="ra-pista-hud">Buscando marcador…</div>
@@ -650,6 +651,30 @@
             sistema.start();
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 1300);
+            // Reajuste insistente: en cuanto el video tenga medidas reales, se repite
+            // el resize para que el rastreador recalcule el encuadre con datos buenos.
+            var intentosResize = 0;
+            var relojResize = setInterval(function () {
+                intentosResize++;
+                var v = contenedor.querySelector('video');
+                if (v && v.videoWidth > 0) {
+                    window.dispatchEvent(new Event('resize'));
+                    setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 700);
+                    clearInterval(relojResize);
+                }
+                if (intentosResize > 24) { clearInterval(relojResize); }
+            }, 500);
+            // Diagnóstico temporal: medidas reales en pantalla
+            var relojDiag = setInterval(function () {
+                var chip = document.getElementById('diagRA');
+                if (!chip || !camaraAbierta) { clearInterval(relojDiag); return; }
+                var vv = contenedor.querySelector('video');
+                var esc = document.getElementById('escenaAR');
+                chip.textContent = 'cont ' + (esc ? esc.clientWidth + 'x' + esc.clientHeight : '?') +
+                    ' · video ' + (vv ? vv.videoWidth + 'x' + vv.videoHeight : '—') +
+                    ' · estilo ' + (vv ? vv.style.width + 'x' + vv.style.height : '—') +
+                    ' · ventana ' + window.innerWidth + 'x' + window.innerHeight;
+            }, 800);
             clearTimeout(temporizadorConsejo);
             temporizadorConsejo = setTimeout(function () {
                 var p = document.getElementById('pistaEscaneo');
