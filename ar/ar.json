@@ -1,0 +1,26 @@
+{
+  "experiencias": [
+    {
+      "nombre": "Adv — Ju-bits de Navidad",
+      "marcador": "ar/marcador-adv.jpg",
+      "tipo": "video",
+      "contenido": "ar/teaser-navidad.mp4",
+      "ancho": 0.5625,
+      "alto": 1,
+      "titulo": "🎄 Ju-bits: teaser de Navidad",
+      "descripcion": "Enfoca la imagen de Adv y se reproduce el teaser de la temporada navideña de Ju-bits."
+    },
+    {
+      "nombre": "Cartel Juve-Smash Secundaria",
+      "marcador": "ar/marcador-smash.jpg",
+      "tipo": "imagen",
+      "contenido": "vs.jpg",
+      "ancho": 0.85,
+      "alto": 0.85,
+      "titulo": "Juve-Smash Secundaria · Diciembre 2026",
+      "descripcion": "Torneo de Super Smash Bros. Ultimate para Secundaria. Aquí aparecerán avisos y el registro del torneo.",
+      "enlace": "proximos-torneos.html",
+      "textoEnlace": "Ver próximos torneos"
+    }
+  ]
+}

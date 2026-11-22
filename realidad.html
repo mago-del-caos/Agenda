@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Realidad aumentada - Ag lucem</title>
+
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        .ra-wrap { display: flex; flex-direction: column; gap: 16px; padding-bottom: 36px; }
+        .ra-intro { font-size: 1rem; line-height: 1.5; margin: 0; }
+        .ra-lista { display: flex; flex-direction: column; gap: 12px; }
+        .ra-item { display: flex; align-items: center; gap: 14px; background: var(--fondo-app, #FFFFFF); border-radius: 16px; padding: 12px 14px; box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12); }
+        .ra-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; flex: none; }
+        .ra-item .ra-item-tx { flex: 1; min-width: 0; }
+        .ra-item strong { font-size: 1rem; }
+        .ra-item span { color: #64748b; font-size: 0.9rem; }
+        .ra-borrar { flex: none; background: #fdecea; color: #922B21; border: none; border-radius: 10px; padding: 9px 12px; font-weight: 700; cursor: pointer; }
+        .ra-btn { background: #6C3483; color: #fff; border: none; border-radius: 14px; padding: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(108, 52, 131, 0.35); width: 100%; }
+        .ra-btn:active { transform: scale(0.98); }
+        .ra-btn:disabled { background: #b8a6c2; box-shadow: none; }
+        .ra-btn-sec { background: #fff; color: #6C3483; border: 2px solid #6C3483; border-radius: 14px; padding: 13px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; }
+        .ra-error { background: #fdecea; color: #922B21; border-radius: 12px; padding: 12px 14px; margin: 0; line-height: 1.45; }
+        .ra-ok { background: #e8f6ec; color: #1E8449; border-radius: 12px; padding: 12px 14px; margin: 0; line-height: 1.45; }
+        .ra-card { background: var(--fondo-app, #FFFFFF); border-radius: 16px; padding: 16px; box-shadow: 0 6px 16px rgba(15, 23, 42, 0.10); }
+        .ra-card h3 { margin: 0 0 8px; font-size: 1.05rem; }
+        .ra-card p { margin: 0 0 10px; line-height: 1.5; color: #475569; font-size: 0.95rem; }
+        .ra-chips { display: flex; gap: 10px; }
+        .ra-chip { flex: 1; border: 2px solid #6C3483; background: #fff; color: #6C3483; border-radius: 999px; padding: 11px 8px; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+        .ra-chip.activo { background: #6C3483; color: #fff; }
+        .ra-form label { display: block; font-weight: 700; margin: 14px 0 6px; font-size: 0.95rem; }
+        .ra-form label:first-of-type { margin-top: 4px; }
+        .ra-form input[type="text"], .ra-form select, .ra-form textarea { width: 100%; box-sizing: border-box; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 11px; font-size: 1rem; font-family: inherit; background: #fff; }
+        .ra-form input[type="file"] { width: 100%; font-size: 0.95rem; }
+        .ra-form .pista { font-weight: 400; color: #64748b; font-size: 0.85rem; margin-top: 4px; }
+        .ra-previa { width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px; margin-top: 10px; background: #f1f5f9; display: none; }
+        .ra-progreso { display: none; margin-top: 14px; }
+        .ra-progreso .barra { height: 12px; background: #ede9f2; border-radius: 999px; overflow: hidden; }
+        .ra-progreso .relleno { height: 100%; width: 0%; background: #6C3483; transition: width 0.2s; }
+        .ra-progreso p { margin: 8px 0 0; font-size: 0.9rem; color: #475569; }
+        #contenedorAR { position: fixed; inset: 0; z-index: 2000; background: #000; }
+        #contenedorAR a-scene { width: 100%; height: 100%; display: block; }
+        .ra-hud { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+        .ra-cerrar { position: absolute; top: 14px; right: 14px; pointer-events: auto; background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 10px 16px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+        .ra-pista-hud { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 9px 16px; border-radius: 999px; font-size: 0.92rem; white-space: nowrap; }
+        .ra-tarjeta { position: absolute; left: 12px; right: 12px; bottom: 14px; background: rgba(255,255,255,0.96); border-radius: 16px; padding: 14px 16px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); pointer-events: auto; }
+        .ra-tarjeta strong { font-size: 1.02rem; }
+        .ra-tarjeta p { margin: 6px 0 0; color: #475569; line-height: 1.45; font-size: 0.94rem; }
+        .ra-tarjeta-btn { display: inline-block; margin-top: 10px; background: #6C3483; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <main class="app-main" id="vistaNormal">
+        <h2 class="section-title">📷 Realidad aumentada</h2>
+
+        <div class="ra-wrap">
+            <p class="ra-intro">Enfoca con tu cámara una foto o cartel registrado y encima aparecerá su contenido: un video o una imagen, sin salir de la cámara.</p>
+
+            <div class="ra-chips" role="group" aria-label="Conjunto de experiencias">
+                <button id="chipAglucem" class="ra-chip activo">De Ag Lucem</button>
+                <button id="chipMias" class="ra-chip">Mis experiencias</button>
+            </div>
+
+            <div id="listaExperiencias" class="ra-lista"></div>
+
+            <button id="btnIniciar" class="ra-btn">▶ Iniciar cámara</button>
+            <p id="mensajeError" class="ra-error" style="display:none"></p>
+            <p id="mensajeOk" class="ra-ok" style="display:none"></p>
+
+            <div class="ra-card ra-form">
+                <h3>✨ Programa tu experiencia</h3>
+                <p>Toma una foto o elige una de tu galería, asígnale un video o una imagen, y guárdala. A partir de ese momento, al enfocar esa foto con la cámara se reproducirá tu contenido. Todo se hace aquí mismo y es gratuito: tus experiencias se guardan en este teléfono.</p>
+
+                <label for="fNombre">Nombre de la experiencia</label>
+                <input type="text" id="fNombre" placeholder="Ej. El cartel de mi salón" maxlength="60">
+
+                <label for="fMarcador">1 · Foto que vas a enfocar (el marcador)</label>
+                <input type="file" id="fMarcador" accept="image/*">
+                <div class="pista">Funciona mejor con imágenes con detalle y buen contraste: un cartel, una portada, una ilustración. Evita fotos borrosas o casi vacías.</div>
+                <img id="previaMarcador" class="ra-previa" alt="Vista previa del marcador">
+
+                <label for="fTipo">2 · ¿Qué quieres mostrar encima?</label>
+                <select id="fTipo">
+                    <option value="video">Un video</option>
+                    <option value="imagen">Una imagen</option>
+                </select>
+
+                <label for="fContenido">3 · El video o la imagen</label>
+                <input type="file" id="fContenido" accept="video/*">
+                <img id="previaContenido" class="ra-previa" alt="Vista previa del contenido">
+
+                <label for="fTitulo">Título al detectarla (opcional)</label>
+                <input type="text" id="fTitulo" placeholder="Ej. ¡Bienvenidos al tema!" maxlength="80">
+
+                <label for="fDescripcion">Descripción (opcional)</label>
+                <textarea id="fDescripcion" rows="2" maxlength="220" placeholder="Un texto corto que acompaña al contenido."></textarea>
+
+                <div style="height:14px"></div>
+                <button id="btnGuardar" class="ra-btn">Guardar y compilar</button>
+
+                <div class="ra-progreso" id="progreso">
+                    <div class="barra"><div class="relleno" id="progresoRelleno"></div></div>
+                    <p id="progresoTexto">Compilando tu foto…</p>
+                </div>
+            </div>
+
+            <div class="ra-card">
+                <h3>¿Cómo funciona?</h3>
+                <p><strong>De Ag Lucem:</strong> experiencias ya instaladas que se ven en cualquier dispositivo. <strong>Mis experiencias:</strong> las que tú programas aquí; viven en este teléfono. Si quieres que una tuya quede instalada para todos (por ejemplo, para tus alumnos), pídesela a Aracknia y la integra al conjunto de Ag Lucem.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="contenedorAR" style="display:none">
+        <div id="escenaAR"></div>
+        <div class="ra-hud">
+            <button id="btnCerrar" class="ra-cerrar">✕ Cerrar</button>
+            <div id="pistaEscaneo" class="ra-pista-hud">Buscando marcador…</div>
+            <div id="tarjetaInfo" class="ra-tarjeta" style="display:none">
+                <strong id="tarjetaTitulo"></strong>
+                <p id="tarjetaTexto"></p>
+                <a id="tarjetaEnlace" class="ra-tarjeta-btn" style="display:none" target="_blank" rel="noopener"></a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Agenda/script.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        /* ---------- Estado ---------- */
+        var conjuntoActivo = 'aglucem'; // 'aglucem' | 'mias'
+        var experienciasAglucem = [];
+        var experienciasMias = [];
+        var bufferCompilado = null; // ArrayBuffer del targets.mind local
+        var escena = null;
+        var sistema = null;
+        var videos = {};
+        var urlsTemporales = [];
+        var libreriasListas = false;
+
+        /* ---------- Utilidades ---------- */
+        function urlDe(blob) {
+            var u = URL.createObjectURL(blob);
+            urlsTemporales.push(u);
+            return u;
+        }
+        function liberarUrls() {
+            urlsTemporales.forEach(function (u) { URL.revokeObjectURL(u); });
+            urlsTemporales = [];
+        }
+        function mostrar(id, texto) {
+            var m = document.getElementById(id);
+            if (!texto) { m.style.display = 'none'; m.textContent = ''; return; }
+            m.textContent = texto;
+            m.style.display = 'block';
+        }
+        function error(t) { mostrar('mensajeError', t); }
+        function ok(t) { mostrar('mensajeOk', t); }
+        function cargarScript(src) {
+            return new Promise(function (res, rej) {
+                var s = document.createElement('script');
+                s.src = src;
+                s.onload = res;
+                s.onerror = rej;
+                document.head.appendChild(s);
+            });
+        }
+        function cargarLibrerias() {
+            if (libreriasListas) { return Promise.resolve(); }
+            return cargarScript('https://aframe.io/releases/1.5.0/aframe.min.js')
+                .then(function () { return cargarScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js'); })
+                .then(function () { libreriasListas = true; });
+        }
+        function cargarImagen(src) {
+            return new Promise(function (res, rej) {
+                var img = new Image();
+                img.onload = function () { res(img); };
+                img.onerror = rej;
+                img.src = src;
+            });
+        }
+        function ajustar(marcW, marcH, contW, contH) {
+            var altoMarcador = marcH / marcW;
+            var aspectoContenido = contW / contH;
+            var w = 1, h = 1 / aspectoContenido;
+            if (h > altoMarcador) { h = altoMarcador; w = altoMarcador * aspectoContenido; }
+            return { ancho: w, alto: h };
+        }
+
+        /* ---------- IndexedDB ---------- */
+        var bd = null;
+        function abrirBD() {
+            return new Promise(function (res, rej) {
+                var pet = indexedDB.open('aglucem-ra', 1);
+                pet.onupgradeneeded = function () {
+                    var db = pet.result;
+                    if (!db.objectStoreNames.contains('experiencias')) { db.createObjectStore('experiencias', { keyPath: 'id' }); }
+                    if (!db.objectStoreNames.contains('compilado')) { db.createObjectStore('compilado', { keyPath: 'id' }); }
+                };
+                pet.onsuccess = function () { bd = pet.result; res(); };
+                pet.onerror = function () { rej(pet.error); };
+            });
+        }
+        function bdOp(almacen, modo, fn) {
+            return new Promise(function (res, rej) {
+                var tx = bd.transaction(almacen, modo);
+                var st = tx.objectStore(almacen);
+                var pet = fn(st);
+                if (pet) {
+                    pet.onsuccess = function () { res(pet.result); };
+                    pet.onerror = function () { rej(pet.error); };
+                } else {
+                    tx.oncomplete = function () { res(); };
+                    tx.onerror = function () { rej(tx.error); };
+                }
+            });
+        }
+        function bdTodas() { return bdOp('experiencias', 'readonly', function (st) { return st.getAll(); }); }
+        function bdGuardar(exp) { return bdOp('experiencias', 'readwrite', function (st) { return st.put(exp); }); }
+        function bdBorrar(id) { return bdOp('experiencias', 'readwrite', function (st) { return st.delete(id); }); }
+        function bdGuardarCompilado(buffer) { return bdOp('compilado', 'readwrite', function (st) { return st.put({ id: 'actual', buffer: buffer }); }); }
+        function bdLeerCompilado() { return bdOp('compilado', 'readonly', function (st) { return st.get('actual'); }); }
+        function bdBorrarCompilado() { return bdOp('compilado', 'readwrite', function (st) { return st.delete('actual'); }); }
+
+        /* ---------- Listas y conjuntos ---------- */
+        function listaActual() {
+            return conjuntoActivo === 'aglucem' ? experienciasAglucem : experienciasMias;
+        }
+        function pintarLista() {
+            liberarUrls();
+            var cont = document.getElementById('listaExperiencias');
+            cont.innerHTML = '';
+            var lista = listaActual();
+            if (!lista.length) {
+                var vacio = document.createElement('div');
+                vacio.className = 'ra-item';
+                vacio.innerHTML = '<div class="ra-item-tx"><strong>Sin experiencias todavía</strong><br><span>' +
+                    (conjuntoActivo === 'mias' ? 'Programa la primera con el formulario de abajo.' : 'Aún no hay experiencias instaladas.') + '</span></div>';
+                cont.appendChild(vacio);
+            }
+            lista.forEach(function (e) {
+                var div = document.createElement('div');
+                div.className = 'ra-item';
+                var img = document.createElement('img');
+                img.src = e.marcadorBlob ? urlDe(e.marcadorBlob) : e.marcador;
+                img.alt = e.nombre;
+                var tx = document.createElement('div');
+                tx.className = 'ra-item-tx';
+                var b = document.createElement('strong');
+                b.textContent = e.nombre;
+                var s = document.createElement('span');
+                s.textContent = e.tipo === 'video' ? 'Reproduce un video' : 'Muestra una imagen';
+                tx.appendChild(b);
+                tx.appendChild(document.createElement('br'));
+                tx.appendChild(s);
+                div.appendChild(img);
+                div.appendChild(tx);
+                if (conjuntoActivo === 'mias') {
+                    var btn = document.createElement('button');
+                    btn.className = 'ra-borrar';
+                    btn.textContent = 'Borrar';
+                    btn.addEventListener('click', function () { borrarExperiencia(e.id, e.nombre); });
+                    div.appendChild(btn);
+                }
+                cont.appendChild(div);
+            });
+            var btnCam = document.getElementById('btnIniciar');
+            if (conjuntoActivo === 'mias' && (!experienciasMias.length || !bufferCompilado)) {
+                btnCam.disabled = true;
+                btnCam.textContent = '▶ Iniciar cámara';
+            } else {
+                btnCam.disabled = false;
+                btnCam.textContent = '▶ Iniciar cámara';
+            }
+            document.getElementById('chipMias').textContent = 'Mis experiencias (' + experienciasMias.length + ')';
+        }
+        function cambiarConjunto(cual) {
+            conjuntoActivo = cual;
+            document.getElementById('chipAglucem').classList.toggle('activo', cual === 'aglucem');
+            document.getElementById('chipMias').classList.toggle('activo', cual === 'mias');
+            pintarLista();
+        }
+        document.getElementById('chipAglucem').addEventListener('click', function () { cambiarConjunto('aglucem'); });
+        document.getElementById('chipMias').addEventListener('click', function () { cambiarConjunto('mias'); });
+
+        /* ---------- Compilación local ---------- */
+        function progreso(pct, texto) {
+            var caja = document.getElementById('progreso');
+            caja.style.display = 'block';
+            document.getElementById('progresoRelleno').style.width = Math.max(0, Math.min(100, pct)) + '%';
+            if (texto) { document.getElementById('progresoTexto').textContent = texto; }
+        }
+        function finProgreso() {
+            document.getElementById('progreso').style.display = 'none';
+            document.getElementById('progresoRelleno').style.width = '0%';
+        }
+        function recompilar() {
+            if (!experienciasMias.length) {
+                bufferCompilado = null;
+                return bdBorrarCompilado();
+            }
+            return cargarLibrerias().then(function () {
+                progreso(1, 'Preparando tus fotos…');
+                var ordenadas = experienciasMias.slice().sort(function (a, b) { return a.creadaEn - b.creadaEn; });
+                var promesas = ordenadas.map(function (e) { return cargarImagen(urlDe(e.marcadorBlob)); });
+                return Promise.all(promesas).then(function (imagenes) {
+                    var compilador = new window.MINDAR.IMAGE.Compiler();
+                    return compilador.compileImageTargets(imagenes, function (pct) {
+                        progreso(pct, 'Compilando tus fotos… ' + Math.round(pct) + '%');
+                    }).then(function () {
+                        var datos = compilador.exportData();
+                        var buffer = datos instanceof Uint8Array ? datos.buffer.slice(datos.byteOffset, datos.byteOffset + datos.byteLength) : datos;
+                        bufferCompilado = buffer;
+                        progreso(100, 'Listo.');
+                        return bdGuardarCompilado(buffer);
+                    });
+                });
+            });
+        }
+
+        /* ---------- Crear / borrar experiencias ---------- */
+        var archivoMarcador = null;
+        var archivoContenido = null;
+        document.getElementById('fTipo').addEventListener('change', function () {
+            var tipo = this.value;
+            document.getElementById('fContenido').setAttribute('accept', tipo === 'video' ? 'video/*' : 'image/*');
+            archivoContenido = null;
+            document.getElementById('fContenido').value = '';
+            document.getElementById('previaContenido').style.display = 'none';
+        });
+        document.getElementById('fMarcador').addEventListener('change', function () {
+            archivoMarcador = this.files && this.files[0] ? this.files[0] : null;
+            var prev = document.getElementById('previaMarcador');
+            if (archivoMarcador) {
+                prev.src = urlDe(archivoMarcador);
+                prev.style.display = 'block';
+            } else { prev.style.display = 'none'; }
+        });
+        document.getElementById('fContenido').addEventListener('change', function () {
+            archivoContenido = this.files && this.files[0] ? this.files[0] : null;
+            var prev = document.getElementById('previaContenido');
+            if (archivoContenido && document.getElementById('fTipo').value === 'imagen') {
+                prev.src = urlDe(archivoContenido);
+                prev.style.display = 'block';
+            } else { prev.style.display = 'none'; }
+        });
+
+        function dimensiones(tipo, blob) {
+            var url = urlDe(blob);
+            if (tipo === 'video') {
+                return new Promise(function (res, rej) {
+                    var v = document.createElement('video');
+                    v.preload = 'metadata';
+                    v.onloadedmetadata = function () { res({ w: v.videoWidth, h: v.videoHeight }); };
+                    v.onerror = rej;
+                    v.src = url;
+                });
+            }
+            return cargarImagen(url).then(function (img) { return { w: img.naturalWidth, h: img.naturalHeight }; });
+        }
+
+        document.getElementById('btnGuardar').addEventListener('click', function () {
+            error(''); ok('');
+            var nombre = document.getElementById('fNombre').value.trim();
+            var tipo = document.getElementById('fTipo').value;
+            if (!nombre) { error('Ponle un nombre a tu experiencia.'); return; }
+            if (!archivoMarcador) { error('Falta la foto que vas a enfocar (el marcador).'); return; }
+            if (!archivoContenido) { error('Falta el ' + (tipo === 'video' ? 'video' : 'la imagen') + ' que se mostrará encima.'); return; }
+            if (experienciasMias.length >= 10) { error('Ya tienes 10 experiencias en este teléfono, el máximo recomendado. Borra alguna para crear otra.'); return; }
+            var btn = document.getElementById('btnGuardar');
+            btn.disabled = true;
+            progreso(0, 'Leyendo tus archivos…');
+            var imgMarcador;
+            cargarImagen(urlDe(archivoMarcador))
+                .then(function (img) {
+                    imgMarcador = img;
+                    return dimensiones(tipo, archivoContenido);
+                })
+                .then(function (dim) {
+                    var tam = ajustar(imgMarcador.naturalWidth, imgMarcador.naturalHeight, dim.w, dim.h);
+                    var exp = {
+                        id: 'exp-' + Date.now(),
+                        nombre: nombre,
+                        tipo: tipo,
+                        marcadorBlob: archivoMarcador,
+                        contenidoBlob: archivoContenido,
+                        titulo: document.getElementById('fTitulo').value.trim() || nombre,
+                        descripcion: document.getElementById('fDescripcion').value.trim(),
+                        enlace: '',
+                        textoEnlace: '',
+                        ancho: tam.ancho,
+                        alto: tam.alto,
+                        creadaEn: Date.now()
+                    };
+                    experienciasMias.push(exp);
+                    return bdGuardar(exp).then(function () { return recompilar(); });
+                })
+                .then(function () {
+                    finProgreso();
+                    btn.disabled = false;
+                    document.getElementById('fNombre').value = '';
+                    document.getElementById('fTitulo').value = '';
+                    document.getElementById('fDescripcion').value = '';
+                    document.getElementById('fMarcador').value = '';
+                    document.getElementById('fContenido').value = '';
+                    archivoMarcador = null; archivoContenido = null;
+                    document.getElementById('previaMarcador').style.display = 'none';
+                    document.getElementById('previaContenido').style.display = 'none';
+                    cambiarConjunto('mias');
+                    ok('Experiencia guardada y compilada. Cambia a «Mis experiencias», abre la cámara y enfoca tu foto.');
+                })
+                .catch(function () {
+                    finProgreso();
+                    btn.disabled = false;
+                    error('Algo falló al compilar. Prueba con una foto con más detalle o un archivo más ligero.');
+                });
+        });
+
+        function borrarExperiencia(id, nombre) {
+            if (!confirm('¿Borrar la experiencia «' + nombre + '»?')) { return; }
+            experienciasMias = experienciasMias.filter(function (e) { return e.id !== id; });
+            progreso(0, 'Actualizando…');
+            bdBorrar(id).then(function () { return recompilar(); })
+                .then(function () { finProgreso(); pintarLista(); ok('Experiencia borrada.'); })
+                .catch(function () { finProgreso(); error('No se pudo actualizar la compilación.'); });
+        }
+
+        /* ---------- Cámara ---------- */
+        function construirEscena(lista, targetSrc) {
+            var cont = document.getElementById('escenaAR');
+            cont.innerHTML = '';
+            videos = {};
+            var assetsHtml = '';
+            var targetsHtml = '';
+            lista.forEach(function (e, i) {
+                if (e.tipo === 'video') {
+                    var srcV = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
+                    assetsHtml += '<video id="vid' + i + '" src="' + srcV + '" loop playsinline webkit-playsinline crossorigin="anonymous" preload="auto"></video>';
+                }
+            });
+            lista.forEach(function (e, i) {
+                var inner = '';
+                if (e.tipo === 'video') {
+                    inner = '<a-video src="#vid' + i + '" width="' + e.ancho + '" height="' + e.alto + '" position="0 0 0.01"></a-video>';
+                } else if (e.tipo === 'imagen') {
+                    var srcI = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
+                    inner = '<a-image src="' + srcI + '" width="' + e.ancho + '" height="' + e.alto + '" position="0 0 0.01"></a-image>';
+                }
+                targetsHtml += '<a-entity class="objetivo" data-indice="' + i + '" mindar-image-target="targetIndex: ' + i + '">' + inner + '</a-entity>';
+            });
+            cont.innerHTML =
+                '<a-scene mindar-image="imageTargetSrc: ' + targetSrc + '; autoStart: false; uiLoading: no; uiScanning: no; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">'
+                + '<a-assets>' + assetsHtml + '</a-assets>'
+                + '<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>'
+                + targetsHtml
+                + '</a-scene>';
+            escena = cont.querySelector('a-scene');
+            lista.forEach(function (e, i) {
+                if (e.tipo === 'video') { videos[i] = document.getElementById('vid' + i); }
+            });
+            cont.querySelectorAll('.objetivo').forEach(function (ent) {
+                var i = parseInt(ent.getAttribute('data-indice'), 10);
+                ent.addEventListener('targetFound', function () { alDetectar(lista, i); });
+                ent.addEventListener('targetLost', function () { alPerder(i); });
+            });
+        }
+        function alDetectar(lista, i) {
+            var e = lista[i];
+            document.getElementById('pistaEscaneo').style.display = 'none';
+            document.getElementById('tarjetaTitulo').textContent = e.titulo || e.nombre;
+            document.getElementById('tarjetaTexto').textContent = e.descripcion || '';
+            var a = document.getElementById('tarjetaEnlace');
+            if (e.enlace) {
+                a.href = e.enlace;
+                a.textContent = e.textoEnlace || 'Abrir';
+                a.style.display = 'inline-block';
+            } else { a.style.display = 'none'; }
+            document.getElementById('tarjetaInfo').style.display = 'block';
+            var v = videos[i];
+            if (v) {
+                v.muted = false;
+                var p = v.play();
+                if (p && p.catch) { p.catch(function () { v.muted = true; v.play(); }); }
+            }
+        }
+        function alPerder(i) {
+            document.getElementById('tarjetaInfo').style.display = 'none';
+            document.getElementById('pistaEscaneo').style.display = 'block';
+            var v = videos[i];
+            if (v) { v.pause(); }
+        }
+        function arrancarSistema() {
+            if (!escena || !escena.systems || !escena.systems['mindar-image-system']) { return; }
+            sistema = escena.systems['mindar-image-system'];
+            sistema.start();
+        }
+        document.getElementById('btnIniciar').addEventListener('click', function () {
+            error(''); ok('');
+            var lista = listaActual().slice().sort(function (a, b) { return (a.creadaEn || 0) - (b.creadaEn || 0); });
+            if (!lista.length) { error('Este conjunto no tiene experiencias todavía.'); return; }
+            cargarLibrerias().then(function () {
+                var targetSrc;
+                if (conjuntoActivo === 'aglucem') {
+                    targetSrc = 'ar/targets.mind';
+                } else {
+                    if (!bufferCompilado) { error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
+                    targetSrc = urlDe(new Blob([bufferCompilado], { type: 'application/octet-stream' }));
+                }
+                construirEscena(lista, targetSrc);
+                document.getElementById('vistaNormal').style.display = 'none';
+                document.getElementById('contenedorAR').style.display = 'block';
+                Object.keys(videos).forEach(function (k) {
+                    var v = videos[k];
+                    if (!v) { return; }
+                    v.muted = true;
+                    var pr = v.play();
+                    if (pr && pr.then) {
+                        pr.then(function () { v.pause(); v.currentTime = 0; v.muted = false; }).catch(function () { v.muted = false; });
+                    }
+                });
+                if (escena.hasLoaded) { arrancarSistema(); }
+                else { escena.addEventListener('loaded', arrancarSistema); }
+            }).catch(function () {
+                error('No se pudieron cargar las librerías de realidad aumentada. Revisa tu conexión e inténtalo de nuevo.');
+            });
+        });
+        document.getElementById('btnCerrar').addEventListener('click', function () {
+            try { if (sistema) { sistema.stop(); } } catch (e) {}
+            sistema = null;
+            Object.keys(videos).forEach(function (k) { if (videos[k]) { videos[k].pause(); } });
+            document.getElementById('escenaAR').innerHTML = '';
+            escena = null;
+            document.getElementById('tarjetaInfo').style.display = 'none';
+            document.getElementById('pistaEscaneo').style.display = 'block';
+            document.getElementById('contenedorAR').style.display = 'none';
+            document.getElementById('vistaNormal').style.display = 'block';
+            pintarLista();
+        });
+
+        /* ---------- Arranque ---------- */
+        fetch('ar/ar.json')
+            .then(function (r) { return r.json(); })
+            .then(function (d) { experienciasAglucem = d.experiencias || []; pintarLista(); })
+            .catch(function () { experienciasAglucem = []; pintarLista(); });
+        abrirBD()
+            .then(function () { return bdTodas(); })
+            .then(function (todas) {
+                experienciasMias = (todas || []).sort(function (a, b) { return a.creadaEn - b.creadaEn; });
+                return bdLeerCompilado();
+            })
+            .then(function (reg) {
+                if (reg && reg.buffer) { bufferCompilado = reg.buffer; }
+                pintarLista();
+            })
+            .catch(function () { pintarLista(); });
+    })();
+    </script>
+</body>
+</html>
