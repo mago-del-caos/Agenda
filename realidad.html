@@ -172,7 +172,9 @@
         var conjuntoActivo = 'aglucem'; // 'aglucem' | 'mias'
         var experienciasAglucem = [];
         var experienciasMias = [];
-        var bufferCompilado = null; // ArrayBuffer del targets.mind local
+        var bufferCompilado = null;
+        var versionAglucem = 1;
+        var bufferAglucem = null; // ArrayBuffer del targets.mind local
         var escena = null;
         var sistema = null;
         var videos = {};
@@ -321,6 +323,39 @@
         function bdGuardarCompilado(buffer) { return bdOp('compilado', 'readwrite', function (st) { return st.put({ id: 'actual', buffer: buffer }); }); }
         function bdLeerCompilado() { return bdOp('compilado', 'readonly', function (st) { return st.get('actual'); }); }
         function bdBorrarCompilado() { return bdOp('compilado', 'readwrite', function (st) { return st.delete('actual'); }); }
+        function bdLeerAglucem() { return bdOp('compilado', 'readonly', function (st) { return st.get('aglucem'); }); }
+        function bdGuardarAglucem(version, buffer) { return bdOp('compilado', 'readwrite', function (st) { return st.put({ id: 'aglucem', version: version, buffer: buffer }); }); }
+        function cargarImagenUrl(url) {
+            return fetch(url).then(function (r) { return r.blob(); }).then(function (b) {
+                return new Promise(function (res, rej) {
+                    var img = new Image();
+                    img.onload = function () { res(img); };
+                    img.onerror = function () { rej(new Error('No se pudo cargar ' + url)); };
+                    img.src = urlDe(b);
+                });
+            });
+        }
+        function obtenerBufferAglucem() {
+            if (bufferAglucem) { return Promise.resolve(bufferAglucem); }
+            return bdLeerAglucem().then(function (reg) {
+                if (reg && reg.buffer && reg.version === versionAglucem) { bufferAglucem = reg.buffer; return bufferAglucem; }
+                etapaRA('Preparando las experiencias de Ag Lucem (solo la primera vez)…');
+                var imagenes = [];
+                var cadena = Promise.resolve();
+                experienciasAglucem.forEach(function (e) {
+                    cadena = cadena.then(function () { return cargarImagenUrl(e.marcador); }).then(function (img) { imagenes.push(img); });
+                });
+                return cadena.then(function () {
+                    var compiler = new window.MINDAR.IMAGE.Compiler();
+                    return compiler.compileImageTargets(imagenes, function (p) {
+                        etapaRA('Preparando las experiencias de Ag Lucem… ' + Math.round(p) + '%');
+                    }).then(function () { return compiler.exportData(); });
+                }).then(function (buffer) {
+                    bufferAglucem = buffer;
+                    return bdGuardarAglucem(versionAglucem, buffer).then(function () { return buffer; });
+                });
+            });
+        }
 
         /* ---------- Listas y conjuntos ---------- */
         function listaActual() {
@@ -705,13 +740,7 @@
             if (!lista.length) { error('Este conjunto no tiene experiencias todavía.'); return; }
             cargarLibrerias().then(function () {
                 etapaRA('Etapa 2 · construyendo la escena…');
-                var targetSrc;
-                if (conjuntoActivo === 'aglucem') {
-                    targetSrc = 'ar/targets.mind?v=3';
-                } else {
-                    if (!bufferCompilado) { error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
-                    targetSrc = urlDe(new Blob([bufferCompilado], { type: 'application/octet-stream' }));
-                }
+                var seguirCon = function (targetSrc) {
                 document.getElementById('vistaNormal').style.display = 'none';
                 document.getElementById('contenedorAR').style.display = 'block';
                 document.body.classList.add('ra-activo');
@@ -729,6 +758,17 @@
                 if (escena.hasLoaded) { arrancarSistema(); }
                 else { escena.addEventListener('loaded', arrancarSistema); }
                 });
+                };
+                if (conjuntoActivo === 'aglucem') {
+                    obtenerBufferAglucem().then(function (buffer) {
+                        seguirCon(urlDe(new Blob([buffer], { type: 'application/octet-stream' })));
+                    }).catch(function () {
+                        seguirCon('ar/targets.mind');
+                    });
+                } else {
+                    if (!bufferCompilado) { error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
+                    seguirCon(urlDe(new Blob([bufferCompilado], { type: 'application/octet-stream' })));
+                }
             }).catch(function () {
                 error('No se pudieron cargar las librerías de realidad aumentada. Revisa tu conexión e inténtalo de nuevo.');
             });
@@ -753,9 +793,9 @@
         });
 
         /* ---------- Arranque ---------- */
-        fetch('ar/ar.json?v=3')
+        fetch('ar/ar.json', { cache: 'no-store' })
             .then(function (r) { return r.json(); })
-            .then(function (d) { experienciasAglucem = d.experiencias || []; pintarLista(); })
+            .then(function (d) { experienciasAglucem = d.experiencias || []; versionAglucem = d.version || 1; pintarLista(); })
             .catch(function () { experienciasAglucem = []; pintarLista(); });
         abrirBD()
             .then(function () { return bdTodas(); })
