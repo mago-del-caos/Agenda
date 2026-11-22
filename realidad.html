@@ -80,6 +80,7 @@
             <div id="listaExperiencias" class="ra-lista"></div>
 
             <button id="btnIniciar" class="ra-btn">▶ Iniciar cámara</button>
+            <div id="etapaRA" style="font:12px/1.5 monospace; color:#555; margin-top:6px;"></div>
             <p id="mensajeError" class="ra-error" style="display:none"></p>
             <p id="mensajeOk" class="ra-ok" style="display:none"></p>
 
@@ -193,6 +194,13 @@
             if (!texto) { m.style.display = 'none'; m.textContent = ''; return; }
             m.textContent = texto;
             m.style.display = 'block';
+        }
+        var ultimaEtapaRA = '';
+        var raLista = false;
+        function etapaRA(t) {
+            ultimaEtapaRA = t;
+            var a = document.getElementById('etapaRA'); if (a) { a.textContent = t; }
+            var c = document.getElementById('diagRA'); if (c) { c.textContent = t; }
         }
         function error(t) { mostrar('mensajeError', t); }
         function ok(t) { mostrar('mensajeOk', t); }
@@ -646,7 +654,12 @@
         }
         var temporizadorConsejo = null;
         function arrancarSistema() {
-            if (!escena || !escena.systems || !escena.systems['mindar-image-system']) { return; }
+            if (!escena || !escena.systems || !escena.systems['mindar-image-system']) { etapaRA('Etapa 3 · SIN SISTEMA RA'); return; }
+            etapaRA('Etapa 3 · arrancando el rastreador…');
+            raLista = false;
+            escena.addEventListener('arReady', function () { raLista = true; etapaRA('Etapa 4 · rastreador listo'); });
+            escena.addEventListener('arError', function (ev) { etapaRA('ERROR del rastreador: ' + (ev && ev.detail && ev.detail.error ? ev.detail.error : 'sin detalle')); });
+            setTimeout(function () { if (!raLista) { etapaRA(ultimaEtapaRA + ' · SIN ESTAR LISTO TRAS 15 s'); } }, 15000);
             sistema = escena.systems['mindar-image-system'];
             sistema.start();
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
@@ -670,7 +683,7 @@
                 if (!chip || !camaraAbierta) { clearInterval(relojDiag); return; }
                 var vv = contenedor.querySelector('video');
                 var esc = document.getElementById('escenaAR');
-                chip.textContent = 'cont ' + (esc ? esc.clientWidth + 'x' + esc.clientHeight : '?') +
+                chip.textContent = (ultimaEtapaRA ? ultimaEtapaRA + ' · ' : '') + 'cont ' + (esc ? esc.clientWidth + 'x' + esc.clientHeight : '?') +
                     ' · video ' + (vv ? vv.videoWidth + 'x' + vv.videoHeight : '—') +
                     ' · estilo ' + (vv ? vv.style.width + 'x' + vv.style.height : '—') +
                     ' · ventana ' + window.innerWidth + 'x' + window.innerHeight;
@@ -687,9 +700,11 @@
         }
         document.getElementById('btnIniciar').addEventListener('click', function () {
             error(''); ok('');
+            etapaRA('Etapa 1 · cargando librerías…');
             var lista = listaActual().slice().sort(function (a, b) { return (a.creadaEn || 0) - (b.creadaEn || 0); });
             if (!lista.length) { error('Este conjunto no tiene experiencias todavía.'); return; }
             cargarLibrerias().then(function () {
+                etapaRA('Etapa 2 · construyendo la escena…');
                 var targetSrc;
                 if (conjuntoActivo === 'aglucem') {
                     targetSrc = 'ar/targets.mind';
