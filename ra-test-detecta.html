@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prueba de detección</title>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+<pre id="log">iniciando…</pre>
+<script>
+var log = document.getElementById('log');
+function esc(s) { log.textContent += '\n' + s; }
+function cargarImagen(url) {
+    return fetch(url).then(function (r) { return r.blob(); }).then(function (b) {
+        return new Promise(function (res, rej) {
+            var img = new Image();
+            img.onload = function () { res(img); };
+            img.onerror = function () { rej(new Error('no cargó ' + url)); };
+            img.src = URL.createObjectURL(b);
+        });
+    });
+}
+function deformada(img) {
+    var c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    var x = c.getContext('2d');
+    x.fillStyle = '#888'; x.fillRect(0, 0, c.width, c.height);
+    x.translate(c.width / 2, c.height / 2);
+    x.rotate(0.14);
+    x.transform(1, 0.12, -0.18, 0.82, 0, 0);
+    x.scale(0.78, 0.78);
+    x.drawImage(img, -img.width / 2, -img.height / 2);
+    x.fillStyle = 'rgba(255,255,255,0.10)';
+    x.fillRect(-c.width / 2, -c.height / 2, c.width, c.height);
+    return c;
+}
+async function probar(nombre, entrada, w, h, buffer) {
+    var ctrl = new window.MINDAR.IMAGE.Controller({ inputWidth: w, inputHeight: h, maxTrack: 1 });
+    try {
+        ctrl.addImageTargetsFromBuffer(buffer);
+        await ctrl.dummyRun(entrada);
+        var input = ctrl.inputLoader.loadInput(entrada);
+        var res = await ctrl._detectAndMatch(input, [0, 1]);
+        esc(nombre + ' -> targetIndex: ' + res.targetIndex);
+        return res.targetIndex;
+    } finally {
+        try { ctrl.dispose(); } catch (e) {}
+    }
+}
+window.addEventListener('load', async function () {
+    try {
+        var buffer = await (await fetch('ar/targets.mind')).arrayBuffer();
+        esc('targets.mind: ' + buffer.byteLength + ' bytes');
+        var adv = await cargarImagen('ar/marcador-adv.jpg');
+        var smash = await cargarImagen('ar/marcador-smash.jpg');
+        var otra = await cargarImagen('vs.jpg');
+        var r1 = await probar('A · Adv tal cual', adv, adv.width, adv.height, buffer);
+        var r2 = await probar('B · Smash tal cual', smash, smash.width, smash.height, buffer);
+        var def = deformada(adv);
+        var r3 = await probar('C · Adv deformada (como foto de cámara)', def, def.width, def.height, buffer);
+        var def2 = deformada(smash);
+        var r4 = await probar('D · Smash deformada', def2, def2.width, def2.height, buffer);
+        var r5 = await probar('E · imagen ajena (no debe detectar)', otra, otra.width, otra.height, buffer);
+        esc('RESUMEN A:' + r1 + ' B:' + r2 + ' C:' + r3 + ' D:' + r4 + ' E:' + r5);
+        document.title = 'LISTO A:' + r1 + ' B:' + r2 + ' C:' + r3 + ' D:' + r4 + ' E:' + r5;
+    } catch (e) {
+        esc('ERROR: ' + (e && e.message ? e.message : String(e)));
+        document.title = 'RESULTADO: ERROR';
+    }
+});
+</script>
+</body>
+</html>
