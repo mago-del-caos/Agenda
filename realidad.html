@@ -52,7 +52,8 @@
         .ra-progreso .relleno { height: 100%; width: 0%; background: #6C3483; transition: width 0.2s; }
         .ra-progreso p { margin: 8px 0 0; font-size: 0.9rem; color: #475569; }
         #contenedorAR { position: fixed; inset: 0; z-index: 2000; background: #000; }
-        #contenedorAR a-scene { width: 100%; height: 100%; display: block; }
+        #escenaAR { position: absolute; inset: 0; overflow: hidden; }
+        #contenedorAR a-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
         .ra-hud { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
         .ra-cerrar { position: absolute; top: 14px; right: 14px; pointer-events: auto; background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 10px 16px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
         .ra-pista-hud { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 9px 16px; border-radius: 999px; font-size: 0.92rem; white-space: nowrap; }
@@ -648,6 +649,7 @@
             sistema = escena.systems['mindar-image-system'];
             sistema.start();
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
+            setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 1300);
             clearTimeout(temporizadorConsejo);
             temporizadorConsejo = setTimeout(function () {
                 var p = document.getElementById('pistaEscaneo');

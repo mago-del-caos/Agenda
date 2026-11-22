@@ -1,5 +1,5 @@
 // Nombre y versión de la caché (Actualizado a v91 para forzar el cambio automático)
-const APP_VERSION = 'aglucem-v105';
+const APP_VERSION = 'aglucem-v106';
 
 // Lista de archivos esenciales que la PWA guardará en la memoria
 const ASSETS_TO_CACHE = [
