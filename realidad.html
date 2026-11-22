@@ -79,7 +79,7 @@
             <p id="mensajeError" class="ra-error" style="display:none"></p>
             <p id="mensajeOk" class="ra-ok" style="display:none"></p>
 
-            <div class="ra-card ra-form">
+            <div class="ra-card ra-form" id="tarjetaCrear">
                 <h3>✨ Programa tu experiencia</h3>
                 <p>Toma una foto o elige una de tu galería, asígnale un video o una imagen, y guárdala. A partir de ese momento, al enfocar esa foto con la cámara se reproducirá tu contenido. Todo se hace aquí mismo y es gratuito: tus experiencias se guardan en este teléfono.</p>
 
@@ -118,7 +118,7 @@
 
             <div class="ra-card">
                 <h3>¿Cómo funciona?</h3>
-                <p><strong>De Ag Lucem:</strong> experiencias ya instaladas que se ven en cualquier dispositivo. <strong>Mis experiencias:</strong> las que tú programas aquí; viven en este teléfono. Si quieres que una tuya quede instalada para todos (por ejemplo, para tus alumnos), pídesela a Aracknia y la integra al conjunto de Ag Lucem.</p>
+                <p id="textoComoFunciona"><strong>De Ag Lucem:</strong> experiencias ya instaladas que se ven en cualquier dispositivo. <strong>Mis experiencias:</strong> las que tú programas aquí; viven en este teléfono. Si quieres que una tuya quede instalada para todos (por ejemplo, para tus alumnos), pídesela a Aracknia y la integra al conjunto de Ag Lucem.</p>
             </div>
         </div>
     </main>
@@ -140,6 +140,18 @@
     <script>
     (function () {
         'use strict';
+
+        /* ---------- Quién puede crear: solo la cuenta administradora (cifra) ---------- */
+        var esCreador = false;
+        try {
+            var usuarioSesion = JSON.parse(localStorage.getItem('aglucem_user') || 'null');
+            esCreador = !!(usuarioSesion && usuarioSesion.rol === 'admin');
+        } catch (e) { esCreador = false; }
+        if (!esCreador) {
+            document.getElementById('tarjetaCrear').style.display = 'none';
+            document.querySelector('.ra-chips').style.display = 'none';
+            document.getElementById('textoComoFunciona').innerHTML = 'Las experiencias de realidad aumentada las crea únicamente la cuenta administradora (<strong>cifra</strong>). Tu cuenta solo las disfruta: abre la cámara y enfoca los marcadores que él haya instalado.';
+        }
 
         /* ---------- Estado ---------- */
         var conjuntoActivo = 'aglucem'; // 'aglucem' | 'mias'
