@@ -1,35 +1,21 @@
 {
-  "version": 2,
+  "version": 3,
   "experiencias": [
     {
-      "nombre": "Adv — Ju-bits de Navidad",
-      "marcador": "ar/marcador-adv.jpg",
-      "tipo": "video",
-      "contenido": "ar/teaser-navidad.mp4",
-      "ancho": 0.5625,
-      "alto": 1,
-      "titulo": "🎄 Ju-bits: teaser de Navidad",
-      "descripcion": "Enfoca la imagen de Adv y se reproduce el teaser de la temporada navideña de Ju-bits."
-    },
-    {
-      "nombre": "Cartel Juve-Smash Secundaria",
-      "marcador": "ar/marcador-smash.jpg",
-      "tipo": "imagen",
-      "contenido": "vs.jpg",
-      "ancho": 0.85,
-      "alto": 0.85,
-      "titulo": "Juve-Smash Secundaria · Diciembre 2026",
-      "descripcion": "Torneo de Super Smash Bros. Ultimate para Secundaria. Aquí aparecerán avisos y el registro del torneo.",
-      "enlace": "proximos-torneos.html",
-      "textoEnlace": "Ver próximos torneos"
-    },
-    {
-      "nombre": "La Piedra Cúbica",
-      "marcador": "ar/marcador-piedra.jpg",
+      "nombre": "Open House ejemplo",
+      "marcador": "ar/marcador-soyjuventud.jpg",
       "tipo": "youtube",
-      "youtubeId": "Gf72HzmoAKw",
-      "titulo": "La Piedra Cúbica",
-      "descripcion": "Los secretos del Compañero. Enfoca la portada y se reproduce el video."
+      "youtubeId": "SD25y3h2UDs",
+      "titulo": "Open House",
+      "descripcion": "Enfoca el logo Soy Juventud y se reproduce el video del Open House."
+    },
+    {
+      "nombre": "Hero Realms",
+      "marcador": "ar/marcador-herorealms.jpg",
+      "tipo": "youtube",
+      "youtubeId": "7Alvne1kKl8",
+      "titulo": "Hero Realms",
+      "descripcion": "Enfoca la carta de Hero Realms y se reproduce el video."
     }
   ]
 }
