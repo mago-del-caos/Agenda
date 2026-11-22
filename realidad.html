@@ -209,11 +209,12 @@
                 .then(function () { return cargarScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js'); })
                 .then(function () { libreriasListas = true; });
         }
-        function cargarImagen(src) {
+        function cargarImagen(src) { return cargarImagenEtiqueta(src, 'una imagen'); }
+        function cargarImagenEtiqueta(src, etiqueta) {
             return new Promise(function (res, rej) {
                 var img = new Image();
                 img.onload = function () { res(img); };
-                img.onerror = function () { rej(new Error('No se pudo leer una imagen (formato no soportado por el navegador)')); };
+                img.onerror = function () { rej(new Error('No se pudo leer ' + etiqueta + ' (el navegador no pudo abrirla)')); };
                 img.src = src;
             });
         }
@@ -226,11 +227,42 @@
             c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
             return c;
         }
-        function imagenReducida(blob) {
-            return cargarImagen(urlDe(blob)).then(function (img) {
-                if (Math.max(img.naturalWidth, img.naturalHeight) <= 1024) { return img; }
-                return lienzoABlob(reducirImagen(img, 1024)).then(function (b) { return cargarImagen(urlDe(b)); });
-            });
+        function reducirBlob(blob, etiqueta) {
+            function desdeImg(src) {
+                return cargarImagenEtiqueta(src, etiqueta).then(function (img) {
+                    var c = reducirImagen(img, 1024);
+                    return lienzoABlob(c).then(function (b) { return { blob: b, ancho: c.width, alto: c.height }; });
+                });
+            }
+            function desdeObjeto() {
+                return desdeImg(urlDe(blob)).catch(function () {
+                    return new Promise(function (res, rej) {
+                        var fr = new FileReader();
+                        fr.onload = function () { res(fr.result); };
+                        fr.onerror = function () { rej(new Error('No se pudo leer ' + etiqueta)); };
+                        fr.readAsDataURL(blob);
+                    }).then(function (dataUrl) { return desdeImg(dataUrl); });
+                });
+            }
+            if (window.createImageBitmap) {
+                return Promise.resolve()
+                    .then(function () { return createImageBitmap(blob, { resizeWidth: 1024 }); })
+                    .then(function (bmp) {
+                        var escala = Math.min(1, 1024 / Math.max(bmp.width, bmp.height));
+                        var c = document.createElement('canvas');
+                        c.width = Math.max(1, Math.round(bmp.width * escala));
+                        c.height = Math.max(1, Math.round(bmp.height * escala));
+                        c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+                        if (bmp.close) { bmp.close(); }
+                        return lienzoABlob(c).then(function (b) { return { blob: b, ancho: c.width, alto: c.height }; });
+                    })
+                    .catch(function () { return desdeObjeto(); });
+            }
+            return desdeObjeto();
+        }
+        function imagenParaCompilar(e) {
+            return reducirBlob(e.marcadorBlob, 'la foto guardada de «' + e.nombre + '»')
+                .then(function (red) { return cargarImagen(urlDe(red.blob)); });
         }
         function lienzoABlob(lienzo) {
             return new Promise(function (res, rej) {
@@ -360,7 +392,7 @@
             return cargarLibrerias().then(function () {
                 progreso(1, 'Preparando tus fotos…');
                 var ordenadas = experienciasMias.slice().sort(function (a, b) { return a.creadaEn - b.creadaEn; });
-                var promesas = ordenadas.map(function (e) { return imagenReducida(e.marcadorBlob); });
+                var promesas = ordenadas.map(function (e) { return imagenParaCompilar(e); });
                 return Promise.all(promesas).then(function (imagenes) {
                     if (!window.MINDAR || !window.MINDAR.IMAGE || !window.MINDAR.IMAGE.Compiler) { throw new Error('El compilador de fotos no cargó'); }
                     var compilador = new window.MINDAR.IMAGE.Compiler();
@@ -425,7 +457,7 @@
                     v.src = url;
                 });
             }
-            return cargarImagen(url).then(function (img) { return { w: img.naturalWidth, h: img.naturalHeight }; });
+            return cargarImagenEtiqueta(url, 'la imagen de contenido').then(function (img) { return { w: img.naturalWidth, h: img.naturalHeight }; });
         }
 
         document.getElementById('btnGuardar').addEventListener('click', function () {
@@ -445,13 +477,10 @@
             progreso(0, 'Leyendo tus archivos…');
             var lienzoMarcador;
             var marcadorFinal = null;
-            cargarImagen(urlDe(archivoMarcador))
-                .then(function (img) {
-                    lienzoMarcador = reducirImagen(img, 1024);
-                    return lienzoABlob(lienzoMarcador);
-                })
-                .then(function (blob) {
-                    marcadorFinal = blob;
+            reducirBlob(archivoMarcador, 'tu foto marcadora')
+                .then(function (red) {
+                    marcadorFinal = red.blob;
+                    lienzoMarcador = { width: red.ancho, height: red.alto };
                     return tipo === 'youtube' ? { w: 16, h: 9 } : dimensiones(tipo, archivoContenido);
                 })
                 .then(function (dim) {
