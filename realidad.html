@@ -63,14 +63,26 @@
         .ra-tarjeta-btn { display: inline-block; margin-top: 10px; background: #6C3483; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; }
         .ra-yt { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); width: min(92vw, 560px); aspect-ratio: 16 / 9; background: #000; border-radius: 14px; overflow: hidden; box-shadow: 0 14px 34px rgba(0,0,0,0.5); pointer-events: auto; }
         .ra-yt iframe { width: 100%; height: 100%; border: 0; display: block; }
+        #pantallaCarga { position: fixed; inset: 0; z-index: 100000; background: linear-gradient(160deg, #2a7cc4, #17548f); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; text-align: center; transition: opacity 0.4s ease; }
+        #pantallaCarga img { width: min(62vw, 300px); border-radius: 26px; box-shadow: 0 18px 40px rgba(0,0,0,0.35); }
+        .carga-frase { color: #fff; font-size: 1.15rem; font-weight: 700; min-height: 1.5em; }
+        .carga-barra { width: min(78vw, 340px); height: 12px; background: rgba(255,255,255,0.28); border-radius: 999px; overflow: hidden; }
+        #cargaProgreso { height: 100%; width: 0%; background: linear-gradient(90deg, #7ed957, #ffd23f); border-radius: 999px; transition: width 0.3s ease; }
+        .carga-pct { color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 600; }
     </style>
 </head>
 <body>
+    <div id="pantallaCarga">
+        <img src="ra.jpg" alt="AR Juventud">
+        <div class="carga-frase" id="cargaFrase">Transformando la realidad…</div>
+        <div class="carga-barra"><div id="cargaProgreso"></div></div>
+        <div class="carga-pct" id="cargaPct"></div>
+    </div>
     <main class="app-main" id="vistaNormal">
-        <h2 class="section-title">📷 Realidad aumentada</h2>
+        <h2 class="section-title" id="tituloRA">📷 Realidad aumentada</h2>
 
         <div class="ra-wrap">
-            <p class="ra-intro">Enfoca con tu cámara una foto o cartel registrado y encima aparecerá su contenido: un video o una imagen, sin salir de la cámara.</p>
+            <p class="ra-intro" id="introRA">Enfoca con tu cámara una foto o cartel registrado y encima aparecerá su contenido: un video o una imagen, sin salir de la cámara.</p>
 
             <div class="ra-chips" role="group" aria-label="Conjunto de experiencias">
                 <button id="chipAglucem" class="ra-chip activo">De Ag Lucem</button>
@@ -80,7 +92,6 @@
             <div id="listaExperiencias" class="ra-lista"></div>
 
             <button id="btnIniciar" class="ra-btn">▶ Iniciar cámara</button>
-            <div id="etapaRA" style="font:12px/1.5 monospace; color:#555; margin-top:6px;"></div>
             <p id="mensajeError" class="ra-error" style="display:none"></p>
             <p id="mensajeOk" class="ra-ok" style="display:none"></p>
 
@@ -129,16 +140,11 @@
                 </div>
             </div>
 
-            <div class="ra-card">
-                <h3>¿Cómo funciona?</h3>
-                <p id="textoComoFunciona"><strong>De Ag Lucem:</strong> experiencias ya instaladas que se ven en cualquier dispositivo. <strong>Mis experiencias:</strong> las que tú programas aquí; viven en este teléfono. Si quieres que una tuya quede instalada para todos (por ejemplo, para tus alumnos), pídesela a Aracknia y la integra al conjunto de Ag Lucem.</p>
-            </div>
         </div>
     </main>
 
     <div id="contenedorAR" style="display:none">
         <div id="escenaAR"></div>
-        <div id="diagRA" style="position:absolute; top:64px; left:10px; z-index:30; background:rgba(0,0,0,.65); color:#9fe870; font:11px/1.5 monospace; padding:4px 8px; border-radius:8px; pointer-events:none;"></div>
         <div class="ra-hud">
             <button id="btnCerrar" class="ra-cerrar">✕ Cerrar</button>
             <div id="pistaEscaneo" class="ra-pista-hud">Buscando marcador…</div>
@@ -165,7 +171,9 @@
         if (!esCreador) {
             document.getElementById('tarjetaCrear').style.display = 'none';
             document.querySelector('.ra-chips').style.display = 'none';
-            document.getElementById('textoComoFunciona').innerHTML = 'Las experiencias de realidad aumentada las crea únicamente la cuenta administradora (<strong>cifra</strong>). Tu cuenta solo las disfruta: abre la cámara y enfoca los marcadores que él haya instalado.';
+            document.getElementById('tituloRA').textContent = 'AR Juventud';
+            document.getElementById('introRA').textContent = 'Busca y mira los diferentes secretos que la realidad aumentada tiene para ti.';
+            document.title = 'AR Juventud · Ag Lucem';
         }
 
         /* ---------- Estado ---------- */
@@ -197,12 +205,58 @@
             m.textContent = texto;
             m.style.display = 'block';
         }
-        var ultimaEtapaRA = '';
         var raLista = false;
-        function etapaRA(t) {
-            ultimaEtapaRA = t;
-            var a = document.getElementById('etapaRA'); if (a) { a.textContent = t; }
-            var c = document.getElementById('diagRA'); if (c) { c.textContent = t; }
+        /* ---------- Pantalla de carga ---------- */
+        var FRASES_CARGA = ['Transformando la realidad…', 'Vectorizando el espacio…', 'Pixelando átomos…', 'Calibrando los lentes de Chema…', 'Buscando secretos escondidos…', 'Tejiendo la red de marcadores…', 'Ajustando el visor…'];
+        var cargaPctActual = 0;
+        var cargaFraseIdx = 0;
+        var cargaTimer = null;
+        function girarFrasesCarga() {
+            var el = document.getElementById('cargaFrase');
+            if (el) { el.textContent = FRASES_CARGA[cargaFraseIdx % FRASES_CARGA.length]; }
+            cargaFraseIdx++;
+        }
+        function mostrarCarga() {
+            var p = document.getElementById('pantallaCarga');
+            if (!p) { return; }
+            cargaPctActual = 0;
+            p.style.display = 'flex';
+            p.style.opacity = '1';
+            progresoCarga(6);
+            girarFrasesCarga();
+            if (cargaTimer) { clearInterval(cargaTimer); }
+            cargaTimer = setInterval(girarFrasesCarga, 1600);
+        }
+        function progresoCarga(p) {
+            if (p > cargaPctActual) { cargaPctActual = Math.min(100, p); }
+            var barra = document.getElementById('cargaProgreso');
+            if (barra) { barra.style.width = cargaPctActual + '%'; }
+            var pct = document.getElementById('cargaPct');
+            if (pct) { pct.textContent = cargaPctActual > 0 ? Math.round(cargaPctActual) + '%' : ''; }
+        }
+        function ocultarCarga() {
+            var p = document.getElementById('pantallaCarga');
+            if (!p) { return; }
+            progresoCarga(100);
+            if (cargaTimer) { clearInterval(cargaTimer); cargaTimer = null; }
+            setTimeout(function () {
+                p.style.opacity = '0';
+                setTimeout(function () { p.style.display = 'none'; }, 420);
+            }, 300);
+        }
+        var cargaInicialPendientes = 2;
+        function cargaInicialLista() {
+            cargaInicialPendientes--;
+            if (cargaInicialPendientes <= 0) { ocultarCarga(); }
+        }
+        function avisoRastreador(texto) {
+            var p = document.getElementById('pistaEscaneo');
+            if (p) {
+                p.style.whiteSpace = 'normal';
+                p.style.textAlign = 'center';
+                p.textContent = texto;
+                p.style.display = 'block';
+            }
         }
         function error(t) { mostrar('mensajeError', t); }
         function ok(t) { mostrar('mensajeOk', t); }
@@ -338,8 +392,8 @@
         function obtenerBufferAglucem() {
             if (bufferAglucem) { return Promise.resolve(bufferAglucem); }
             return bdLeerAglucem().then(function (reg) {
-                if (reg && reg.buffer && reg.version === versionAglucem) { bufferAglucem = reg.buffer; return bufferAglucem; }
-                etapaRA('Preparando las experiencias de Ag Lucem (solo la primera vez)…');
+                if (reg && reg.buffer && reg.version === versionAglucem) { bufferAglucem = reg.buffer; progresoCarga(85); return bufferAglucem; }
+                progresoCarga(45);
                 var imagenes = [];
                 var cadena = Promise.resolve();
                 experienciasAglucem.forEach(function (e) {
@@ -348,7 +402,7 @@
                 return cadena.then(function () {
                     var compiler = new window.MINDAR.IMAGE.Compiler();
                     return compiler.compileImageTargets(imagenes, function (p) {
-                        etapaRA('Preparando las experiencias de Ag Lucem… ' + Math.round(p) + '%');
+                        progresoCarga(45 + p * 0.5);
                     }).then(function () { return compiler.exportData(); });
                 }).then(function (buffer) {
                     bufferAglucem = buffer;
@@ -689,12 +743,12 @@
         }
         var temporizadorConsejo = null;
         function arrancarSistema() {
-            if (!escena || !escena.systems || !escena.systems['mindar-image-system']) { etapaRA('Etapa 3 · SIN SISTEMA RA'); return; }
-            etapaRA('Etapa 3 · arrancando el rastreador…');
+            if (!escena || !escena.systems || !escena.systems['mindar-image-system']) { avisoRastreador('El rastreador no pudo iniciar. Cierra la cámara y vuelve a intentarlo.'); return; }
+            progresoCarga(92);
             raLista = false;
-            escena.addEventListener('arReady', function () { raLista = true; etapaRA('Etapa 4 · rastreador listo'); });
-            escena.addEventListener('arError', function (ev) { etapaRA('ERROR del rastreador: ' + (ev && ev.detail && ev.detail.error ? ev.detail.error : 'sin detalle')); });
-            setTimeout(function () { if (!raLista) { etapaRA(ultimaEtapaRA + ' · SIN ESTAR LISTO TRAS 15 s'); } }, 15000);
+            escena.addEventListener('arReady', function () { raLista = true; ocultarCarga(); });
+            escena.addEventListener('arError', function () { ocultarCarga(); avisoRastreador('El rastreador no pudo iniciar. Cierra la cámara y vuelve a intentarlo.'); });
+            setTimeout(function () { if (!raLista && camaraAbierta) { avisoRastreador('El rastreador tardó en iniciar. Cierra la cámara y vuelve a intentarlo.'); } }, 15000);
             sistema = escena.systems['mindar-image-system'];
             sistema.start();
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
@@ -712,17 +766,6 @@
                 }
                 if (intentosResize > 24) { clearInterval(relojResize); }
             }, 500);
-            // Diagnóstico temporal: medidas reales en pantalla
-            var relojDiag = setInterval(function () {
-                var chip = document.getElementById('diagRA');
-                if (!chip || !camaraAbierta) { clearInterval(relojDiag); return; }
-                var vv = contenedor.querySelector('video');
-                var esc = document.getElementById('escenaAR');
-                chip.textContent = (ultimaEtapaRA ? ultimaEtapaRA + ' · ' : '') + 'cont ' + (esc ? esc.clientWidth + 'x' + esc.clientHeight : '?') +
-                    ' · video ' + (vv ? vv.videoWidth + 'x' + vv.videoHeight : '—') +
-                    ' · estilo ' + (vv ? vv.style.width + 'x' + vv.style.height : '—') +
-                    ' · ventana ' + window.innerWidth + 'x' + window.innerHeight;
-            }, 800);
             clearTimeout(temporizadorConsejo);
             temporizadorConsejo = setTimeout(function () {
                 var p = document.getElementById('pistaEscaneo');
@@ -735,11 +778,11 @@
         }
         document.getElementById('btnIniciar').addEventListener('click', function () {
             error(''); ok('');
-            etapaRA('Etapa 1 · cargando librerías…');
+            mostrarCarga();
             var lista = listaActual().slice().sort(function (a, b) { return (a.creadaEn || 0) - (b.creadaEn || 0); });
-            if (!lista.length) { error('Este conjunto no tiene experiencias todavía.'); return; }
+            if (!lista.length) { ocultarCarga(); error('Este conjunto no tiene experiencias todavía.'); return; }
             cargarLibrerias().then(function () {
-                etapaRA('Etapa 2 · construyendo la escena…');
+                progresoCarga(35);
                 var seguirCon = function (targetSrc) {
                 document.getElementById('vistaNormal').style.display = 'none';
                 document.getElementById('contenedorAR').style.display = 'block';
@@ -766,14 +809,15 @@
                         seguirCon('ar/targets.mind');
                     });
                 } else {
-                    if (!bufferCompilado) { error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
+                    if (!bufferCompilado) { ocultarCarga(); error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
                     seguirCon(urlDe(new Blob([bufferCompilado], { type: 'application/octet-stream' })));
                 }
             }).catch(function () {
-                error('No se pudieron cargar las librerías de realidad aumentada. Revisa tu conexión e inténtalo de nuevo.');
+                ocultarCarga(); error('No se pudieron cargar las librerías de realidad aumentada. Revisa tu conexión e inténtalo de nuevo.');
             });
         });
         document.getElementById('btnCerrar').addEventListener('click', function () {
+            ocultarCarga();
             clearTimeout(temporizadorConsejo);
             document.body.classList.remove('ra-activo');
             var pista = document.getElementById('pistaEscaneo');
@@ -793,10 +837,12 @@
         });
 
         /* ---------- Arranque ---------- */
+        mostrarCarga();
+        progresoCarga(18);
         fetch('ar/ar.json', { cache: 'no-store' })
             .then(function (r) { return r.json(); })
-            .then(function (d) { experienciasAglucem = d.experiencias || []; versionAglucem = d.version || 1; pintarLista(); })
-            .catch(function () { experienciasAglucem = []; pintarLista(); });
+            .then(function (d) { experienciasAglucem = d.experiencias || []; versionAglucem = d.version || 1; progresoCarga(55); pintarLista(); cargaInicialLista(); })
+            .catch(function () { experienciasAglucem = []; pintarLista(); cargaInicialLista(); });
         abrirBD()
             .then(function () { return bdTodas(); })
             .then(function (todas) {
@@ -806,12 +852,13 @@
             .then(function (reg) {
                 if (reg && reg.buffer) { bufferCompilado = reg.buffer; }
                 pintarLista();
+                progresoCarga(80); cargaInicialLista();
                 // Autocuración: experiencias guardadas sin compilación (p. ej. un intento fallido) se compilan solas al abrir.
                 if (experienciasMias.length && !bufferCompilado) {
                     recompilar().then(function () { finProgreso(); pintarLista(); }).catch(function () { finProgreso(); });
                 }
             })
-            .catch(function () { pintarLista(); });
+            .catch(function () { pintarLista(); cargaInicialLista(); });
     })();
     </script>
 </body>
