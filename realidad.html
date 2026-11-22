@@ -199,7 +199,7 @@
                 var s = document.createElement('script');
                 s.src = src;
                 s.onload = res;
-                s.onerror = rej;
+                s.onerror = function () { rej(new Error('No se pudo cargar una librería de RA (revisa tu conexión)')); };
                 document.head.appendChild(s);
             });
         }
@@ -213,7 +213,7 @@
             return new Promise(function (res, rej) {
                 var img = new Image();
                 img.onload = function () { res(img); };
-                img.onerror = rej;
+                img.onerror = function () { rej(new Error('No se pudo leer una imagen (formato no soportado por el navegador)')); };
                 img.src = src;
             });
         }
@@ -225,6 +225,12 @@
             c.height = Math.max(1, Math.round(h * escala));
             c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
             return c;
+        }
+        function imagenReducida(blob) {
+            return cargarImagen(urlDe(blob)).then(function (img) {
+                if (Math.max(img.naturalWidth, img.naturalHeight) <= 1024) { return img; }
+                return lienzoABlob(reducirImagen(img, 1024)).then(function (b) { return cargarImagen(urlDe(b)); });
+            });
         }
         function lienzoABlob(lienzo) {
             return new Promise(function (res, rej) {
@@ -354,14 +360,16 @@
             return cargarLibrerias().then(function () {
                 progreso(1, 'Preparando tus fotos…');
                 var ordenadas = experienciasMias.slice().sort(function (a, b) { return a.creadaEn - b.creadaEn; });
-                var promesas = ordenadas.map(function (e) {
-                    return cargarImagen(urlDe(e.marcadorBlob)).then(function (img) { return reducirImagen(img, 1024); });
-                });
+                var promesas = ordenadas.map(function (e) { return imagenReducida(e.marcadorBlob); });
                 return Promise.all(promesas).then(function (imagenes) {
                     if (!window.MINDAR || !window.MINDAR.IMAGE || !window.MINDAR.IMAGE.Compiler) { throw new Error('El compilador de fotos no cargó'); }
                     var compilador = new window.MINDAR.IMAGE.Compiler();
+                    var ultimoPct = 0;
                     return compilador.compileImageTargets(imagenes, function (pct) {
+                        ultimoPct = pct;
                         progreso(pct, 'Compilando tus fotos… ' + Math.round(pct) + '%');
+                    }).catch(function (e) {
+                        throw new Error('Falló el compilador al ' + Math.round(ultimoPct) + '%: ' + (e && e.message ? e.message : 'error sin mensaje'));
                     }).then(function () {
                         var datos = compilador.exportData();
                         var buffer = datos instanceof Uint8Array ? datos.buffer.slice(datos.byteOffset, datos.byteOffset + datos.byteLength) : datos;
@@ -484,8 +492,8 @@
                 .catch(function (err) {
                     finProgreso();
                     btn.disabled = false;
-                    var detalle = err && err.message ? String(err.message).slice(0, 140) : 'sin detalle';
-                    error('Algo falló al compilar. Detalle técnico: ' + detalle + '. Si persiste, prueba con otra foto y mándame captura de este mensaje.');
+                    var detalle = err && err.message ? String(err.message).slice(0, 200) : 'error sin mensaje';
+                    error('Algo falló al compilar. Detalle técnico: ' + detalle + '. Mándame captura de este mensaje tal cual.');
                 });
         });
 
