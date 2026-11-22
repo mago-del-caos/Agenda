@@ -42,7 +42,7 @@
         .ra-chip.activo { background: #6C3483; color: #fff; }
         .ra-form label { display: block; font-weight: 700; margin: 14px 0 6px; font-size: 0.95rem; }
         .ra-form label:first-of-type { margin-top: 4px; }
-        .ra-form input[type="text"], .ra-form select, .ra-form textarea { width: 100%; box-sizing: border-box; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 11px; font-size: 1rem; font-family: inherit; background: #fff; }
+        .ra-form input[type="text"], .ra-form input[type="url"], .ra-form select, .ra-form textarea { width: 100%; box-sizing: border-box; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 11px; font-size: 1rem; font-family: inherit; background: #fff; }
         .ra-form input[type="file"] { width: 100%; font-size: 0.95rem; }
         .ra-form .pista { font-weight: 400; color: #64748b; font-size: 0.85rem; margin-top: 4px; }
         .ra-previa { width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px; margin-top: 10px; background: #f1f5f9; display: none; }
@@ -59,6 +59,8 @@
         .ra-tarjeta strong { font-size: 1.02rem; }
         .ra-tarjeta p { margin: 6px 0 0; color: #475569; line-height: 1.45; font-size: 0.94rem; }
         .ra-tarjeta-btn { display: inline-block; margin-top: 10px; background: #6C3483; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; }
+        .ra-yt { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); width: min(92vw, 560px); aspect-ratio: 16 / 9; background: #000; border-radius: 14px; overflow: hidden; box-shadow: 0 14px 34px rgba(0,0,0,0.5); pointer-events: auto; }
+        .ra-yt iframe { width: 100%; height: 100%; border: 0; display: block; }
     </style>
 </head>
 <body>
@@ -81,7 +83,7 @@
 
             <div class="ra-card ra-form" id="tarjetaCrear">
                 <h3>✨ Programa tu experiencia</h3>
-                <p>Toma una foto o elige una de tu galería, asígnale un video o una imagen, y guárdala. A partir de ese momento, al enfocar esa foto con la cámara se reproducirá tu contenido. Todo se hace aquí mismo y es gratuito: tus experiencias se guardan en este teléfono.</p>
+                <p>Toma una foto o elige una de tu galería, asígnale un video de YouTube o una imagen, y guárdala. A partir de ese momento, al enfocar esa foto con la cámara se reproducirá tu contenido. Todo se hace aquí mismo y es gratuito: tus experiencias se guardan en este teléfono.</p>
 
                 <label for="fNombre">Nombre de la experiencia</label>
                 <input type="text" id="fNombre" placeholder="Ej. El cartel de mi salón" maxlength="60">
@@ -93,13 +95,21 @@
 
                 <label for="fTipo">2 · ¿Qué quieres mostrar encima?</label>
                 <select id="fTipo">
-                    <option value="video">Un video</option>
+                    <option value="youtube">Un video de YouTube</option>
                     <option value="imagen">Una imagen</option>
                 </select>
 
-                <label for="fContenido">3 · El video o la imagen</label>
-                <input type="file" id="fContenido" accept="video/*">
-                <img id="previaContenido" class="ra-previa" alt="Vista previa del contenido">
+                <div id="bloqueYoutube">
+                    <label for="fEnlace">3 · Enlace de YouTube</label>
+                    <input type="url" id="fEnlace" placeholder="https://www.youtube.com/watch?v=…" inputmode="url">
+                    <div class="pista">Pega el enlace del video tal como lo copias de YouTube (también sirve el enlace corto youtu.be o el de un Short). Al enfocar tu foto, el video se reproduce dentro de la cámara.</div>
+                </div>
+
+                <div id="bloqueImagen" style="display:none">
+                    <label for="fContenido">3 · La imagen</label>
+                    <input type="file" id="fContenido" accept="image/*">
+                    <img id="previaContenido" class="ra-previa" alt="Vista previa del contenido">
+                </div>
 
                 <label for="fTitulo">Título al detectarla (opcional)</label>
                 <input type="text" id="fTitulo" placeholder="Ej. ¡Bienvenidos al tema!" maxlength="80">
@@ -128,6 +138,7 @@
         <div class="ra-hud">
             <button id="btnCerrar" class="ra-cerrar">✕ Cerrar</button>
             <div id="pistaEscaneo" class="ra-pista-hud">Buscando marcador…</div>
+            <div id="reproductorYT" class="ra-yt" style="display:none"><iframe id="marcoYT" title="Video de YouTube" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen playsinline></iframe></div>
             <div id="tarjetaInfo" class="ra-tarjeta" style="display:none">
                 <strong id="tarjetaTitulo"></strong>
                 <p id="tarjetaTexto"></p>
@@ -275,7 +286,7 @@
                 var b = document.createElement('strong');
                 b.textContent = e.nombre;
                 var s = document.createElement('span');
-                s.textContent = e.tipo === 'video' ? 'Reproduce un video' : 'Muestra una imagen';
+                s.textContent = e.tipo === 'youtube' ? 'Reproduce un video de YouTube' : (e.tipo === 'video' ? 'Reproduce un video' : 'Muestra una imagen');
                 tx.appendChild(b);
                 tx.appendChild(document.createElement('br'));
                 tx.appendChild(s);
@@ -347,12 +358,18 @@
         /* ---------- Crear / borrar experiencias ---------- */
         var archivoMarcador = null;
         var archivoContenido = null;
+        function extraerIdYoutube(texto) {
+            if (!texto) { return ''; }
+            texto = texto.trim();
+            var m = texto.match(/(?:youtube\.com\/(?:watch\?[^#\s]*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,})/);
+            if (m) { return m[1]; }
+            if (/^[\w-]{11}$/.test(texto)) { return texto; }
+            return '';
+        }
         document.getElementById('fTipo').addEventListener('change', function () {
-            var tipo = this.value;
-            document.getElementById('fContenido').setAttribute('accept', tipo === 'video' ? 'video/*' : 'image/*');
-            archivoContenido = null;
-            document.getElementById('fContenido').value = '';
-            document.getElementById('previaContenido').style.display = 'none';
+            var esYT = this.value === 'youtube';
+            document.getElementById('bloqueYoutube').style.display = esYT ? 'block' : 'none';
+            document.getElementById('bloqueImagen').style.display = esYT ? 'none' : 'block';
         });
         document.getElementById('fMarcador').addEventListener('change', function () {
             archivoMarcador = this.files && this.files[0] ? this.files[0] : null;
@@ -391,7 +408,11 @@
             var tipo = document.getElementById('fTipo').value;
             if (!nombre) { error('Ponle un nombre a tu experiencia.'); return; }
             if (!archivoMarcador) { error('Falta la foto que vas a enfocar (el marcador).'); return; }
-            if (!archivoContenido) { error('Falta el ' + (tipo === 'video' ? 'video' : 'la imagen') + ' que se mostrará encima.'); return; }
+            var idYoutube = '';
+            if (tipo === 'youtube') {
+                idYoutube = extraerIdYoutube(document.getElementById('fEnlace').value);
+                if (!idYoutube) { error('Ese enlace de YouTube no se reconoce. Pega el enlace completo del video.'); return; }
+            } else if (!archivoContenido) { error('Falta la imagen que se mostrará encima.'); return; }
             if (experienciasMias.length >= 10) { error('Ya tienes 10 experiencias en este teléfono, el máximo recomendado. Borra alguna para crear otra.'); return; }
             var btn = document.getElementById('btnGuardar');
             btn.disabled = true;
@@ -400,7 +421,7 @@
             cargarImagen(urlDe(archivoMarcador))
                 .then(function (img) {
                     imgMarcador = img;
-                    return dimensiones(tipo, archivoContenido);
+                    return tipo === 'youtube' ? { w: 16, h: 9 } : dimensiones(tipo, archivoContenido);
                 })
                 .then(function (dim) {
                     var tam = ajustar(imgMarcador.naturalWidth, imgMarcador.naturalHeight, dim.w, dim.h);
@@ -409,7 +430,8 @@
                         nombre: nombre,
                         tipo: tipo,
                         marcadorBlob: archivoMarcador,
-                        contenidoBlob: archivoContenido,
+                        contenidoBlob: tipo === 'imagen' ? archivoContenido : null,
+                        youtubeId: idYoutube,
                         titulo: document.getElementById('fTitulo').value.trim() || nombre,
                         descripcion: document.getElementById('fDescripcion').value.trim(),
                         enlace: '',
@@ -429,6 +451,7 @@
                     document.getElementById('fDescripcion').value = '';
                     document.getElementById('fMarcador').value = '';
                     document.getElementById('fContenido').value = '';
+                    document.getElementById('fEnlace').value = '';
                     archivoMarcador = null; archivoContenido = null;
                     document.getElementById('previaMarcador').style.display = 'none';
                     document.getElementById('previaContenido').style.display = 'none';
@@ -490,8 +513,18 @@
                 ent.addEventListener('targetLost', function () { alPerder(i); });
             });
         }
+        function mostrarYT(id) {
+            var marco = document.getElementById('marcoYT');
+            marco.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&playsinline=1&rel=0';
+            document.getElementById('reproductorYT').style.display = 'block';
+        }
+        function ocultarYT() {
+            document.getElementById('reproductorYT').style.display = 'none';
+            document.getElementById('marcoYT').src = '';
+        }
         function alDetectar(lista, i) {
             var e = lista[i];
+            if (e.tipo === 'youtube' && e.youtubeId) { mostrarYT(e.youtubeId); }
             document.getElementById('pistaEscaneo').style.display = 'none';
             document.getElementById('tarjetaTitulo').textContent = e.titulo || e.nombre;
             document.getElementById('tarjetaTexto').textContent = e.descripcion || '';
@@ -510,6 +543,7 @@
             }
         }
         function alPerder(i) {
+            ocultarYT();
             document.getElementById('tarjetaInfo').style.display = 'none';
             document.getElementById('pistaEscaneo').style.display = 'block';
             var v = videos[i];
@@ -554,6 +588,7 @@
             try { if (sistema) { sistema.stop(); } } catch (e) {}
             sistema = null;
             Object.keys(videos).forEach(function (k) { if (videos[k]) { videos[k].pause(); } });
+            ocultarYT();
             document.getElementById('escenaAR').innerHTML = '';
             escena = null;
             document.getElementById('tarjetaInfo').style.display = 'none';
