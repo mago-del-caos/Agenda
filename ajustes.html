@@ -97,6 +97,22 @@
             <p id="msgPass" style="min-height:1.2em; font-size:.9rem; margin:4px 0 0;"></p>
         </div>
 
+
+        <h2 class="section-title">📲 Ag lucem como app</h2>
+
+        <div class="card-elevation" style="padding: 25px; margin-bottom: 20px;">
+            <p style="margin:0 0 12px; line-height:1.55;">Instala Ag lucem en tu teléfono: queda con su icono en tu pantalla de inicio, se abre a pantalla completa y entras con tu misma cuenta. No ocupa casi nada y no pasa por ninguna tienda.</p>
+            <p id="msgYaApp" style="display:none; margin:0 0 6px; font-weight:bold; color:#229954;">✓ Ya estás usando Ag lucem como app en este dispositivo.</p>
+            <button id="btnInstalarApp" class="app-btn btn-blue" style="width:100%; display:none;">📲 Instalar Ag lucem</button>
+            <div id="instIOS" style="display:none; margin-top:6px; line-height:1.6;">
+                <p style="margin:0 0 6px;"><strong>En iPhone (Safari):</strong></p>
+                <p style="margin:0;">1. Toca el botón <strong>Compartir</strong> (el cuadrito con la flecha hacia arriba).<br>2. Elige <strong>«Agregar a pantalla de inicio»</strong>.<br>3. Toca <strong>Agregar</strong>. El icono de Ag lucem queda en tu pantalla.</p>
+            </div>
+            <div id="instAndroid" style="display:none; margin-top:6px; line-height:1.6;">
+                <p style="margin:0;"><strong>En Android (Chrome):</strong> abre el menú <strong>⋮</strong> del navegador y elige <strong>«Instalar app»</strong> o <strong>«Agregar a pantalla principal»</strong>.</p>
+            </div>
+        </div>
+
         <!-- Botón de Actualización Forzada -->
         <button id="btnActualizarApp" class="app-btn btn-blue" style="width: 100%; margin-bottom: 15px; flex-direction: row; gap: 10px;">
             🔄 Forzar Actualización del Sistema
@@ -210,6 +226,33 @@
                   }).catch(function () { nota("msgPass", "Error de red al cambiar la contraseña.", false); });
             });
         })();
+    </script>
+
+    <script>
+    // Instalación como app (PWA): Android ofrece el diálogo; iPhone se hace desde Safari.
+    (function () {
+        var btn = document.getElementById('btnInstalarApp');
+        var msgYa = document.getElementById('msgYaApp');
+        var ios = document.getElementById('instIOS');
+        var and = document.getElementById('instAndroid');
+        var enApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (enApp) { msgYa.style.display = 'block'; return; }
+        var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        var diferido = null;
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault(); diferido = e; btn.style.display = 'block'; ios.style.display = 'none'; and.style.display = 'none';
+        });
+        if (esIOS) { ios.style.display = 'block'; }
+        else { and.style.display = 'block'; }
+        btn.addEventListener('click', async function () {
+            if (!diferido) return;
+            diferido.prompt();
+            var r = await diferido.userChoice;
+            if (r && r.outcome === 'accepted') { btn.style.display = 'none'; msgYa.style.display = 'block'; }
+            diferido = null;
+        });
+        window.addEventListener('appinstalled', function () { btn.style.display = 'none'; ios.style.display = 'none'; and.style.display = 'none'; msgYa.style.display = 'block'; });
+    })();
     </script>
 </body>
 </html>
