@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Herramientas - Ag lucem</title>
+    
+    <!-- Destructores de caché -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Rutas absolutas -->
+    <link rel="stylesheet" href="/Agenda/styles.css">
+    <link rel="manifest" href="/Agenda/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ag lucem">
+    <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
+
+    <style>
+        /* Contenedor estricto para forzar la simetría de todas las imágenes */
+        .icon-wrapper {
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        /* La imagen se adaptará al contenedor sin deformarse */
+        .img-icon {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 6px 6px rgba(0,0,0,0.3));
+        }
+
+        /* Forzar que todos los botones tengan la misma altura para alinear el texto */
+        .app-btn {
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Colores manuales de los botones de abajo */
+        .btn-green { 
+            background: linear-gradient(135deg, #00C65A, var(--ij-verde, #009944)); 
+            color: #FFFFFF !important; 
+        }
+        .btn-yellow { 
+            background: linear-gradient(135deg, #FFE047, var(--ij-amarillo, #FFD100)); 
+            color: #1E293B !important; 
+        }
+        /* Estilo para el botón de Aura (tono fuego/llama) */
+        .btn-orange { 
+            background: linear-gradient(135deg, #FF7A00, var(--ij-naranja, #FF4500)); 
+            color: #FFFFFF !important; 
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/Agenda/Ag.png" alt="Ag lucem" class="header-image">
+    </header>
+
+    <nav class="app-nav">
+        <a href="/Agenda/novedades.html" class="nav-btn">Novedades</a>
+        <a href="/Agenda/horario.html" class="nav-btn">Horario</a>
+        <a href="/Agenda/calendario.html" class="nav-btn">Calendario</a>
+        <a href="https://mago-del-caos.github.io/Ju-bits/" class="nav-btn" style="display:none">Ju-bits</a>
+        <a href="/Agenda/herramientas.html" class="nav-btn active">Herramientas</a>
+        <a href="/Agenda/comunicacion.html" class="nav-btn">Comunicación</a>
+        <a href="/Agenda/redes.html" class="nav-btn">Redes</a>
+        <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
+    </nav>
+
+    <main class="app-main">
+        <h2 class="section-title">Herramientas</h2>
+        
+        <div class="button-grid">
+            
+            <!-- 1. Chemini -->
+            <a href="https://chemini.aracknia.com/" target="_blank" class="app-btn btn-blue">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/Chemini.png" alt="Icono Chemini" class="img-icon">
+                </div>
+                Chemini
+            </a>
+
+            <!-- 2. Edu-chema -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/CHEMA-edu-2.0/" target="_blank" class="app-btn btn-magenta">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/Edu.png" alt="Icono Edu-chema" class="img-icon">
+                </div>
+                Edu-chema
+            </a>
+
+            <!-- 3. Repositorio IA -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/Juventudrepositorio/" target="_blank" class="app-btn btn-green">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/repo.png" alt="Icono Repositorio IA" class="img-icon">
+                </div>
+                Repositorio IA
+            </a>
+
+            <!-- 4. Mapa -->
+            <a href="https://proyecto-aracknia.neocities.org/Mapajuventud" target="_blank" class="app-btn btn-yellow">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/mapa.png" alt="Icono Mapa" class="img-icon">
+                </div>
+                Mapa
+            </a>
+
+            <!-- 5. Calculadora Juventud -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/Calculadora-juventud-2.0/" target="_blank" class="app-btn btn-blue">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/calculadora.png" alt="Icono Calculadora" class="img-icon">
+                </div>
+                Calculadora Juventud
+            </a>
+
+            <!-- 6. Goblin tools -->
+            <a href="https://goblin.tools/" target="_blank" class="app-btn btn-magenta">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/goblin.png" alt="Icono Goblin Tools" class="img-icon">
+                </div>
+                Goblin tools
+            </a>
+
+            <!-- 7. Cuaderno Cornell -->
+            <a href="https://departamentoinnovacioneducativa-del.github.io/CuadernoCornell/" target="_blank" class="app-btn btn-green">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/icon.png" alt="Icono Cuaderno Cornell" class="img-icon">
+                </div>
+                Cuaderno Cornell
+            </a>
+
+            <!-- 8. Aura -->
+            <a href="https://proyecto-aracknia.neocities.org/medidor-aura%20(1)" target="_blank" class="app-btn btn-orange">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/llama.png" alt="Icono Aura" class="img-icon">
+                </div>
+                Aura
+            </a>
+
+            <!-- 9. Sociograma -->
+            <a href="sociograma.html" target="_blank" class="app-btn btn-blue">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/sociograma0.jpeg" alt="Icono Sociograma" class="img-icon">
+                </div>
+                Sociograma
+            </a>
+            
+            <!-- 10. Juvenchess -->
+            <a href="https://mago-del-caos.github.io/Juvenchess/index.html" target="_blank" class="app-btn btn-blue">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/chematorre.png" alt="Icono Juvenchess" class="img-icon">
+                </div>
+                Juvenchess
+            </a>
+
+            <!-- 11. Inventario -->
+            <a href="https://ijem-hds.neocities.org/" target="_blank" class="app-btn btn-green">
+                <div class="icon-wrapper">
+                    <img src="/Agenda/inventario.png" alt="Icono Inventario" class="img-icon">
+                </div>
+                Inventario
+            </a>
+
+        </div>
+    </main>
+
+    <script src="/Agenda/script.js"></script>
+</body>
+</html>
