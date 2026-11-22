@@ -216,6 +216,20 @@
                 img.src = src;
             });
         }
+        function reducirImagen(img, maximo) {
+            var w = img.naturalWidth, h = img.naturalHeight;
+            var escala = Math.min(1, maximo / Math.max(w, h));
+            var c = document.createElement('canvas');
+            c.width = Math.max(1, Math.round(w * escala));
+            c.height = Math.max(1, Math.round(h * escala));
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            return c;
+        }
+        function lienzoABlob(lienzo) {
+            return new Promise(function (res, rej) {
+                lienzo.toBlob(function (b) { if (b) { res(b); } else { rej(new Error('No se pudo preparar la foto')); } }, 'image/jpeg', 0.88);
+            });
+        }
         function ajustar(marcW, marcH, contW, contH) {
             var altoMarcador = marcH / marcW;
             var aspectoContenido = contW / contH;
@@ -339,8 +353,11 @@
             return cargarLibrerias().then(function () {
                 progreso(1, 'Preparando tus fotos…');
                 var ordenadas = experienciasMias.slice().sort(function (a, b) { return a.creadaEn - b.creadaEn; });
-                var promesas = ordenadas.map(function (e) { return cargarImagen(urlDe(e.marcadorBlob)); });
+                var promesas = ordenadas.map(function (e) {
+                    return cargarImagen(urlDe(e.marcadorBlob)).then(function (img) { return reducirImagen(img, 1024); });
+                });
                 return Promise.all(promesas).then(function (imagenes) {
+                    if (!window.MINDAR || !window.MINDAR.IMAGE || !window.MINDAR.IMAGE.Compiler) { throw new Error('El compilador de fotos no cargó'); }
                     var compilador = new window.MINDAR.IMAGE.Compiler();
                     return compilador.compileImageTargets(imagenes, function (pct) {
                         progreso(pct, 'Compilando tus fotos… ' + Math.round(pct) + '%');
@@ -417,19 +434,24 @@
             var btn = document.getElementById('btnGuardar');
             btn.disabled = true;
             progreso(0, 'Leyendo tus archivos…');
-            var imgMarcador;
+            var lienzoMarcador;
+            var marcadorFinal = null;
             cargarImagen(urlDe(archivoMarcador))
                 .then(function (img) {
-                    imgMarcador = img;
+                    lienzoMarcador = reducirImagen(img, 1024);
+                    return lienzoABlob(lienzoMarcador);
+                })
+                .then(function (blob) {
+                    marcadorFinal = blob;
                     return tipo === 'youtube' ? { w: 16, h: 9 } : dimensiones(tipo, archivoContenido);
                 })
                 .then(function (dim) {
-                    var tam = ajustar(imgMarcador.naturalWidth, imgMarcador.naturalHeight, dim.w, dim.h);
+                    var tam = ajustar(lienzoMarcador.width, lienzoMarcador.height, dim.w, dim.h);
                     var exp = {
                         id: 'exp-' + Date.now(),
                         nombre: nombre,
                         tipo: tipo,
-                        marcadorBlob: archivoMarcador,
+                        marcadorBlob: marcadorFinal,
                         contenidoBlob: tipo === 'imagen' ? archivoContenido : null,
                         youtubeId: idYoutube,
                         titulo: document.getElementById('fTitulo').value.trim() || nombre,
@@ -458,10 +480,11 @@
                     cambiarConjunto('mias');
                     ok('Experiencia guardada y compilada. Cambia a «Mis experiencias», abre la cámara y enfoca tu foto.');
                 })
-                .catch(function () {
+                .catch(function (err) {
                     finProgreso();
                     btn.disabled = false;
-                    error('Algo falló al compilar. Prueba con una foto con más detalle o un archivo más ligero.');
+                    var detalle = err && err.message ? String(err.message).slice(0, 140) : 'sin detalle';
+                    error('Algo falló al compilar. Detalle técnico: ' + detalle + '. Si persiste, prueba con otra foto y mándame captura de este mensaje.');
                 });
         });
 
@@ -612,6 +635,10 @@
             .then(function (reg) {
                 if (reg && reg.buffer) { bufferCompilado = reg.buffer; }
                 pintarLista();
+                // Autocuración: experiencias guardadas sin compilación (p. ej. un intento fallido) se compilan solas al abrir.
+                if (experienciasMias.length && !bufferCompilado) {
+                    recompilar().then(function () { finProgreso(); pintarLista(); }).catch(function () { finProgreso(); });
+                }
             })
             .catch(function () { pintarLista(); });
     })();
