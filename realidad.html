@@ -707,7 +707,7 @@
                 etapaRA('Etapa 2 · construyendo la escena…');
                 var targetSrc;
                 if (conjuntoActivo === 'aglucem') {
-                    targetSrc = 'ar/targets.mind';
+                    targetSrc = 'ar/targets.mind?v=3';
                 } else {
                     if (!bufferCompilado) { error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
                     targetSrc = urlDe(new Blob([bufferCompilado], { type: 'application/octet-stream' }));
@@ -753,7 +753,7 @@
         });
 
         /* ---------- Arranque ---------- */
-        fetch('ar/ar.json')
+        fetch('ar/ar.json?v=3')
             .then(function (r) { return r.json(); })
             .then(function (d) { experienciasAglucem = d.experiencias || []; pintarLista(); })
             .catch(function () { experienciasAglucem = []; pintarLista(); });

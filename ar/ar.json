@@ -21,6 +21,14 @@
       "descripcion": "Torneo de Super Smash Bros. Ultimate para Secundaria. Aquí aparecerán avisos y el registro del torneo.",
       "enlace": "proximos-torneos.html",
       "textoEnlace": "Ver próximos torneos"
+    },
+    {
+      "nombre": "La Piedra Cúbica",
+      "marcador": "ar/marcador-piedra.jpg",
+      "tipo": "youtube",
+      "youtubeId": "Gf72HzmoAKw",
+      "titulo": "La Piedra Cúbica",
+      "descripcion": "Los secretos del Compañero. Enfoca la portada y se reproduce el video."
     }
   ]
 }
