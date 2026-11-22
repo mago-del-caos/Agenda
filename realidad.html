@@ -19,7 +19,8 @@
     <link rel="apple-touch-icon" href="/Agenda/icon-192.png">
 
     <style>
-        .ra-wrap { display: flex; flex-direction: column; gap: 16px; padding-bottom: 36px; }
+        .ra-wrap { display: flex; flex-direction: column; gap: 16px; padding-bottom: 36px; margin-top: 40px; }
+        body.ra-activo #aglucem-sesion { display: none !important; }
         .ra-intro { font-size: 1rem; line-height: 1.5; margin: 0; }
         .ra-lista { display: flex; flex-direction: column; gap: 12px; }
         .ra-item { display: flex; align-items: center; gap: 14px; background: var(--fondo-app, #FFFFFF); border-radius: 16px; padding: 12px 14px; box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12); }
@@ -547,6 +548,7 @@
         }
         function alDetectar(lista, i) {
             var e = lista[i];
+            clearTimeout(temporizadorConsejo);
             if (e.tipo === 'youtube' && e.youtubeId) { mostrarYT(e.youtubeId); }
             document.getElementById('pistaEscaneo').style.display = 'none';
             document.getElementById('tarjetaTitulo').textContent = e.titulo || e.nombre;
@@ -572,10 +574,21 @@
             var v = videos[i];
             if (v) { v.pause(); }
         }
+        var temporizadorConsejo = null;
         function arrancarSistema() {
             if (!escena || !escena.systems || !escena.systems['mindar-image-system']) { return; }
             sistema = escena.systems['mindar-image-system'];
             sistema.start();
+            setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
+            clearTimeout(temporizadorConsejo);
+            temporizadorConsejo = setTimeout(function () {
+                var p = document.getElementById('pistaEscaneo');
+                if (p && p.style.display !== 'none') {
+                    p.style.whiteSpace = 'normal';
+                    p.style.textAlign = 'center';
+                    p.textContent = 'Sigue buscando… la imagen completa y plana en el encuadre, con buena luz y sin reflejos';
+                }
+            }, 12000);
         }
         document.getElementById('btnIniciar').addEventListener('click', function () {
             error(''); ok('');
@@ -589,9 +602,11 @@
                     if (!bufferCompilado) { error('Tus experiencias aún no están compiladas. Vuelve a guardar una experiencia.'); return; }
                     targetSrc = urlDe(new Blob([bufferCompilado], { type: 'application/octet-stream' }));
                 }
-                construirEscena(lista, targetSrc);
                 document.getElementById('vistaNormal').style.display = 'none';
                 document.getElementById('contenedorAR').style.display = 'block';
+                document.body.classList.add('ra-activo');
+                requestAnimationFrame(function () {
+                construirEscena(lista, targetSrc);
                 Object.keys(videos).forEach(function (k) {
                     var v = videos[k];
                     if (!v) { return; }
@@ -603,11 +618,17 @@
                 });
                 if (escena.hasLoaded) { arrancarSistema(); }
                 else { escena.addEventListener('loaded', arrancarSistema); }
+                });
             }).catch(function () {
                 error('No se pudieron cargar las librerías de realidad aumentada. Revisa tu conexión e inténtalo de nuevo.');
             });
         });
         document.getElementById('btnCerrar').addEventListener('click', function () {
+            clearTimeout(temporizadorConsejo);
+            document.body.classList.remove('ra-activo');
+            var pista = document.getElementById('pistaEscaneo');
+            pista.style.whiteSpace = 'nowrap';
+            pista.textContent = 'Buscando marcador…';
             try { if (sistema) { sistema.stop(); } } catch (e) {}
             sistema = null;
             Object.keys(videos).forEach(function (k) { if (videos[k]) { videos[k].pause(); } });
