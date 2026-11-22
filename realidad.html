@@ -416,6 +416,10 @@
         /* ---------- Crear / borrar experiencias ---------- */
         var archivoMarcador = null;
         var archivoContenido = null;
+        var marcadorListo = null;
+        var marcadorDim = null;
+        var contenidoListo = null;
+        var contenidoDim = null;
         function extraerIdYoutube(texto) {
             if (!texto) { return ''; }
             texto = texto.trim();
@@ -428,21 +432,45 @@
             var esYT = this.value === 'youtube';
             document.getElementById('bloqueYoutube').style.display = esYT ? 'block' : 'none';
             document.getElementById('bloqueImagen').style.display = esYT ? 'none' : 'block';
+            contenidoListo = null;
+            contenidoDim = null;
         });
         document.getElementById('fMarcador').addEventListener('change', function () {
             archivoMarcador = this.files && this.files[0] ? this.files[0] : null;
+            marcadorListo = null;
+            marcadorDim = null;
             var prev = document.getElementById('previaMarcador');
             if (archivoMarcador) {
                 prev.src = urlDe(archivoMarcador);
                 prev.style.display = 'block';
+                var elegido = archivoMarcador;
+                reducirBlob(elegido, 'tu foto marcadora').then(function (red) {
+                    if (archivoMarcador !== elegido) { return; }
+                    marcadorListo = red.blob;
+                    marcadorDim = red;
+                }).catch(function () {
+                    if (archivoMarcador !== elegido) { return; }
+                    error('No se pudo leer la foto al elegirla. Elige una foto guardada en el dispositivo (no de la nube) e inténtalo de nuevo.');
+                });
             } else { prev.style.display = 'none'; }
         });
         document.getElementById('fContenido').addEventListener('change', function () {
             archivoContenido = this.files && this.files[0] ? this.files[0] : null;
+            contenidoListo = null;
+            contenidoDim = null;
             var prev = document.getElementById('previaContenido');
             if (archivoContenido && document.getElementById('fTipo').value === 'imagen') {
                 prev.src = urlDe(archivoContenido);
                 prev.style.display = 'block';
+                var elegidoC = archivoContenido;
+                reducirBlob(elegidoC, 'la imagen de contenido').then(function (red) {
+                    if (archivoContenido !== elegidoC) { return; }
+                    contenidoListo = red.blob;
+                    contenidoDim = red;
+                }).catch(function () {
+                    if (archivoContenido !== elegidoC) { return; }
+                    error('No se pudo leer la imagen al elegirla. Elige una guardada en el dispositivo e inténtalo de nuevo.');
+                });
             } else { prev.style.display = 'none'; }
         });
 
@@ -466,22 +494,24 @@
             var tipo = document.getElementById('fTipo').value;
             if (!nombre) { error('Ponle un nombre a tu experiencia.'); return; }
             if (!archivoMarcador) { error('Falta la foto que vas a enfocar (el marcador).'); return; }
+            if (!marcadorListo) { error('Tu foto aún se está preparando o no se pudo leer. Espera un segundo o elígela de nuevo.'); return; }
             var idYoutube = '';
             if (tipo === 'youtube') {
                 idYoutube = extraerIdYoutube(document.getElementById('fEnlace').value);
                 if (!idYoutube) { error('Ese enlace de YouTube no se reconoce. Pega el enlace completo del video.'); return; }
             } else if (!archivoContenido) { error('Falta la imagen que se mostrará encima.'); return; }
+            else if (!contenidoListo) { error('Tu imagen aún se está preparando o no se pudo leer. Espera un segundo o elígela de nuevo.'); return; }
             if (experienciasMias.length >= 10) { error('Ya tienes 10 experiencias en este teléfono, el máximo recomendado. Borra alguna para crear otra.'); return; }
             var btn = document.getElementById('btnGuardar');
             btn.disabled = true;
             progreso(0, 'Leyendo tus archivos…');
             var lienzoMarcador;
             var marcadorFinal = null;
-            reducirBlob(archivoMarcador, 'tu foto marcadora')
-                .then(function (red) {
-                    marcadorFinal = red.blob;
-                    lienzoMarcador = { width: red.ancho, height: red.alto };
-                    return tipo === 'youtube' ? { w: 16, h: 9 } : dimensiones(tipo, archivoContenido);
+            Promise.resolve()
+                .then(function () {
+                    marcadorFinal = marcadorListo;
+                    lienzoMarcador = { width: marcadorDim.ancho, height: marcadorDim.alto };
+                    return tipo === 'youtube' ? { w: 16, h: 9 } : { w: contenidoDim.ancho, h: contenidoDim.alto };
                 })
                 .then(function (dim) {
                     var tam = ajustar(lienzoMarcador.width, lienzoMarcador.height, dim.w, dim.h);
@@ -490,7 +520,7 @@
                         nombre: nombre,
                         tipo: tipo,
                         marcadorBlob: marcadorFinal,
-                        contenidoBlob: tipo === 'imagen' ? archivoContenido : null,
+                        contenidoBlob: tipo === 'imagen' ? contenidoListo : null,
                         youtubeId: idYoutube,
                         titulo: document.getElementById('fTitulo').value.trim() || nombre,
                         descripcion: document.getElementById('fDescripcion').value.trim(),
@@ -513,6 +543,7 @@
                     document.getElementById('fContenido').value = '';
                     document.getElementById('fEnlace').value = '';
                     archivoMarcador = null; archivoContenido = null;
+                    marcadorListo = null; marcadorDim = null; contenidoListo = null; contenidoDim = null;
                     document.getElementById('previaMarcador').style.display = 'none';
                     document.getElementById('previaContenido').style.display = 'none';
                     cambiarConjunto('mias');
