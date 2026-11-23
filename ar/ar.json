@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -16,6 +16,14 @@
       "youtubeId": "7Alvne1kKl8",
       "titulo": "Hero Realms",
       "descripcion": "Enfoca la carta de Hero Realms y se reproduce el video."
+    },
+    {
+      "nombre": "Opening Profe Adrian",
+      "marcador": "ar/marcador-opening.jpg",
+      "tipo": "youtube",
+      "youtubeId": "mb5qnOSqWjo",
+      "titulo": "Opening Profe Adrian",
+      "descripcion": "Enfoca la vitrina de la oficina del profe Adrian y se reproduce su opening."
     }
   ]
 }
