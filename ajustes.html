@@ -101,10 +101,6 @@
             <p style="margin-top:0;">📲 Descarga Ag lucem en tu pantalla principal: se abre como aplicación, sin la barra del navegador y con tu sesión iniciada.</p>
             <button id="btnInstalarApp" class="app-btn btn-blue" style="width:100%; flex-direction: row; gap: 10px;">⬇️ Descargar la app</button>
             <p id="msgInstalar" style="min-height:1.2em; font-size:.9rem; margin:8px 0 0;"></p>
-            <div id="pasosInstalar" class="hidden" style="font-size:.92rem; margin-top:6px;">
-                <p style="margin:6px 0;"><strong>En Android (Chrome):</strong> toca el menú ⋮ del navegador y elige «Instalar app» o «Agregar a pantalla principal».</p>
-                <p style="margin:6px 0;"><strong>En iPhone (Safari):</strong> toca Compartir y elige «Agregar a inicio».</p>
-            </div>
         </div>
 
         <!-- Botón de Actualización Forzada -->
@@ -226,8 +222,6 @@
         (function () {
             var btn = document.getElementById("btnInstalarApp");
             var msg = document.getElementById("msgInstalar");
-            var pasos = document.getElementById("pasosInstalar");
-            var diferido = null;
             function instalada() {
                 return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
             }
@@ -235,12 +229,8 @@
                 btn.textContent = "✅ Ya tienes la app instalada";
                 btn.disabled = true;
             }
-            window.addEventListener("beforeinstallprompt", function (e) {
-                e.preventDefault();
-                diferido = e;
-            });
             window.addEventListener("appinstalled", function () {
-                diferido = null;
+                window.__aglucemPrompt = null;
                 btn.textContent = "✅ Ya tienes la app instalada";
                 btn.disabled = true;
                 msg.textContent = "Listo: busca Ag lucem en tu pantalla principal.";
@@ -248,12 +238,13 @@
             });
             btn.addEventListener("click", function () {
                 if (instalada()) return;
-                if (diferido) {
-                    diferido.prompt();
-                    diferido.userChoice.then(function () { diferido = null; });
+                var p = window.__aglucemPrompt;
+                if (p) {
+                    p.prompt();
+                    p.userChoice.then(function () { window.__aglucemPrompt = null; });
                 } else {
-                    pasos.classList.remove("hidden");
-                    msg.textContent = "Sigue estos pasos según tu teléfono:";
+                    msg.textContent = "Tu navegador aún no libera la descarga; espera unos segundos y toca de nuevo.";
+                    msg.style.color = "#b91c1c";
                 }
             });
         })();

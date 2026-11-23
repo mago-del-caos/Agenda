@@ -1,4 +1,16 @@
 // ==========================================
+// 0. DESCARGA DIRECTA DE LA APP (PWA)
+// Se captura el aviso de instalación en cuanto el navegador lo ofrece,
+// para que el botón «Descargar la app» de Ajustes la baje directo.
+// ==========================================
+window.__aglucemPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.__aglucemPrompt = e;
+});
+window.addEventListener('appinstalled', () => { window.__aglucemPrompt = null; });
+
+// ==========================================
 // 1. CARGA INICIAL DE PREFERENCIAS VISUALES
 // ==========================================
 const temaGuardado = localStorage.getItem('tema');
