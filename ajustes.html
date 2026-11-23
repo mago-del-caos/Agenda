@@ -95,6 +95,18 @@
             <p id="msgPass" style="min-height:1.2em; font-size:.9rem; margin:4px 0 0;"></p>
         </div>
 
+        <h2 class="section-title">Ag lucem como app</h2>
+
+        <div class="card-elevation" style="padding: 25px; margin-bottom: 20px;">
+            <p style="margin-top:0;">📲 Descarga Ag lucem en tu pantalla principal: se abre como aplicación, sin la barra del navegador y con tu sesión iniciada.</p>
+            <button id="btnInstalarApp" class="app-btn btn-blue" style="width:100%; flex-direction: row; gap: 10px;">⬇️ Descargar la app</button>
+            <p id="msgInstalar" style="min-height:1.2em; font-size:.9rem; margin:8px 0 0;"></p>
+            <div id="pasosInstalar" class="hidden" style="font-size:.92rem; margin-top:6px;">
+                <p style="margin:6px 0;"><strong>En Android (Chrome):</strong> toca el menú ⋮ del navegador y elige «Instalar app» o «Agregar a pantalla principal».</p>
+                <p style="margin:6px 0;"><strong>En iPhone (Safari):</strong> toca Compartir y elige «Agregar a inicio».</p>
+            </div>
+        </div>
+
         <!-- Botón de Actualización Forzada -->
         <button id="btnActualizarApp" class="app-btn btn-blue" style="width: 100%; margin-bottom: 15px; flex-direction: row; gap: 10px;">
             🔄 Forzar Actualización del Sistema
@@ -206,6 +218,43 @@
                       document.getElementById("miPassActual").value = "";
                       document.getElementById("miPassNueva").value = "";
                   }).catch(function () { nota("msgPass", "Error de red al cambiar la contraseña.", false); });
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var btn = document.getElementById("btnInstalarApp");
+            var msg = document.getElementById("msgInstalar");
+            var pasos = document.getElementById("pasosInstalar");
+            var diferido = null;
+            function instalada() {
+                return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+            }
+            if (instalada()) {
+                btn.textContent = "✅ Ya tienes la app instalada";
+                btn.disabled = true;
+            }
+            window.addEventListener("beforeinstallprompt", function (e) {
+                e.preventDefault();
+                diferido = e;
+            });
+            window.addEventListener("appinstalled", function () {
+                diferido = null;
+                btn.textContent = "✅ Ya tienes la app instalada";
+                btn.disabled = true;
+                msg.textContent = "Listo: busca Ag lucem en tu pantalla principal.";
+                msg.style.color = "#15803d";
+            });
+            btn.addEventListener("click", function () {
+                if (instalada()) return;
+                if (diferido) {
+                    diferido.prompt();
+                    diferido.userChoice.then(function () { diferido = null; });
+                } else {
+                    pasos.classList.remove("hidden");
+                    msg.textContent = "Sigue estos pasos según tu teléfono:";
+                }
             });
         })();
     </script>
