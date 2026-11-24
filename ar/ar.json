@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -24,6 +24,14 @@
       "youtubeId": "mb5qnOSqWjo",
       "titulo": "Opening Profe Adrian",
       "descripcion": "Enfoca la vitrina de la oficina del profe Adrian y se reproduce su opening."
+    },
+    {
+      "nombre": "Mensaje Josefino",
+      "marcador": "ar/marcador-mensaje-josefino.jpg",
+      "tipo": "youtube",
+      "youtubeId": "o7N8Avmmadc",
+      "titulo": "Mensaje Josefino",
+      "descripcion": "Enfoca el retrato enmarcado y se reproduce el Mensaje Josefino de Juventud TV."
     }
   ]
 }
