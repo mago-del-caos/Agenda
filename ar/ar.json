@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -32,6 +32,14 @@
       "youtubeId": "o7N8Avmmadc",
       "titulo": "Mensaje Josefino",
       "descripcion": "Enfoca el retrato enmarcado y se reproduce el Mensaje Josefino de Juventud TV."
+    },
+    {
+      "nombre": "Open House 2026",
+      "marcador": "ar/marcador-open-house-2026.jpg",
+      "tipo": "youtube",
+      "youtubeId": "AqNhwq56uK4",
+      "titulo": "Tu VIDA en cada RANGO de la MASONERIA",
+      "descripcion": "Enfoca el cartel del Open House del Instituto Juventud (sábado 28 de noviembre) y se reproduce el video."
     }
   ]
 }
