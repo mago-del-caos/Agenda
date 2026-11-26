@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -40,6 +40,14 @@
       "youtubeId": "AqNhwq56uK4",
       "titulo": "Tu VIDA en cada RANGO de la MASONERIA",
       "descripcion": "Enfoca el cartel del Open House del Instituto Juventud (sábado 28 de noviembre) y se reproduce el video."
+    },
+    {
+      "nombre": "Geografía en Foco",
+      "marcador": "ar/marcador-geografia-en-foco.jpg",
+      "tipo": "youtube",
+      "youtubeId": "oavMtUWDBTM",
+      "titulo": "Trololo",
+      "descripcion": "Enfoca la portada de la revista Geografía en Foco — El Niño «Godzilla» 2026 — y se reproduce el video de Trololo."
     }
   ]
 }
