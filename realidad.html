@@ -202,6 +202,8 @@
         var targetSrcActivoAR = null;
         var mariposas = [];
         var rafMariposas = 0;
+        var copos = [];
+        var rafNieve = 0;
 
         /* Volteo de cámara: MindAR 1.2.5 pide siempre la trasera (facingMode
            «environment» fijo). Se envuelve getUserMedia para sustituir ese
@@ -727,6 +729,7 @@
             cont.innerHTML = '';
             videos = {};
             mariposas = [];
+            copos = [];
             var assetsHtml = '';
             var targetsHtml = '';
             lista.forEach(function (e, i) {
@@ -746,6 +749,11 @@
                     inner = '';
                     for (var b = 0; b < 8; b++) {
                         inner += '<a-image class="mariposa" src="' + e.contenido + '" width="0.26" height="0.187" material="transparent: true; alphaTest: 0.08; side: double"></a-image>';
+                    }
+                } else if (e.tipo === 'nieve') {
+                    inner = '';
+                    for (var n = 0; n < 70; n++) {
+                        inner += '<a-image class="copo" src="' + e.contenido + '" width="0.08" height="0.08" material="transparent: true; alphaTest: 0.05; side: double; depthWrite: false; opacity: 0.95"></a-image>';
                     }
                 }
                 targetsHtml += '<a-entity class="objetivo" data-indice="' + i + '" mindar-image-target="targetIndex: ' + i + '">' + inner + '</a-entity>';
@@ -776,6 +784,17 @@
                     tam: 0.8 + Math.random() * 0.5
                 });
             });
+            cont.querySelectorAll('.copo').forEach(function (cp) {
+                copos.push({
+                    el: cp,
+                    x: -1.7 + Math.random() * 3.4,
+                    z: 0.06 + Math.random() * 0.3,
+                    vel: 0.25 + Math.random() * 0.35,
+                    off: Math.random() * 3.8,
+                    fase: Math.random() * 6.28,
+                    tam: 0.6 + Math.random() * 1.0
+                });
+            });
         }
         function animarMariposas(ts) {
             if (!escena) { rafMariposas = 0; return; }
@@ -792,6 +811,19 @@
                 o.rotation.set(0, al * 0.45, Math.sin(t * 0.34 * m.vel + m.fase) * 0.35);
             });
             rafMariposas = requestAnimationFrame(animarMariposas);
+        }
+        function animarNieve(ts) {
+            if (!escena) { rafNieve = 0; return; }
+            var t = ts / 1000;
+            copos.forEach(function (c) {
+                var o = c.el.object3D;
+                if (!o) { return; }
+                var y = 1.6 - ((t * c.vel + c.off) % 3.8);
+                var x = c.x + Math.sin(t * 0.9 + c.fase) * 0.09;
+                o.position.set(x, y, c.z);
+                o.scale.set(c.tam, c.tam, c.tam);
+            });
+            rafNieve = requestAnimationFrame(animarNieve);
         }
         function aplicarMate(entidad) {
             var intentos = 0;
@@ -879,7 +911,7 @@
             setTimeout(function () { if (!raLista && camaraAbierta) { avisoRastreador('El rastreador tardó en iniciar. Cierra la cámara y vuelve a intentarlo.'); } }, 15000);
             sistema = escena.systems['mindar-image-system'];
             sistema.start();
-            if (mariposas.length && !rafMariposas) { rafMariposas = requestAnimationFrame(animarMariposas); }
+            if (mariposas.length && !rafMariposas) { rafMariposas = requestAnimationFrame(animarMariposas); } if (copos.length && !rafNieve) { rafNieve = requestAnimationFrame(animarNieve); }
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 1300);
             // Reajuste insistente: en cuanto el video tenga medidas reales, se repite
@@ -964,7 +996,7 @@
             var pista = document.getElementById('pistaEscaneo');
             pista.style.whiteSpace = 'nowrap';
             pista.textContent = 'Buscando marcador…';
-            if (rafMariposas) { cancelAnimationFrame(rafMariposas); rafMariposas = 0; }
+            if (rafMariposas) { cancelAnimationFrame(rafMariposas); rafMariposas = 0; } if (rafNieve) { cancelAnimationFrame(rafNieve); rafNieve = 0; }
             if (relojAntiVR) { clearInterval(relojAntiVR); relojAntiVR = 0; }
             try { if (sistema) { sistema.stop(); } } catch (e) {}
             sistema = null;
