@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -60,14 +60,15 @@
       "descripcion": "Chema te saluda en realidad aumentada. Graba tu video con el botón rojo."
     },
     {
-      "nombre": "Chema saludando — Valores Juventud",
-      "marcador": "ar/marcador-valores-juventud.jpg",
+      "nombre": "Chema saludando — Escudo Juventud",
+      "marcador": "ar/marcador-escudo-juventud.jpg",
       "tipo": "videomate",
       "contenido": "ar/chema-navidad-mate.mp4",
       "ancho": 1,
       "alto": 0.5625,
       "titulo": "¡Hola! Soy Chema",
-      "descripcion": "Enfoca la lona de valores del Instituto Juventud (la del QR y los dos campus) y Chema te saluda en realidad aumentada. Graba tu video con el botón rojo."
+      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo.",
+      "posicion": "1.02 0 0.01"
     }
   ]
 }

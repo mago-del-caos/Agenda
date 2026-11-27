@@ -686,10 +686,10 @@
             lista.forEach(function (e, i) {
                 var inner = '';
                 if (e.tipo === 'video' || e.tipo === 'videomate') {
-                    inner = '<a-video src="#vid' + i + '" width="' + e.ancho + '" height="' + e.alto + '" position="0 0 0.01"></a-video>';
+                    inner = '<a-video src="#vid' + i + '" width="' + e.ancho + '" height="' + e.alto + '" position="' + (e.posicion || '0 0 0.01') + '"></a-video>';
                 } else if (e.tipo === 'imagen') {
                     var srcI = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
-                    inner = '<a-image src="' + srcI + '" width="' + e.ancho + '" height="' + e.alto + '" position="0 0 0.01"></a-image>';
+                    inner = '<a-image src="' + srcI + '" width="' + e.ancho + '" height="' + e.alto + '" position="' + (e.posicion || '0 0 0.01') + '"></a-image>';
                 }
                 targetsHtml += '<a-entity class="objetivo" data-indice="' + i + '" mindar-image-target="targetIndex: ' + i + '">' + inner + '</a-entity>';
             });
