@@ -980,17 +980,17 @@
             var tipo = (grabadorAR && grabadorAR.mimeType) || 'video/webm';
             var blob = new Blob(trozosAR, { type: tipo });
             var ext = tipo.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
-            var archivo = new File([blob], 'ar-juventud.' + ext, { type: tipo });
-            if (navigator.canShare && navigator.canShare({ files: [archivo] }) && navigator.share) {
-                navigator.share({ files: [archivo] }).catch(function () {});
-                return;
-            }
+            var ahora = new Date();
+            function dos(n) { return String(n).padStart(2, '0'); }
+            var nombre = 'ar-juventud-' + ahora.getFullYear() + '-' + dos(ahora.getMonth() + 1) + '-' + dos(ahora.getDate()) + '-' + dos(ahora.getHours()) + dos(ahora.getMinutes()) + dos(ahora.getSeconds()) + '.' + ext;
+            var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'ar-juventud.' + ext;
+            a.href = url;
+            a.download = nombre;
             document.body.appendChild(a);
             a.click();
             a.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
         }
         document.getElementById('btnGrabar').addEventListener('click', function () {
             if (!grabandoAR) { iniciarGrabacionAR(); } else { detenerGrabacionAR(); }
