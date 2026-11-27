@@ -41,7 +41,7 @@
     var estado = document.getElementById('estado');
     var btnIniciar = document.getElementById('btnIniciar');
     var btnGrabar = document.getElementById('btnGrabar');
-    var escena = null, videoChema = null, grabador = null, trozos = [], grabando = false, archivoGrabado = null;
+    var escena = null, videoChema = null, grabador = null, trozos = [], grabando = false, archivoGrabado = null, lienzoGrab = null, relojGrab = null;
 
     function decir(html) { estado.innerHTML = html; }
     function cargarScript(src) {
@@ -84,7 +84,7 @@
     function construirEscena(targetSrc) {
         var cont = document.getElementById('escenaAR');
         cont.innerHTML =
-            '<a-scene mindar-image="imageTargetSrc: ' + targetSrc + '; autoStart: false; uiLoading: no; uiScanning: no; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">'
+            '<a-scene mindar-image="imageTargetSrc: ' + targetSrc + '; autoStart: false; uiLoading: no; uiScanning: no; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true; preserveDrawingBuffer: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">'
             + '<a-assets><video id="vidChema" src="ar/chema-navidad-mate.mp4" loop playsinline webkit-playsinline crossorigin="anonymous" preload="auto" muted></video></a-assets>'
             + '<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>'
             + '<a-entity id="objetivo" mindar-image-target="targetIndex: 0">'
@@ -158,7 +158,35 @@
             decir('Este navegador no permite grabar la vista. Prueba con Safari o Chrome actualizados.');
             return;
         }
-        var stream = canvas.captureStream(30);
+        /* La cámara vive en un <video> detrás del lienzo 3D: hay que componer
+           ambos en un lienzo 2D y grabar ese, o la grabación sale con fondo negro. */
+        var camara = null;
+        var videosDom = document.querySelectorAll('video');
+        for (var vi = 0; vi < videosDom.length; vi++) {
+            if (videosDom[vi].srcObject) { camara = videosDom[vi]; break; }
+        }
+        var stream;
+        if (camara) {
+            lienzoGrab = document.createElement('canvas');
+            lienzoGrab.width = canvas.width;
+            lienzoGrab.height = canvas.height;
+            var ctx = lienzoGrab.getContext('2d');
+            var pintar = function () {
+                var W = lienzoGrab.width, H = lienzoGrab.height;
+                if (camara.videoWidth > 0) {
+                    var escala = Math.max(W / camara.videoWidth, H / camara.videoHeight);
+                    var dw = camara.videoWidth * escala, dh = camara.videoHeight * escala;
+                    ctx.drawImage(camara, (W - dw) / 2, (H - dh) / 2, dw, dh);
+                }
+                ctx.drawImage(canvas, 0, 0, W, H);
+                if (grabando) { relojGrab = requestAnimationFrame(pintar); }
+            };
+            grabando = true;
+            pintar();
+            stream = lienzoGrab.captureStream(30);
+        } else {
+            stream = canvas.captureStream(30);
+        }
         try {
             var flujoVideo = videoChema.captureStream ? videoChema.captureStream() : null;
             if (flujoVideo) {
@@ -174,6 +202,7 @@
         try {
             grabador = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
         } catch (e) {
+            grabando = false;
             decir('Este navegador no permite grabar la vista.');
             return;
         }
