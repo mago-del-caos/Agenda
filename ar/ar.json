@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -48,6 +48,16 @@
       "youtubeId": "oavMtUWDBTM",
       "titulo": "Trololo",
       "descripcion": "Enfoca la portada de la revista Geografía en Foco — El Niño «Godzilla» 2026 — y se reproduce el video de Trololo."
+    },
+    {
+      "nombre": "Chema navideño",
+      "marcador": "ar/marcador-chema-navidad.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate.mp4",
+      "ancho": 1,
+      "alto": 0.5625,
+      "titulo": "¡Feliz Navidad!",
+      "descripcion": "Chema te saluda en realidad aumentada. Graba tu video con el botón rojo."
     }
   ]
 }

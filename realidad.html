@@ -55,6 +55,9 @@
         #escenaAR { position: absolute; inset: 0; overflow: hidden; }
         #contenedorAR a-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
         .ra-hud { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+        .ra-grabar { position: absolute; top: 14px; left: 14px; pointer-events: auto; background: rgba(178,24,32,0.9); color: #fff; border: 1px solid rgba(255,255,255,0.5); border-radius: 999px; padding: 10px 16px; font-size: 0.95rem; font-weight: 700; cursor: pointer; z-index: 6; }
+        .ra-grabar.grabando { background: rgba(15,15,15,0.88); animation: raPulso 1.1s ease-in-out infinite; }
+        @keyframes raPulso { 0%,100% { box-shadow: 0 0 0 0 rgba(255,70,70,0.55); } 50% { box-shadow: 0 0 0 9px rgba(255,70,70,0); } }
         .ra-cerrar { position: absolute; top: 14px; right: 14px; pointer-events: auto; background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 10px 16px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
         .ra-pista-hud { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 9px 16px; border-radius: 999px; font-size: 0.92rem; white-space: nowrap; }
         .ra-tarjeta { position: absolute; left: 12px; right: 12px; bottom: 14px; background: rgba(255,255,255,0.96); border-radius: 16px; padding: 14px 16px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); pointer-events: auto; }
@@ -147,6 +150,7 @@
         <div id="escenaAR"></div>
         <div class="ra-hud">
             <button id="btnCerrar" class="ra-cerrar">✕ Cerrar</button>
+            <button id="btnGrabar" class="ra-grabar" style="display:none">● Grabar</button>
             <div id="pistaEscaneo" class="ra-pista-hud">Buscando marcador…</div>
             <div id="reproductorYT" class="ra-yt" style="display:none"><iframe id="marcoYT" title="Video de YouTube" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen playsinline></iframe></div>
             <div id="tarjetaInfo" class="ra-tarjeta" style="display:none">
@@ -188,6 +192,7 @@
         var videos = {};
         var urlsTemporales = [];
         var libreriasListas = false;
+        var indiceActivo = -1;
 
         /* ---------- Utilidades ---------- */
         function urlDe(blob) {
@@ -438,7 +443,7 @@
                 var b = document.createElement('strong');
                 b.textContent = e.nombre;
                 var s = document.createElement('span');
-                s.textContent = e.tipo === 'youtube' ? 'Reproduce un video de YouTube' : (e.tipo === 'video' ? 'Reproduce un video' : 'Muestra una imagen');
+                s.textContent = e.tipo === 'youtube' ? 'Reproduce un video de YouTube' : ((e.tipo === 'video' || e.tipo === 'videomate') ? 'Reproduce un video' : 'Muestra una imagen');
                 tx.appendChild(b);
                 tx.appendChild(document.createElement('br'));
                 tx.appendChild(s);
@@ -673,14 +678,14 @@
             var assetsHtml = '';
             var targetsHtml = '';
             lista.forEach(function (e, i) {
-                if (e.tipo === 'video') {
+                if (e.tipo === 'video' || e.tipo === 'videomate') {
                     var srcV = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
                     assetsHtml += '<video id="vid' + i + '" src="' + srcV + '" loop playsinline webkit-playsinline crossorigin="anonymous" preload="auto"></video>';
                 }
             });
             lista.forEach(function (e, i) {
                 var inner = '';
-                if (e.tipo === 'video') {
+                if (e.tipo === 'video' || e.tipo === 'videomate') {
                     inner = '<a-video src="#vid' + i + '" width="' + e.ancho + '" height="' + e.alto + '" position="0 0 0.01"></a-video>';
                 } else if (e.tipo === 'imagen') {
                     var srcI = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
@@ -689,20 +694,50 @@
                 targetsHtml += '<a-entity class="objetivo" data-indice="' + i + '" mindar-image-target="targetIndex: ' + i + '">' + inner + '</a-entity>';
             });
             cont.innerHTML =
-                '<a-scene mindar-image="imageTargetSrc: ' + targetSrc + '; autoStart: false; uiLoading: no; uiScanning: no; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">'
+                '<a-scene mindar-image="imageTargetSrc: ' + targetSrc + '; autoStart: false; uiLoading: no; uiScanning: no; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true; preserveDrawingBuffer: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">'
                 + '<a-assets>' + assetsHtml + '</a-assets>'
                 + '<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>'
                 + targetsHtml
                 + '</a-scene>';
             escena = cont.querySelector('a-scene');
             lista.forEach(function (e, i) {
-                if (e.tipo === 'video') { videos[i] = document.getElementById('vid' + i); }
+                if (e.tipo === 'video' || e.tipo === 'videomate') { videos[i] = document.getElementById('vid' + i); }
             });
             cont.querySelectorAll('.objetivo').forEach(function (ent) {
                 var i = parseInt(ent.getAttribute('data-indice'), 10);
+                if (lista[i].tipo === 'videomate') { aplicarMate(ent); }
                 ent.addEventListener('targetFound', function () { alDetectar(lista, i); });
                 ent.addEventListener('targetLost', function () { alPerder(i); });
             });
+        }
+        function aplicarMate(entidad) {
+            var intentos = 0;
+            var reloj = setInterval(function () {
+                intentos++;
+                var plano = entidad.querySelector('a-video');
+                var mesh = plano && plano.getObject3D ? plano.getObject3D('mesh') : null;
+                if (mesh && mesh.material && mesh.material.map) {
+                    var textura = mesh.material.map;
+                    mesh.material = new THREE.ShaderMaterial({
+                        uniforms: { mapa: { value: textura } },
+                        vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                        fragmentShader: [
+                            'uniform sampler2D mapa; varying vec2 vUv;',
+                            'void main() {',
+                            '  vec3 color = texture2D(mapa, vec2(vUv.x, vUv.y * 0.5 + 0.5)).rgb;',
+                            '  float alfa = texture2D(mapa, vec2(vUv.x, vUv.y * 0.5)).r;',
+                            '  gl_FragColor = vec4(color, alfa);',
+                            '  #include <tonemapping_fragment>',
+                            '  #include <colorspace_fragment>',
+                            '}'
+                        ].join('\n'),
+                        transparent: true,
+                        depthWrite: false
+                    });
+                    clearInterval(reloj);
+                }
+                if (intentos > 40) { clearInterval(reloj); }
+            }, 250);
         }
         function mostrarYT(id) {
             var marco = document.getElementById('marcoYT');
@@ -715,6 +750,7 @@
         }
         function alDetectar(lista, i) {
             var e = lista[i];
+            indiceActivo = i;
             clearTimeout(temporizadorConsejo);
             if (e.tipo === 'youtube' && e.youtubeId) { mostrarYT(e.youtubeId); }
             document.getElementById('pistaEscaneo').style.display = 'none';
@@ -735,6 +771,7 @@
             }
         }
         function alPerder(i) {
+            if (indiceActivo === i) { indiceActivo = -1; }
             ocultarYT();
             document.getElementById('tarjetaInfo').style.display = 'none';
             document.getElementById('pistaEscaneo').style.display = 'block';
@@ -786,6 +823,7 @@
                 var seguirCon = function (targetSrc) {
                 document.getElementById('vistaNormal').style.display = 'none';
                 document.getElementById('contenedorAR').style.display = 'block';
+                if (typeof MediaRecorder !== 'undefined') { document.getElementById('btnGrabar').style.display = 'block'; }
                 document.body.classList.add('ra-activo');
                 requestAnimationFrame(function () {
                 construirEscena(lista, targetSrc);
@@ -817,6 +855,8 @@
             });
         });
         document.getElementById('btnCerrar').addEventListener('click', function () {
+            if (grabandoAR) { detenerGrabacionAR(); }
+            document.getElementById('btnGrabar').style.display = 'none';
             ocultarCarga();
             clearTimeout(temporizadorConsejo);
             document.body.classList.remove('ra-activo');
@@ -834,6 +874,87 @@
             document.getElementById('contenedorAR').style.display = 'none';
             document.getElementById('vistaNormal').style.display = 'block';
             pintarLista();
+        });
+
+        /* ---------- Grabación de la vista AR (cámara + contenido compuesto) ---------- */
+        var grabandoAR = false;
+        var grabadorAR = null;
+        var trozosAR = [];
+        function videoCamaraAR() {
+            var vids = document.querySelectorAll('#contenedorAR video');
+            for (var i = 0; i < vids.length; i++) { if (vids[i].srcObject) { return vids[i]; } }
+            return null;
+        }
+        function iniciarGrabacionAR() {
+            var canvas3d = document.querySelector('#escenaAR canvas');
+            var camara = videoCamaraAR();
+            if (!canvas3d || !camara || !canvas3d.captureStream || typeof MediaRecorder === 'undefined') { return; }
+            var lienzo = document.createElement('canvas');
+            lienzo.width = canvas3d.width;
+            lienzo.height = canvas3d.height;
+            var ctx = lienzo.getContext('2d');
+            grabandoAR = true;
+            var pintar = function () {
+                if (!grabandoAR) { return; }
+                var W = lienzo.width, H = lienzo.height;
+                if (camara.videoWidth > 0) {
+                    var escala = Math.max(W / camara.videoWidth, H / camara.videoHeight);
+                    var dw = camara.videoWidth * escala, dh = camara.videoHeight * escala;
+                    ctx.drawImage(camara, (W - dw) / 2, (H - dh) / 2, dw, dh);
+                }
+                if (escena && escena.renderer) {
+                    try { escena.renderer.render(escena.object3D, escena.camera); } catch (e) {}
+                }
+                ctx.drawImage(canvas3d, 0, 0, W, H);
+                requestAnimationFrame(pintar);
+            };
+            pintar();
+            var stream = lienzo.captureStream(30);
+            try {
+                var vAct = indiceActivo >= 0 ? videos[indiceActivo] : null;
+                var flujo = vAct && vAct.captureStream ? vAct.captureStream() : null;
+                var pistaAudio = flujo ? flujo.getAudioTracks()[0] : null;
+                if (pistaAudio) { stream.addTrack(pistaAudio); }
+            } catch (e) {}
+            var tipos = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+            var tipo = '';
+            for (var i = 0; i < tipos.length; i++) { if (MediaRecorder.isTypeSupported(tipos[i])) { tipo = tipos[i]; break; } }
+            try {
+                grabadorAR = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
+            } catch (e) { grabandoAR = false; return; }
+            trozosAR = [];
+            grabadorAR.ondataavailable = function (ev) { if (ev.data && ev.data.size) { trozosAR.push(ev.data); } };
+            grabadorAR.onstop = entregarGrabacionAR;
+            grabadorAR.start(250);
+            var btn = document.getElementById('btnGrabar');
+            btn.textContent = '■ Detener';
+            btn.classList.add('grabando');
+        }
+        function detenerGrabacionAR() {
+            grabandoAR = false;
+            if (grabadorAR && grabadorAR.state !== 'inactive') { grabadorAR.stop(); }
+            var btn = document.getElementById('btnGrabar');
+            btn.textContent = '● Grabar';
+            btn.classList.remove('grabando');
+        }
+        function entregarGrabacionAR() {
+            var tipo = (grabadorAR && grabadorAR.mimeType) || 'video/webm';
+            var blob = new Blob(trozosAR, { type: tipo });
+            var ext = tipo.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
+            var archivo = new File([blob], 'ar-juventud.' + ext, { type: tipo });
+            if (navigator.canShare && navigator.canShare({ files: [archivo] }) && navigator.share) {
+                navigator.share({ files: [archivo] }).catch(function () {});
+                return;
+            }
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ar-juventud.' + ext;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+        document.getElementById('btnGrabar').addEventListener('click', function () {
+            if (!grabandoAR) { iniciarGrabacionAR(); } else { detenerGrabacionAR(); }
         });
 
         /* ---------- Arranque ---------- */
