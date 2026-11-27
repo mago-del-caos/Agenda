@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -69,6 +69,50 @@
       "titulo": "¡Hola! Soy Chema",
       "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo.",
       "posicion": "1.02 0 0.01"
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate.mp4",
+      "ancho": 1,
+      "alto": 0.5625,
+      "posicion": "1.02 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (luz fría)",
+      "marcador": "ar/marcador-escudo-frio.jpg",
+      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate.mp4",
+      "ancho": 1,
+      "alto": 0.5625,
+      "posicion": "1.02 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (día)",
+      "marcador": "ar/marcador-escudo-dia.jpg",
+      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate.mp4",
+      "ancho": 1,
+      "alto": 0.5625,
+      "posicion": "1.02 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (tarde)",
+      "marcador": "ar/marcador-escudo-tarde.jpg",
+      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate.mp4",
+      "ancho": 1,
+      "alto": 0.5625,
+      "posicion": "1.02 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (noche)",
+      "marcador": "ar/marcador-escudo-noche.jpg",
+      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
     }
   ]
 }
