@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -113,6 +113,16 @@
       "nombre": "Chema saludando — Escudo (noche)",
       "marcador": "ar/marcador-escudo-noche.jpg",
       "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+    },
+    {
+      "nombre": "Exposición de arte — Mariposas",
+      "marcador": "ar/marcador-expo-arte.jpg",
+      "tipo": "mariposas",
+      "contenido": "ar/mariposa.png",
+      "ancho": 1,
+      "alto": 1.77,
+      "titulo": "🦋 Exposición de arte",
+      "descripcion": "Acrílico sobre madera, obras de alumnos de 4° de Preparatoria. Las mariposas revolotean sobre la exposición."
     }
   ]
 }
