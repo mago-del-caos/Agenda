@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Prueba AR · Chema navideño</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #101418; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #f2f5f7; }
+    #escenaAR { position: fixed; inset: 0; }
+    #escenaAR a-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .panel { position: fixed; left: 50%; transform: translateX(-50%); z-index: 20; text-align: center; width: min(92vw, 430px); }
+    #estado { top: 14px; background: rgba(13, 72, 112, .88); border-radius: 14px; padding: 10px 14px; font-size: 15px; line-height: 1.35; }
+    #estado b { color: #ffe94a; }
+    #btnIniciar { bottom: 96px; display: none; background: #2d7d2f; color: #fff; border: 0; border-radius: 999px; padding: 14px 26px; font-size: 17px; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.45); cursor: pointer; }
+    #btnGrabar { bottom: 26px; display: none; background: #c62828; color: #fff; border: 0; border-radius: 999px; padding: 14px 26px; font-size: 17px; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.45); cursor: pointer; }
+    #btnGrabar.grabando { background: #37474f; }
+    #resultado { position: fixed; inset: 0; z-index: 30; background: rgba(8, 12, 16, .93); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 18px; }
+    #resultado video { width: min(92vw, 420px); max-height: 62vh; border-radius: 12px; background: #000; }
+    #resultado .fila { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    #resultado a, #resultado button { background: #0d4870; color: #fff; border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; }
+    #resultado button.claro { background: #455a64; }
+</style>
+</head>
+<body>
+<div id="escenaAR"></div>
+<div class="panel" id="estado">Preparando la prueba…</div>
+<button class="panel" id="btnIniciar">Abrir la cámara</button>
+<button class="panel" id="btnGrabar">● Grabar</button>
+<div id="resultado">
+    <video id="videoGrabado" controls playsinline></video>
+    <div class="fila">
+        <a id="descargarGrabacion" download="chema-ar.mp4">Descargar el video</a>
+        <button id="compartirGrabacion" style="display:none">Compartir</button>
+        <button id="cerrarResultado" class="claro">Seguir probando</button>
+    </div>
+</div>
+<script>
+(function () {
+    'use strict';
+    var estado = document.getElementById('estado');
+    var btnIniciar = document.getElementById('btnIniciar');
+    var btnGrabar = document.getElementById('btnGrabar');
+    var escena = null, videoChema = null, grabador = null, trozos = [], grabando = false, archivoGrabado = null;
+
+    function decir(html) { estado.innerHTML = html; }
+    function cargarScript(src) {
+        return new Promise(function (res, rej) {
+            var s = document.createElement('script');
+            s.src = src; s.onload = res; s.onerror = rej;
+            document.head.appendChild(s);
+        });
+    }
+    function cargarImagen(src) {
+        return new Promise(function (res, rej) {
+            var img = new Image();
+            img.onload = function () { res(img); };
+            img.onerror = rej;
+            img.src = src;
+        });
+    }
+
+    decir('Cargando el rastreador…');
+    cargarScript('https://aframe.io/releases/1.5.0/aframe.min.js')
+        .then(function () { return cargarScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js'); })
+        .then(function () {
+            decir('Compilando la foto de las princesas… <b>0%</b>');
+            return cargarImagen('ar/marcador-princesas.jpg');
+        })
+        .then(function (img) {
+            var compilador = new window.MINDAR.IMAGE.Compiler();
+            return compilador.compileImageTargets([img], function (p) {
+                decir('Compilando la foto de las princesas… <b>' + Math.round(p) + '%</b>');
+            }).then(function () { return compilador.exportData(); });
+        })
+        .then(function (buffer) {
+            var blobUrl = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }));
+            construirEscena(blobUrl);
+            decir('Listo. Toca <b>Abrir la cámara</b> y apunta a la lapicera de las princesas.');
+            btnIniciar.style.display = 'block';
+        })
+        .catch(function () { decir('Algo falló al preparar la prueba. Recarga la página e inténtalo de nuevo.'); });
+
+    function construirEscena(targetSrc) {
+        var cont = document.getElementById('escenaAR');
+        cont.innerHTML =
+            '<a-scene mindar-image="imageTargetSrc: ' + targetSrc + '; autoStart: false; uiLoading: no; uiScanning: no; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">'
+            + '<a-assets><video id="vidChema" src="ar/chema-navidad-mate.mp4" loop playsinline webkit-playsinline crossorigin="anonymous" preload="auto" muted></video></a-assets>'
+            + '<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>'
+            + '<a-entity id="objetivo" mindar-image-target="targetIndex: 0">'
+            + '<a-plane id="planoChema" width="1.5" height="0.84375" position="0 0.05 0.05" material="shader: flat; src: #vidChema; transparent: true"></a-plane>'
+            + '</a-entity></a-scene>';
+        escena = cont.querySelector('a-scene');
+        videoChema = document.getElementById('vidChema');
+        var objetivo = document.getElementById('objetivo');
+        objetivo.addEventListener('targetFound', function () {
+            decir('<b>¡Ahí está Chema!</b> Muévete alrededor de la lapicera: Chema se queda integrado. Graba con el botón rojo.');
+            btnGrabar.style.display = 'block';
+            videoChema.muted = false;
+            var p = videoChema.play();
+            if (p && p.catch) { p.catch(function () { videoChema.muted = true; videoChema.play(); }); }
+        });
+        objetivo.addEventListener('targetLost', function () {
+            decir('Apunta a la lapicera de las princesas para ver a Chema.');
+            videoChema.pause();
+        });
+        escena.addEventListener('loaded', aplicarShaderMate);
+    }
+
+    function aplicarShaderMate() {
+        var intentos = 0;
+        var reloj = setInterval(function () {
+            intentos++;
+            var plano = document.getElementById('planoChema');
+            var mesh = plano && plano.getObject3D ? plano.getObject3D('mesh') : null;
+            if (mesh && mesh.material && mesh.material.map) {
+                var textura = mesh.material.map;
+                mesh.material = new THREE.ShaderMaterial({
+                    uniforms: { mapa: { value: textura } },
+                    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                    fragmentShader: [
+                        'uniform sampler2D mapa; varying vec2 vUv;',
+                        'void main() {',
+                        '  vec3 color = texture2D(mapa, vec2(vUv.x, vUv.y * 0.5 + 0.5)).rgb;',
+                        '  float alfa = texture2D(mapa, vec2(vUv.x, vUv.y * 0.5)).r;',
+                        '  gl_FragColor = vec4(color, alfa);',
+                        '  #include <tonemapping_fragment>',
+                        '  #include <colorspace_fragment>',
+                        '}'
+                    ].join('\n'),
+                    transparent: true,
+                    depthWrite: false
+                });
+                clearInterval(reloj);
+            }
+            if (intentos > 40) { clearInterval(reloj); }
+        }, 250);
+    }
+
+    btnIniciar.addEventListener('click', function () {
+        btnIniciar.style.display = 'none';
+        decir('Iniciando la cámara…');
+        var sistema = escena.systems['mindar-image-system'];
+        escena.addEventListener('arReady', function () { decir('Apunta a la lapicera de las princesas para ver a Chema.'); });
+        escena.addEventListener('arError', function () { decir('La cámara no pudo iniciar. Revisa el permiso de cámara e inténtalo de nuevo.'); });
+        sistema.start();
+        setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 400);
+        setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 1400);
+    });
+
+    btnGrabar.addEventListener('click', function () {
+        if (!grabando) { iniciarGrabacion(); } else { detenerGrabacion(); }
+    });
+
+    function iniciarGrabacion() {
+        var canvas = document.querySelector('#escenaAR canvas');
+        if (!canvas || !canvas.captureStream || typeof MediaRecorder === 'undefined') {
+            decir('Este navegador no permite grabar la vista. Prueba con Safari o Chrome actualizados.');
+            return;
+        }
+        var stream = canvas.captureStream(30);
+        try {
+            var flujoVideo = videoChema.captureStream ? videoChema.captureStream() : null;
+            if (flujoVideo) {
+                var pistaAudio = flujoVideo.getAudioTracks()[0];
+                if (pistaAudio) { stream.addTrack(pistaAudio); }
+            }
+        } catch (e) { /* el video va sin audio si el navegador no lo permite */ }
+        var tipos = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+        var tipo = '';
+        for (var i = 0; i < tipos.length; i++) {
+            if (MediaRecorder.isTypeSupported(tipos[i])) { tipo = tipos[i]; break; }
+        }
+        try {
+            grabador = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
+        } catch (e) {
+            decir('Este navegador no permite grabar la vista.');
+            return;
+        }
+        trozos = [];
+        grabador.ondataavailable = function (ev) { if (ev.data && ev.data.size) { trozos.push(ev.data); } };
+        grabador.onstop = mostrarGrabacion;
+        grabador.start(250);
+        grabando = true;
+        btnGrabar.textContent = '■ Detener';
+        btnGrabar.classList.add('grabando');
+        decir('<b>Grabando…</b> Toca Detener cuando termines.');
+    }
+
+    function detenerGrabacion() {
+        if (grabador && grabador.state !== 'inactive') { grabador.stop(); }
+        grabando = false;
+        btnGrabar.textContent = '● Grabar';
+        btnGrabar.classList.remove('grabando');
+    }
+
+    function mostrarGrabacion() {
+        var tipo = (grabador && grabador.mimeType) || 'video/webm';
+        var blob = new Blob(trozos, { type: tipo });
+        var extension = tipo.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
+        archivoGrabado = new File([blob], 'chema-ar.' + extension, { type: tipo });
+        var url = URL.createObjectURL(blob);
+        document.getElementById('videoGrabado').src = url;
+        var enlace = document.getElementById('descargarGrabacion');
+        enlace.href = url;
+        enlace.setAttribute('download', 'chema-ar.' + extension);
+        var btnCompartir = document.getElementById('compartirGrabacion');
+        if (navigator.canShare && navigator.canShare({ files: [archivoGrabado] })) {
+            btnCompartir.style.display = 'inline-block';
+        } else {
+            btnCompartir.style.display = 'none';
+        }
+        document.getElementById('resultado').style.display = 'flex';
+        decir('Apunta a la lapicera de las princesas para ver a Chema.');
+    }
+
+    document.getElementById('compartirGrabacion').addEventListener('click', function () {
+        if (archivoGrabado && navigator.share) {
+            navigator.share({ files: [archivoGrabado] }).catch(function () { });
+        }
+    });
+    document.getElementById('cerrarResultado').addEventListener('click', function () {
+        document.getElementById('resultado').style.display = 'none';
+    });
+})();
+</script>
+</body>
+</html>
