@@ -743,7 +743,10 @@
                     var srcI = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
                     inner = '<a-image src="' + srcI + '" width="' + e.ancho + '" height="' + e.alto + '" position="' + (e.posicion || '0 0 0.01') + '"></a-image>';
                 } else if (e.tipo === 'mariposas') {
-                    inner = '<a-entity class="grupo-mariposas"></a-entity>';
+                    inner = '';
+                    for (var b = 0; b < 8; b++) {
+                        inner += '<a-image class="mariposa" src="' + e.contenido + '" width="0.26" height="0.187" material="transparent: true; alphaTest: 0.08; side: double"></a-image>';
+                    }
                 }
                 targetsHtml += '<a-entity class="objetivo" data-indice="' + i + '" mindar-image-target="targetIndex: ' + i + '">' + inner + '</a-entity>';
             });
@@ -763,24 +766,15 @@
                 ent.addEventListener('targetFound', function () { alDetectar(lista, i); });
                 ent.addEventListener('targetLost', function () { alPerder(i); });
             });
-            cont.querySelectorAll('.grupo-mariposas').forEach(function (g) {
-                var expM = lista[parseInt(g.parentElement.getAttribute('data-indice'), 10)];
-                for (var b = 0; b < 8; b++) {
-                    var bp = document.createElement('a-image');
-                    bp.setAttribute('src', expM.contenido);
-                    bp.setAttribute('width', '0.26');
-                    bp.setAttribute('height', '0.187');
-                    bp.setAttribute('material', 'transparent: true; alphaTest: 0.08; side: double');
-                    g.appendChild(bp);
-                    mariposas.push({
-                        el: bp,
-                        cx: -0.72 + (b % 4) * 0.48 + (Math.random() - 0.5) * 0.16,
-                        cy: (b < 4 ? 0.42 : -0.38) + (Math.random() - 0.5) * 0.2,
-                        fase: Math.random() * 6.28,
-                        vel: 0.8 + Math.random() * 0.45,
-                        tam: 0.8 + Math.random() * 0.5
-                    });
-                }
+            cont.querySelectorAll('.mariposa').forEach(function (bp, b) {
+                mariposas.push({
+                    el: bp,
+                    cx: -0.72 + (b % 4) * 0.48 + (Math.random() - 0.5) * 0.16,
+                    cy: (b < 4 ? 0.42 : -0.38) + (Math.random() - 0.5) * 0.2,
+                    fase: Math.random() * 6.28,
+                    vel: 0.8 + Math.random() * 0.45,
+                    tam: 0.8 + Math.random() * 0.5
+                });
             });
         }
         function animarMariposas(ts) {
