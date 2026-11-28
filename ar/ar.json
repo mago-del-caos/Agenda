@@ -57,7 +57,7 @@
       "ancho": 1,
       "alto": 0.5625,
       "titulo": "¡Feliz Navidad!",
-      "descripcion": "Chema te saluda en realidad aumentada. Graba tu video con el botón rojo."
+      "descripcion": "Feliz navidad"
     },
     {
       "nombre": "Chema saludando — Escudo Juventud",
@@ -67,7 +67,7 @@
       "ancho": 3,
       "alto": 1.6875,
       "titulo": "¡Hola! Soy Chema",
-      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo.",
+      "descripcion": "Feliz navidad",
       "posicion": "1.12 0 0.01"
     },
     {
@@ -79,7 +79,7 @@
       "titulo": "¡Hola! Soy Chema",
       "nombre": "Chema saludando — Escudo (luz fría)",
       "marcador": "ar/marcador-escudo-frio.jpg",
-      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+      "descripcion": "Feliz navidad"
     },
     {
       "tipo": "videomate",
@@ -90,7 +90,7 @@
       "titulo": "¡Hola! Soy Chema",
       "nombre": "Chema saludando — Escudo (día)",
       "marcador": "ar/marcador-escudo-dia.jpg",
-      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+      "descripcion": "Feliz navidad"
     },
     {
       "tipo": "videomate",
@@ -101,7 +101,7 @@
       "titulo": "¡Hola! Soy Chema",
       "nombre": "Chema saludando — Escudo (tarde)",
       "marcador": "ar/marcador-escudo-tarde.jpg",
-      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+      "descripcion": "Feliz navidad"
     },
     {
       "tipo": "videomate",
@@ -112,7 +112,7 @@
       "titulo": "¡Hola! Soy Chema",
       "nombre": "Chema saludando — Escudo (noche)",
       "marcador": "ar/marcador-escudo-noche.jpg",
-      "descripcion": "Enfoca el escudo del Instituto Juventud y Chema aparece a un lado del escudo, saludando en realidad aumentada. Graba tu video con el botón rojo."
+      "descripcion": "Feliz navidad"
     },
     {
       "nombre": "Exposición de arte — Mariposas",
