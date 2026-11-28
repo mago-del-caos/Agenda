@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -143,6 +143,36 @@
       "alto": 1,
       "titulo": "❄️ Plaza Juventud",
       "descripcion": "La nieve cae sobre la Plaza Juventud. ¡Feliz Navidad!"
+    },
+    {
+      "nombre": "Calavera de cempasúchil",
+      "marcador": "ar/marcador-calavera.jpg",
+      "tipo": "petalos",
+      "contenido": "ar/petalo.png",
+      "contenido2": "ar/petalo2.png",
+      "titulo": "🌼 Calavera de cempasúchil",
+      "descripcion": "Pétalos de cempasúchil cayendo sobre la calavera de la exposición."
+    },
+    {
+      "nombre": "Exposición de arte — Telarañas",
+      "marcador": "ar/marcador-panel-arte.jpg",
+      "tipo": "aranas",
+      "contenido": "ar/arana.png",
+      "tela": "ar/tela.png",
+      "telac": "ar/telac.png",
+      "titulo": "🕷️ Exposición de arte",
+      "descripcion": "Telarañas en las esquinas y arañas bajando de su hilo sobre las pinturas."
+    },
+    {
+      "nombre": "San José y las palomas",
+      "marcador": "ar/marcador-san-jose.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/palomas-mate.mp4",
+      "ancho": 2.2,
+      "alto": 1.2375,
+      "posicion": "0 0.55 0.01",
+      "titulo": "🕊️ San José",
+      "descripcion": "Palomas blancas volando alrededor de San José."
     }
   ]
 }

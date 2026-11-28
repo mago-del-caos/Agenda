@@ -204,6 +204,11 @@
         var rafMariposas = 0;
         var copos = [];
         var rafNieve = 0;
+        var petalos = [];
+        var rafPetalos = 0;
+        var aranas = [];
+        var rafAranas = 0;
+        var audios = {};
 
         /* Volteo de cámara: MindAR 1.2.5 pide siempre la trasera (facingMode
            «environment» fijo). Se envuelve getUserMedia para sustituir ese
@@ -730,6 +735,10 @@
             videos = {};
             mariposas = [];
             copos = [];
+            petalos = [];
+            aranas = [];
+            Object.keys(audios).forEach(function (k) { try { audios[k].pause(); } catch (e) {} });
+            audios = {};
             var assetsHtml = '';
             var targetsHtml = '';
             lista.forEach(function (e, i) {
@@ -752,8 +761,25 @@
                     }
                 } else if (e.tipo === 'nieve') {
                     inner = '';
-                    for (var n = 0; n < 70; n++) {
-                        inner += '<a-image class="copo" src="' + e.contenido + '" width="0.08" height="0.08" material="transparent: true; alphaTest: 0.05; side: double; depthWrite: false; opacity: 0.95"></a-image>';
+                    for (var n = 0; n < 110; n++) {
+                        inner += '<a-image class="copo" src="' + e.contenido + '" width="0.09" height="0.09" material="transparent: true; alphaTest: 0.05; side: double; depthWrite: false; opacity: 0.95"></a-image>';
+                    }
+                } else if (e.tipo === 'petalos') {
+                    inner = '';
+                    for (var p = 0; p < 44; p++) {
+                        var srcP = (p % 2 === 0 || !e.contenido2) ? e.contenido : e.contenido2;
+                        inner += '<a-image class="petalo" src="' + srcP + '" width="0.12" height="0.15" material="transparent: true; alphaTest: 0.05; side: double; depthWrite: false"></a-image>';
+                    }
+                } else if (e.tipo === 'aranas') {
+                    inner = '';
+                    inner += '<a-image src="' + e.tela + '" width="0.95" height="0.95" position="-0.62 0.62 0.02" material="transparent: true; alphaTest: 0.03; side: double; depthWrite: false; opacity: 0.9"></a-image>';
+                    inner += '<a-image src="' + e.tela + '" width="0.95" height="0.95" position="0.62 0.62 0.02" scale="-1 1 1" material="transparent: true; alphaTest: 0.03; side: double; depthWrite: false; opacity: 0.9"></a-image>';
+                    if (e.telac) {
+                        inner += '<a-image src="' + e.telac + '" width="0.8" height="0.8" position="0 0.78 0.015" material="transparent: true; alphaTest: 0.03; side: double; depthWrite: false; opacity: 0.55"></a-image>';
+                    }
+                    for (var a = 0; a < 5; a++) {
+                        inner += '<a-plane class="hilo" width="0.006" height="1" material="color: #ffffff; transparent: true; opacity: 0.45; side: double; depthWrite: false"></a-plane>';
+                        inner += '<a-image class="arana" src="' + e.contenido + '" width="0.17" height="0.17" material="transparent: true; alphaTest: 0.05; side: double; depthWrite: false"></a-image>';
                     }
                 }
                 targetsHtml += '<a-entity class="objetivo" data-indice="' + i + '" mindar-image-target="targetIndex: ' + i + '">' + inner + '</a-entity>';
@@ -767,6 +793,12 @@
             escena = cont.querySelector('a-scene');
             lista.forEach(function (e, i) {
                 if (e.tipo === 'video' || e.tipo === 'videomate') { videos[i] = document.getElementById('vid' + i); }
+                if (e.audio) {
+                    var au = new Audio(e.audio);
+                    au.loop = true;
+                    au.preload = 'auto';
+                    audios[i] = au;
+                }
             });
             cont.querySelectorAll('.objetivo').forEach(function (ent) {
                 var i = parseInt(ent.getAttribute('data-indice'), 10);
@@ -785,14 +817,43 @@
                 });
             });
             cont.querySelectorAll('.copo').forEach(function (cp) {
+                var z = 0.06 + Math.random() * 0.34;
                 copos.push({
                     el: cp,
-                    x: -1.7 + Math.random() * 3.4,
-                    z: 0.06 + Math.random() * 0.3,
-                    vel: 0.25 + Math.random() * 0.35,
-                    off: Math.random() * 3.8,
+                    x: -1.8 + Math.random() * 3.6,
+                    z: z,
+                    vel: 0.22 + Math.random() * 0.33,
+                    off: Math.random() * 4.1,
                     fase: Math.random() * 6.28,
-                    tam: 0.6 + Math.random() * 1.0
+                    rot: (Math.random() - 0.5) * 1.4,
+                    tam: 0.45 + (z - 0.06) * 3.4 + Math.random() * 0.35
+                });
+            });
+            cont.querySelectorAll('.petalo').forEach(function (pt) {
+                petalos.push({
+                    el: pt,
+                    x: -1.8 + Math.random() * 3.6,
+                    z: 0.06 + Math.random() * 0.3,
+                    vel: 0.13 + Math.random() * 0.16,
+                    off: Math.random() * 4.4,
+                    fase: Math.random() * 6.28,
+                    rot: (Math.random() - 0.5) * 2.4,
+                    amp: 0.13 + Math.random() * 0.11,
+                    tam: 0.7 + Math.random() * 0.8
+                });
+            });
+            var elsArana = cont.querySelectorAll('.arana');
+            var elsHilo = cont.querySelectorAll('.hilo');
+            elsArana.forEach(function (ar, a) {
+                aranas.push({
+                    el: ar,
+                    hilo: elsHilo[a],
+                    x: -0.84 + a * 0.42 + (Math.random() - 0.5) * 0.1,
+                    yTecho: 1.5,
+                    z: 0.08,
+                    largoMax: 1.05 + Math.random() * 0.75,
+                    fase: Math.random(),
+                    vel: 0.045 + Math.random() * 0.04
                 });
             });
         }
@@ -815,15 +876,65 @@
         function animarNieve(ts) {
             if (!escena) { rafNieve = 0; return; }
             var t = ts / 1000;
+            // Rachas de viento: dos ondas lentas que empujan los copos de lado.
+            var viento = Math.sin(t * 0.21) * 0.30 + Math.sin(t * 0.073 + 1.7) * 0.18;
             copos.forEach(function (c) {
                 var o = c.el.object3D;
                 if (!o) { return; }
-                var y = 1.6 - ((t * c.vel + c.off) % 3.8);
-                var x = c.x + Math.sin(t * 0.9 + c.fase) * 0.09;
+                var progreso = (t * c.vel + c.off) % 4.1;
+                var y = 1.7 - progreso;
+                var x = c.x + Math.sin(t * 0.9 + c.fase) * 0.09 + viento * progreso * 0.22;
+                if (x > 2.0) { x -= 4.0; }
+                if (x < -2.0) { x += 4.0; }
                 o.position.set(x, y, c.z);
+                o.rotation.set(0, 0, t * c.rot + c.fase);
                 o.scale.set(c.tam, c.tam, c.tam);
             });
             rafNieve = requestAnimationFrame(animarNieve);
+        }
+        function animarPetalos(ts) {
+            if (!escena) { rafPetalos = 0; return; }
+            var t = ts / 1000;
+            petalos.forEach(function (c) {
+                var o = c.el.object3D;
+                if (!o) { return; }
+                var y = 1.8 - ((t * c.vel + c.off) % 4.4);
+                var x = c.x + Math.sin(t * 0.7 + c.fase) * c.amp + Math.sin(t * 1.7 + c.fase * 2) * 0.04;
+                o.position.set(x, y, c.z);
+                o.rotation.set(Math.sin(t * 1.3 + c.fase) * 0.6, 0, t * c.rot + c.fase);
+                // Aleteo: el pétalo se estrecha y se abre al caer.
+                o.scale.set(c.tam * (0.65 + 0.35 * Math.sin(t * 2.6 + c.fase)), c.tam, c.tam);
+            });
+            rafPetalos = requestAnimationFrame(animarPetalos);
+        }
+        function animarAranas(ts) {
+            if (!escena) { rafAranas = 0; return; }
+            var t = ts / 1000;
+            function perfil(c) {
+                // Baja suave, pausa colgando, sube suave, pausa arriba.
+                function sua(u) { return u * u * (3 - 2 * u); }
+                if (c < 0.35) { return sua(c / 0.35); }
+                if (c < 0.55) { return 1; }
+                if (c < 0.9) { return 1 - sua((c - 0.55) / 0.35); }
+                return 0;
+            }
+            aranas.forEach(function (a) {
+                var o = a.el.object3D;
+                if (!o) { return; }
+                var ciclo = (t * a.vel + a.fase) % 1;
+                var largo = 0.12 + a.largoMax * perfil(ciclo);
+                var balanceo = Math.sin(t * 0.8 + a.fase * 6.28) * 0.05;
+                var x = a.x + balanceo;
+                var y = a.yTecho - largo;
+                o.position.set(x, y - 0.09, a.z);
+                o.rotation.set(0, 0, Math.sin(t * 1.1 + a.fase * 6.28) * 0.12);
+                if (a.hilo && a.hilo.object3D) {
+                    var h = a.hilo.object3D;
+                    h.position.set(x, (a.yTecho + y) / 2, a.z - 0.005);
+                    h.scale.set(1, largo, 1);
+                }
+            });
+            rafAranas = requestAnimationFrame(animarAranas);
         }
         function aplicarMate(entidad) {
             var intentos = 0;
@@ -869,6 +980,7 @@
             indiceActivo = i;
             clearTimeout(temporizadorConsejo);
             if (e.tipo === 'youtube' && e.youtubeId) { mostrarYT(e.youtubeId); }
+            if (audios[i]) { var pa = audios[i].play(); if (pa && pa.catch) { pa.catch(function () {}); } }
             document.getElementById('pistaEscaneo').style.display = 'none';
             document.getElementById('tarjetaTitulo').textContent = e.titulo || e.nombre;
             document.getElementById('tarjetaTexto').textContent = e.descripcion || '';
@@ -912,6 +1024,7 @@
             sistema = escena.systems['mindar-image-system'];
             sistema.start();
             if (mariposas.length && !rafMariposas) { rafMariposas = requestAnimationFrame(animarMariposas); } if (copos.length && !rafNieve) { rafNieve = requestAnimationFrame(animarNieve); }
+            if (petalos.length && !rafPetalos) { rafPetalos = requestAnimationFrame(animarPetalos); } if (aranas.length && !rafAranas) { rafAranas = requestAnimationFrame(animarAranas); }
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 350);
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 1300);
             // Reajuste insistente: en cuanto el video tenga medidas reales, se repite
@@ -997,6 +1110,8 @@
             pista.style.whiteSpace = 'nowrap';
             pista.textContent = 'Buscando marcador…';
             if (rafMariposas) { cancelAnimationFrame(rafMariposas); rafMariposas = 0; } if (rafNieve) { cancelAnimationFrame(rafNieve); rafNieve = 0; }
+            if (rafPetalos) { cancelAnimationFrame(rafPetalos); rafPetalos = 0; } if (rafAranas) { cancelAnimationFrame(rafAranas); rafAranas = 0; }
+            Object.keys(audios).forEach(function (k) { try { audios[k].pause(); } catch (e) {} });
             if (relojAntiVR) { clearInterval(relojAntiVR); relojAntiVR = 0; }
             try { if (sistema) { sistema.stop(); } } catch (e) {}
             sistema = null;
