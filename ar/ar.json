@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -208,15 +208,15 @@
       "descripcion": "Apunta a una hoja blanca con un marco cuadrado dibujado o impreso y el Profe Adrián aparece sin fondo, sobre la hoja."
     },
     {
-      "nombre": "La cajita",
+      "nombre": "La puerta a la innovación",
       "marcador": "ar/marcador-cajita.jpg",
-      "tipo": "imagen",
-      "contenido": "ar/cajita.png",
-      "ancho": 1,
-      "alto": 2.62,
+      "tipo": "videomate",
+      "contenido": "ar/profe-mate.mp4",
+      "ancho": 1.6,
+      "alto": 0.9,
       "posicion": "0 0 0.01",
-      "titulo": "📦 La cajita",
-      "descripcion": "La cajita sin fondo: aparece sola, sin el cuarto detrás."
+      "titulo": "🚪 La puerta a la innovación",
+      "descripcion": "Al enfocar la cajita se abre la puerta: aparece el Profe Adrián sin fondo."
     }
   ]
 }
