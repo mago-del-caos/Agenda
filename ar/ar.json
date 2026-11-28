@@ -1,200 +1,211 @@
 {
- "version": 18,
- "experiencias": [
-  {
-   "nombre": "Open House ejemplo",
-   "marcador": "ar/marcador-soyjuventud.jpg",
-   "tipo": "youtube",
-   "youtubeId": "SD25y3h2UDs",
-   "titulo": "Open House",
-   "descripcion": "Enfoca el logo Soy Juventud y se reproduce el video del Open House."
-  },
-  {
-   "nombre": "Hero Realms",
-   "marcador": "ar/marcador-herorealms.jpg",
-   "tipo": "youtube",
-   "youtubeId": "7Alvne1kKl8",
-   "titulo": "Hero Realms",
-   "descripcion": "Enfoca la carta de Hero Realms y se reproduce el video."
-  },
-  {
-   "nombre": "Opening Profe Adrian",
-   "marcador": "ar/marcador-opening.jpg",
-   "tipo": "youtube",
-   "youtubeId": "mb5qnOSqWjo",
-   "titulo": "Opening Profe Adrian",
-   "descripcion": "Enfoca la vitrina de la oficina del profe Adrian y se reproduce su opening."
-  },
-  {
-   "nombre": "Mensaje Josefino",
-   "marcador": "ar/marcador-mensaje-josefino.jpg",
-   "tipo": "youtube",
-   "youtubeId": "o7N8Avmmadc",
-   "titulo": "Mensaje Josefino",
-   "descripcion": "Enfoca el retrato enmarcado y se reproduce el Mensaje Josefino de Juventud TV."
-  },
-  {
-   "nombre": "Open House 2026",
-   "marcador": "ar/marcador-open-house-2026.jpg",
-   "tipo": "youtube",
-   "youtubeId": "AqNhwq56uK4",
-   "titulo": "Tu VIDA en cada RANGO de la MASONERIA",
-   "descripcion": "Enfoca el cartel del Open House del Instituto Juventud (sábado 28 de noviembre) y se reproduce el video."
-  },
-  {
-   "nombre": "Geografía en Foco",
-   "marcador": "ar/marcador-geografia-en-foco.jpg",
-   "tipo": "youtube",
-   "youtubeId": "oavMtUWDBTM",
-   "titulo": "Trololo",
-   "descripcion": "Enfoca la portada de la revista Geografía en Foco — El Niño «Godzilla» 2026 — y se reproduce el video de Trololo."
-  },
-  {
-   "nombre": "Chema navideño",
-   "marcador": "ar/marcador-chema-navidad.jpg",
-   "tipo": "videomate",
-   "contenido": "ar/chema-navidad-mate-v2.mp4",
-   "ancho": 1,
-   "alto": 0.5625,
-   "titulo": "¡Feliz Navidad!",
-   "descripcion": "Feliz navidad"
-  },
-  {
-   "nombre": "Chema saludando — Escudo Juventud",
-   "marcador": "ar/marcador-escudo-juventud.jpg",
-   "tipo": "videomate",
-   "contenido": "ar/chema-navidad-mate-v2.mp4",
-   "ancho": 3,
-   "alto": 1.6875,
-   "titulo": "¡Hola! Soy Chema",
-   "descripcion": "Feliz navidad",
-   "posicion": "1.12 0 0.01"
-  },
-  {
-   "tipo": "videomate",
-   "contenido": "ar/chema-navidad-mate-v2.mp4",
-   "ancho": 3,
-   "alto": 1.6875,
-   "posicion": "1.12 0 0.01",
-   "titulo": "¡Hola! Soy Chema",
-   "nombre": "Chema saludando — Escudo (luz fría)",
-   "marcador": "ar/marcador-escudo-frio.jpg",
-   "descripcion": "Feliz navidad"
-  },
-  {
-   "tipo": "videomate",
-   "contenido": "ar/chema-navidad-mate-v2.mp4",
-   "ancho": 3,
-   "alto": 1.6875,
-   "posicion": "1.12 0 0.01",
-   "titulo": "¡Hola! Soy Chema",
-   "nombre": "Chema saludando — Escudo (día)",
-   "marcador": "ar/marcador-escudo-dia.jpg",
-   "descripcion": "Feliz navidad"
-  },
-  {
-   "tipo": "videomate",
-   "contenido": "ar/chema-navidad-mate-v2.mp4",
-   "ancho": 3,
-   "alto": 1.6875,
-   "posicion": "1.12 0 0.01",
-   "titulo": "¡Hola! Soy Chema",
-   "nombre": "Chema saludando — Escudo (tarde)",
-   "marcador": "ar/marcador-escudo-tarde.jpg",
-   "descripcion": "Feliz navidad"
-  },
-  {
-   "tipo": "videomate",
-   "contenido": "ar/chema-navidad-mate-v2.mp4",
-   "ancho": 3,
-   "alto": 1.6875,
-   "posicion": "1.12 0 0.01",
-   "titulo": "¡Hola! Soy Chema",
-   "nombre": "Chema saludando — Escudo (noche)",
-   "marcador": "ar/marcador-escudo-noche.jpg",
-   "descripcion": "Feliz navidad"
-  },
-  {
-   "nombre": "Exposición de arte — Mariposas",
-   "marcador": "ar/marcador-expo-arte.jpg",
-   "tipo": "mariposas",
-   "contenido": "ar/mariposa.png",
-   "ancho": 1,
-   "alto": 1.77,
-   "titulo": "🦋 Exposición de arte",
-   "descripcion": "Acrílico sobre madera, obras de alumnos de 4° de Preparatoria. Las mariposas revolotean sobre la exposición."
-  },
-  {
-   "nombre": "Exposición de arte — Mariposas (panel completo)",
-   "marcador": "ar/marcador-expo-arte-2.jpg",
-   "tipo": "mariposas",
-   "contenido": "ar/mariposa.png",
-   "ancho": 1,
-   "alto": 1.77,
-   "titulo": "🦋 Exposición de arte",
-   "descripcion": "Acrílico sobre madera, obras de alumnos de 4° de Preparatoria. Las mariposas revolotean sobre la exposición."
-  },
-  {
-   "nombre": "Plaza Juventud — Nieve",
-   "marcador": "ar/marcador-plaza-juventud.jpg",
-   "tipo": "nieve",
-   "contenido": "ar/copo.png",
-   "ancho": 1.78,
-   "alto": 1,
-   "titulo": "❄️ Plaza Juventud",
-   "descripcion": "La nieve cae sobre la Plaza Juventud. ¡Feliz Navidad!"
-  },
-  {
-   "nombre": "Calavera de cempasúchil",
-   "marcador": "ar/marcador-calavera.jpg",
-   "tipo": "petalos",
-   "contenido": "ar/petalo.png",
-   "contenido2": "ar/petalo2.png",
-   "titulo": "🌼 Calavera de cempasúchil",
-   "descripcion": "Pétalos de cempasúchil cayendo sobre la calavera de la exposición."
-  },
-  {
-   "nombre": "Exposición de arte — Telarañas",
-   "marcador": "ar/marcador-panel-arte.jpg",
-   "tipo": "aranas",
-   "contenido": "ar/arana.png",
-   "tela": "ar/tela.png",
-   "telac": "ar/telac.png",
-   "titulo": "🕷️ Exposición de arte",
-   "descripcion": "Telarañas en las esquinas y arañas bajando de su hilo sobre las pinturas."
-  },
-  {
-   "nombre": "San José y las palomas",
-   "marcador": "ar/marcador-san-jose.jpg",
-   "tipo": "videomate",
-   "contenido": "ar/palomas-mate.mp4",
-   "ancho": 2.2,
-   "alto": 1.2375,
-   "posicion": "0 0.55 0.01",
-   "titulo": "🕊️ San José",
-   "descripcion": "Palomas blancas volando alrededor de San José."
-  },
-  {
-   "nombre": "Plano arquitectónico — La casa en 3D",
-   "marcador": "ar/marcador-plano-casa.jpg",
-   "tipo": "video",
-   "contenido": "ar/casa-3d.mp4",
-   "ancho": 1.6,
-   "alto": 0.9,
-   "posicion": "0 0 0.01",
-   "titulo": "🏠 La casa en 3D",
-   "descripcion": "El plano arquitectónico cobra vida: la casa en 3D dando la vuelta."
-  },
-  {
-   "nombre": "Vela de luz",
-   "marcador": "ar/marcador-vela.jpg",
-   "tipo": "videomate",
-   "contenido": "ar/vela-mate.mp4",
-   "ancho": 1.05,
-   "alto": 1.3125,
-   "posicion": "0 0 0.01",
-   "titulo": "🕯️ Vela de luz",
-   "descripcion": "Una vela encendida sin fondo: su luz sube y baja por rangos, como una flama viva."
-  }
- ]
+  "version": 19,
+  "experiencias": [
+    {
+      "nombre": "Open House ejemplo",
+      "marcador": "ar/marcador-soyjuventud.jpg",
+      "tipo": "youtube",
+      "youtubeId": "SD25y3h2UDs",
+      "titulo": "Open House",
+      "descripcion": "Enfoca el logo Soy Juventud y se reproduce el video del Open House."
+    },
+    {
+      "nombre": "Hero Realms",
+      "marcador": "ar/marcador-herorealms.jpg",
+      "tipo": "youtube",
+      "youtubeId": "7Alvne1kKl8",
+      "titulo": "Hero Realms",
+      "descripcion": "Enfoca la carta de Hero Realms y se reproduce el video."
+    },
+    {
+      "nombre": "Opening Profe Adrian",
+      "marcador": "ar/marcador-opening.jpg",
+      "tipo": "youtube",
+      "youtubeId": "mb5qnOSqWjo",
+      "titulo": "Opening Profe Adrian",
+      "descripcion": "Enfoca la vitrina de la oficina del profe Adrian y se reproduce su opening."
+    },
+    {
+      "nombre": "Mensaje Josefino",
+      "marcador": "ar/marcador-mensaje-josefino.jpg",
+      "tipo": "youtube",
+      "youtubeId": "o7N8Avmmadc",
+      "titulo": "Mensaje Josefino",
+      "descripcion": "Enfoca el retrato enmarcado y se reproduce el Mensaje Josefino de Juventud TV."
+    },
+    {
+      "nombre": "Open House 2026",
+      "marcador": "ar/marcador-open-house-2026.jpg",
+      "tipo": "youtube",
+      "youtubeId": "AqNhwq56uK4",
+      "titulo": "Tu VIDA en cada RANGO de la MASONERIA",
+      "descripcion": "Enfoca el cartel del Open House del Instituto Juventud (sábado 28 de noviembre) y se reproduce el video."
+    },
+    {
+      "nombre": "Geografía en Foco",
+      "marcador": "ar/marcador-geografia-en-foco.jpg",
+      "tipo": "youtube",
+      "youtubeId": "oavMtUWDBTM",
+      "titulo": "Trololo",
+      "descripcion": "Enfoca la portada de la revista Geografía en Foco — El Niño «Godzilla» 2026 — y se reproduce el video de Trololo."
+    },
+    {
+      "nombre": "Chema navideño",
+      "marcador": "ar/marcador-chema-navidad.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate-v2.mp4",
+      "ancho": 1,
+      "alto": 0.5625,
+      "titulo": "¡Feliz Navidad!",
+      "descripcion": "Feliz navidad"
+    },
+    {
+      "nombre": "Chema saludando — Escudo Juventud",
+      "marcador": "ar/marcador-escudo-juventud.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate-v2.mp4",
+      "ancho": 3,
+      "alto": 1.6875,
+      "titulo": "¡Hola! Soy Chema",
+      "descripcion": "Feliz navidad",
+      "posicion": "1.12 0 0.01"
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate-v2.mp4",
+      "ancho": 3,
+      "alto": 1.6875,
+      "posicion": "1.12 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (luz fría)",
+      "marcador": "ar/marcador-escudo-frio.jpg",
+      "descripcion": "Feliz navidad"
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate-v2.mp4",
+      "ancho": 3,
+      "alto": 1.6875,
+      "posicion": "1.12 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (día)",
+      "marcador": "ar/marcador-escudo-dia.jpg",
+      "descripcion": "Feliz navidad"
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate-v2.mp4",
+      "ancho": 3,
+      "alto": 1.6875,
+      "posicion": "1.12 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (tarde)",
+      "marcador": "ar/marcador-escudo-tarde.jpg",
+      "descripcion": "Feliz navidad"
+    },
+    {
+      "tipo": "videomate",
+      "contenido": "ar/chema-navidad-mate-v2.mp4",
+      "ancho": 3,
+      "alto": 1.6875,
+      "posicion": "1.12 0 0.01",
+      "titulo": "¡Hola! Soy Chema",
+      "nombre": "Chema saludando — Escudo (noche)",
+      "marcador": "ar/marcador-escudo-noche.jpg",
+      "descripcion": "Feliz navidad"
+    },
+    {
+      "nombre": "Exposición de arte — Mariposas",
+      "marcador": "ar/marcador-expo-arte.jpg",
+      "tipo": "mariposas",
+      "contenido": "ar/mariposa.png",
+      "ancho": 1,
+      "alto": 1.77,
+      "titulo": "🦋 Exposición de arte",
+      "descripcion": "Acrílico sobre madera, obras de alumnos de 4° de Preparatoria. Las mariposas revolotean sobre la exposición."
+    },
+    {
+      "nombre": "Exposición de arte — Mariposas (panel completo)",
+      "marcador": "ar/marcador-expo-arte-2.jpg",
+      "tipo": "mariposas",
+      "contenido": "ar/mariposa.png",
+      "ancho": 1,
+      "alto": 1.77,
+      "titulo": "🦋 Exposición de arte",
+      "descripcion": "Acrílico sobre madera, obras de alumnos de 4° de Preparatoria. Las mariposas revolotean sobre la exposición."
+    },
+    {
+      "nombre": "Plaza Juventud — Nieve",
+      "marcador": "ar/marcador-plaza-juventud.jpg",
+      "tipo": "nieve",
+      "contenido": "ar/copo.png",
+      "ancho": 1.78,
+      "alto": 1,
+      "titulo": "❄️ Plaza Juventud",
+      "descripcion": "La nieve cae sobre la Plaza Juventud. ¡Feliz Navidad!"
+    },
+    {
+      "nombre": "Calavera de cempasúchil",
+      "marcador": "ar/marcador-calavera.jpg",
+      "tipo": "petalos",
+      "contenido": "ar/petalo.png",
+      "contenido2": "ar/petalo2.png",
+      "titulo": "🌼 Calavera de cempasúchil",
+      "descripcion": "Pétalos de cempasúchil cayendo sobre la calavera de la exposición."
+    },
+    {
+      "nombre": "Exposición de arte — Telarañas",
+      "marcador": "ar/marcador-panel-arte.jpg",
+      "tipo": "aranas",
+      "contenido": "ar/arana.png",
+      "tela": "ar/tela.png",
+      "telac": "ar/telac.png",
+      "titulo": "🕷️ Exposición de arte",
+      "descripcion": "Telarañas en las esquinas y arañas bajando de su hilo sobre las pinturas."
+    },
+    {
+      "nombre": "San José y las palomas",
+      "marcador": "ar/marcador-san-jose.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/palomas-mate.mp4",
+      "ancho": 2.2,
+      "alto": 1.2375,
+      "posicion": "0 0.55 0.01",
+      "titulo": "🕊️ San José",
+      "descripcion": "Palomas blancas volando alrededor de San José."
+    },
+    {
+      "nombre": "Plano arquitectónico — La casa en 3D",
+      "marcador": "ar/marcador-plano-casa.jpg",
+      "tipo": "video",
+      "contenido": "ar/casa-3d.mp4",
+      "ancho": 1.6,
+      "alto": 0.9,
+      "posicion": "0 0 0.01",
+      "titulo": "🏠 La casa en 3D",
+      "descripcion": "El plano arquitectónico cobra vida: la casa en 3D dando la vuelta."
+    },
+    {
+      "nombre": "Vela de luz",
+      "marcador": "ar/marcador-vela.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/vela-mate.mp4",
+      "ancho": 1.05,
+      "alto": 1.3125,
+      "posicion": "0 0 0.01",
+      "titulo": "🕯️ Vela de luz",
+      "descripcion": "Una vela encendida sin fondo: su luz sube y baja por rangos, como una flama viva."
+    },
+    {
+      "nombre": "Profe Adrián DIE",
+      "marcador": "ar/marcador-die.jpg",
+      "tipo": "videomate",
+      "contenido": "ar/profe-mate.mp4",
+      "ancho": 1.6,
+      "alto": 0.9,
+      "posicion": "0 0 0.01",
+      "titulo": "👨‍🏫 Profe Adrián",
+      "descripcion": "El avatar del Profe Adrián aparece sobre el logo del DIE."
+    }
+  ]
 }
