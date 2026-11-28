@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -198,14 +198,14 @@
     },
     {
       "nombre": "Profe Adrián",
-      "marcador": "ar/marcador-cuadro-blanco.jpg",
+      "marcador": "ar/marcador-die.jpg",
       "tipo": "videomate",
       "contenido": "ar/profe-mate.mp4",
       "ancho": 1.6,
       "alto": 0.9,
       "posicion": "0 0 0.01",
       "titulo": "👨‍🏫 Profe Adrián",
-      "descripcion": "Apunta a una hoja blanca con un marco cuadrado dibujado o impreso y el Profe Adrián aparece sin fondo, sobre la hoja."
+      "descripcion": "El avatar del Profe Adrián, sin fondo."
     }
   ]
 }
