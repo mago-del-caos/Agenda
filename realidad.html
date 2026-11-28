@@ -750,7 +750,13 @@
             lista.forEach(function (e, i) {
                 var inner = '';
                 if (e.tipo === 'video' || e.tipo === 'videomate') {
-                    inner = '<a-video src="#vid' + i + '" width="' + e.ancho + '" height="' + e.alto + '" position="' + (e.posicion || '0 0 0.01') + '"></a-video>';
+                    inner = '';
+                    if (e.fondo) {
+                        var posF = (e.posicion || '0 0 0.01').split(' ');
+                        var zF = (parseFloat(posF[2] || '0.01') - 0.006).toFixed(3);
+                        inner += '<a-plane width="' + (e.fondoAncho || e.ancho) + '" height="' + (e.fondoAlto || e.alto) + '" position="' + (posF[0] || '0') + ' ' + (posF[1] || '0') + ' ' + zF + '" material="color: ' + e.fondo + '; side: double"></a-plane>';
+                    }
+                    inner += '<a-video src="#vid' + i + '" width="' + e.ancho + '" height="' + e.alto + '" position="' + (e.posicion || '0 0 0.01') + '"></a-video>';
                 } else if (e.tipo === 'imagen') {
                     var srcI = e.contenidoBlob ? urlDe(e.contenidoBlob) : e.contenido;
                     inner = '<a-image src="' + srcI + '" width="' + e.ancho + '" height="' + e.alto + '" position="' + (e.posicion || '0 0 0.01') + '"></a-image>';

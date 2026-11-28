@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -205,7 +205,10 @@
       "alto": 0.9,
       "posicion": "0 0 0.01",
       "titulo": "👨‍🏫 Profe Adrián",
-      "descripcion": "El avatar del Profe Adrián aparece sobre el logo del DIE."
+      "descripcion": "El avatar del Profe Adrián aparece sobre el logo del DIE.",
+      "fondo": "#178a47",
+      "fondoAncho": 1.7,
+      "fondoAlto": 1.1
     }
   ]
 }
