@@ -528,10 +528,6 @@
         <a href="/Agenda/ajustes.html" class="nav-btn">Ajustes</a>
     </nav>
 
-    <!-- Solo el administrador lo ve: interruptor de la cuenta compartida de invitado -->
-    <div id="barraInvitado" style="display:none; max-width:1100px; margin:12px auto 0; padding:0 16px;">
-        <button id="btnToggleInvitado" type="button" style="width:100%; padding:12px; border-radius:10px; border:2px solid #032A60; background:#ffffff; color:#032A60; font-weight:bold; cursor:pointer; font-size:1rem;">Invitado: …</button>
-    </div>
 
     <main class="app-main prod-shell">
         <!-- Encabezado Editorial de Alta Gama -->
@@ -755,39 +751,6 @@
             });
             setTimeout(updatePriorities, 120);
         });
-    </script>
-    <script>
-    // Interruptor del invitado (solo administrador): un clic activa o desactiva.
-    (function () {
-        var API = "https://aglucem-api.adrian-camelot32.workers.dev";
-        var token = localStorage.getItem("aglucem_token");
-        var barra = document.getElementById("barraInvitado");
-        var btn = document.getElementById("btnToggleInvitado");
-        if (!token || !barra || !btn) return;
-        var activo = null;
-        function pintar() {
-            btn.textContent = activo
-                ? "👤 Invitado: ACTIVADO — clic para desactivar"
-                : "👤 Invitado: desactivado — clic para activar";
-            btn.style.background = activo ? "#FFD100" : "#ffffff";
-        }
-        fetch(API + "/admin/invitado", { headers: { Authorization: "Bearer " + token } })
-            .then(function (r) { if (!r.ok) throw new Error("no-admin"); return r.json(); })
-            .then(function (d) { activo = !!d.activo; barra.style.display = "block"; pintar(); })
-            .catch(function () { /* no es admin: la barra no aparece */ });
-        btn.addEventListener("click", function () {
-            if (activo === null) return;
-            btn.disabled = true;
-            fetch(API + "/admin/invitado", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-                body: JSON.stringify({ activo: !activo })
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (d) { activo = !!d.activo; pintar(); btn.disabled = false; })
-            .catch(function () { btn.disabled = false; });
-        });
-    })();
     </script>
 </body>
 </html>
