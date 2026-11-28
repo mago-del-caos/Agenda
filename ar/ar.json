@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -173,6 +173,17 @@
       "posicion": "0 0.55 0.01",
       "titulo": "🕊️ San José",
       "descripcion": "Palomas blancas volando alrededor de San José."
+    },
+    {
+      "nombre": "Plano arquitectónico — La casa en 3D",
+      "marcador": "ar/marcador-plano-casa.jpg",
+      "tipo": "video",
+      "contenido": "ar/casa-3d.mp4",
+      "ancho": 1.6,
+      "alto": 0.9,
+      "posicion": "0 0 0.01",
+      "titulo": "🏠 La casa en 3D",
+      "descripcion": "El plano arquitectónico cobra vida: la casa en 3D dando la vuelta."
     }
   ]
 }
