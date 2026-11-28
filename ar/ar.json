@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -197,18 +197,15 @@
       "descripcion": "Una vela encendida sin fondo: su luz sube y baja por rangos, como una flama viva."
     },
     {
-      "nombre": "Profe Adrián DIE",
-      "marcador": "ar/marcador-die.jpg",
+      "nombre": "Profe Adrián",
+      "marcador": "ar/marcador-cuadro-blanco.jpg",
       "tipo": "videomate",
       "contenido": "ar/profe-mate.mp4",
       "ancho": 1.6,
       "alto": 0.9,
       "posicion": "0 0 0.01",
       "titulo": "👨‍🏫 Profe Adrián",
-      "descripcion": "El avatar del Profe Adrián aparece sobre el logo del DIE.",
-      "fondo": "#178a47",
-      "fondoAncho": 1.7,
-      "fondoAlto": 1.1
+      "descripcion": "Apunta a una hoja blanca con un marco cuadrado dibujado o impreso y el Profe Adrián aparece sin fondo, sobre la hoja."
     }
   ]
 }
