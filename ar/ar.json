@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "experiencias": [
     {
       "nombre": "Open House ejemplo",
@@ -206,6 +206,17 @@
       "posicion": "0 0 0.01",
       "titulo": "👨‍🏫 Profe Adrián",
       "descripcion": "Apunta a una hoja blanca con un marco cuadrado dibujado o impreso y el Profe Adrián aparece sin fondo, sobre la hoja."
+    },
+    {
+      "nombre": "La cajita",
+      "marcador": "ar/marcador-cajita.jpg",
+      "tipo": "imagen",
+      "contenido": "ar/cajita.png",
+      "ancho": 1,
+      "alto": 2.62,
+      "posicion": "0 0 0.01",
+      "titulo": "📦 La cajita",
+      "descripcion": "La cajita sin fondo: aparece sola, sin el cuarto detrás."
     }
   ]
 }
