@@ -85,6 +85,10 @@
             Entrar a la Agenda
         </button>
         <p style="color:#94a3b8; font-size:.8rem; margin:16px 0 0;">¿No tienes cuenta o olvidaste tu contraseña? Pídesela al administrador.</p>
+
+        <button id="btnInvitado" onclick="entrarInvitado()" style="display:none; width: 100%; padding: 13px; margin-top: 14px; font-size: 1rem; background: #ffffff; color: #032A60; border: 2px solid #032A60; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            👤 Entrar como invitado
+        </button>
     </div>
 
     <script>
@@ -102,6 +106,46 @@
                 .then(function (r) { if (r.ok) window.location.replace("/Agenda/novedades.html"); })
                 .catch(function () { /* sin red: se queda en el login */ });
         })();
+
+        // El botón de invitado solo aparece si el administrador lo activó.
+        (function () {
+            fetch(API + "/auth/invitado-estado")
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d && d.activo) document.getElementById('btnInvitado').style.display = 'block';
+                })
+                .catch(function () { /* sin red: el botón se queda oculto */ });
+        })();
+
+        function entrarInvitado() {
+            var btn = document.getElementById('btnInvitado');
+            btn.disabled = true;
+            btn.textContent = "Entrando…";
+            fetch(API + "/auth/invitado", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: "{}"
+            })
+            .then(function (r) {
+                return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+            })
+            .then(function (x) {
+                if (!x.ok) {
+                    mostrarError(x.d.error || "El acceso de invitado no está disponible.");
+                    btn.disabled = false;
+                    btn.textContent = "👤 Entrar como invitado";
+                    return;
+                }
+                localStorage.setItem('aglucem_token', x.d.token);
+                localStorage.setItem('aglucem_user', JSON.stringify({ usuario: x.d.usuario, nombre: x.d.nombre, rol: x.d.rol }));
+                window.location.replace("/Agenda/novedades.html");
+            })
+            .catch(function () {
+                mostrarError("Sin conexión con el servidor de cuentas. Revisa tu internet e inténtalo de nuevo.");
+                btn.disabled = false;
+                btn.textContent = "👤 Entrar como invitado";
+            });
+        }
 
         function verificarEnter(event) {
             if (event.key === "Enter") procesarAcceso();
